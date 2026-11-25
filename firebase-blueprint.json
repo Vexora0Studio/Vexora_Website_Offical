@@ -1,0 +1,185 @@
+{
+  "entities": {
+    "ServiceItem": {
+      "title": "ServiceItem",
+      "description": "A technology or creative service offered by Vexora Studio.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string" },
+        "titleAr": { "type": "string" },
+        "descriptionEn": { "type": "string" },
+        "descriptionAr": { "type": "string" },
+        "iconKey": { "type": "string" },
+        "category": { "type": "string" },
+        "sortOrder": { "type": "integer" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["titleEn", "titleAr", "descriptionEn", "descriptionAr", "iconKey", "category", "sortOrder", "published", "createdAt", "updatedAt"]
+    },
+    "ProjectItem": {
+      "title": "ProjectItem",
+      "description": "A website, mobile app, or digital product built by Vexora Studio.",
+      "type": "object",
+      "properties": {
+        "nameEn": { "type": "string" },
+        "nameAr": { "type": "string" },
+        "descriptionEn": { "type": "string" },
+        "descriptionAr": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "presetImageKey": { "type": "string" },
+        "websiteUrl": { "type": "string" },
+        "technologies": { "type": "array" },
+        "status": { "type": "string", "enum": ["available", "in_development", "completed"] },
+        "featured": { "type": "boolean" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["nameEn", "nameAr", "descriptionEn", "descriptionAr", "imageUrl", "presetImageKey", "websiteUrl", "technologies", "status", "featured", "published", "createdAt", "updatedAt"]
+    },
+    "TeamMember": {
+      "title": "TeamMember",
+      "description": "A Vexora Studio employee with role, skills, bio, and CV details.",
+      "type": "object",
+      "properties": {
+        "nameEn": { "type": "string" },
+        "nameAr": { "type": "string" },
+        "roleEn": { "type": "string" },
+        "roleAr": { "type": "string" },
+        "bioEn": { "type": "string" },
+        "bioAr": { "type": "string" },
+        "skills": { "type": "array" },
+        "experienceYears": { "type": "integer" },
+        "avatarUrl": { "type": "string" },
+        "cvSummaryEn": { "type": "string" },
+        "cvSummaryAr": { "type": "string" },
+        "cvFileName": { "type": "string" },
+        "cvPdfBase64": { "type": "string" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["nameEn", "nameAr", "roleEn", "roleAr", "bioEn", "bioAr", "skills", "experienceYears", "avatarUrl", "cvSummaryEn", "cvSummaryAr", "published", "createdAt", "updatedAt"]
+    },
+    "JobOpening": {
+      "title": "JobOpening",
+      "description": "An open job position at Vexora Studio.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string" },
+        "titleAr": { "type": "string" },
+        "departmentEn": { "type": "string" },
+        "departmentAr": { "type": "string" },
+        "descriptionEn": { "type": "string" },
+        "descriptionAr": { "type": "string" },
+        "locationEn": { "type": "string" },
+        "locationAr": { "type": "string" },
+        "employmentType": { "type": "string", "enum": ["full_time", "part_time", "contract", "remote"] },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["titleEn", "titleAr", "departmentEn", "departmentAr", "descriptionEn", "descriptionAr", "locationEn", "locationAr", "employmentType", "published", "createdAt", "updatedAt"]
+    },
+    "JobApplication": {
+      "title": "JobApplication",
+      "description": "Candidate job application containing PII and PDF CV.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "desiredRole": { "type": "string" },
+        "experienceYears": { "type": "integer" },
+        "skills": { "type": "string" },
+        "cvFileName": { "type": "string" },
+        "cvPdfBase64": { "type": "string" },
+        "cvSizeBytes": { "type": "integer" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+        "adminNote": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "fullName", "email", "phone", "desiredRole", "experienceYears", "skills", "cvFileName", "cvPdfBase64", "cvSizeBytes", "status", "createdAt", "updatedAt"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Visitor contact inquiry sent to Vexora Studio.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "email": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "read", "replied"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "senderName", "email", "subject", "message", "status", "createdAt", "updatedAt"]
+    },
+    "SiteStats": {
+      "title": "SiteStats",
+      "description": "Public company statistics displayed on the home page and managed in Admin Dashboard.",
+      "type": "object",
+      "properties": {
+        "projectsDelivered": { "type": "integer" },
+        "happyClients": { "type": "integer" },
+        "teamExperts": { "type": "integer" },
+        "yearsExperience": { "type": "integer" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["projectsDelivered", "happyClients", "teamExperts", "yearsExperience", "published", "createdAt", "updatedAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Explicit administrator allowlist record.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()" }
+      },
+      "required": ["email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/services/{serviceId}": {
+      "schema": { "$ref": "#/entities/ServiceItem" },
+      "description": "Published Vexora Studio services catalog."
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/ProjectItem" },
+      "description": "Portfolio websites and apps created by Vexora Studio."
+    },
+    "/team_members/{memberId}": {
+      "schema": { "$ref": "#/entities/TeamMember" },
+      "description": "Team members directory and CV summaries."
+    },
+    "/jobs/{jobId}": {
+      "schema": { "$ref": "#/entities/JobOpening" },
+      "description": "Available career openings."
+    },
+    "/job_applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/JobApplication" },
+      "description": "Job applications with applicant PII and PDF CV payload."
+    },
+    "/contact_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Contact form inquiries from visitors."
+    },
+    "/site_stats/{statId}": {
+      "schema": { "$ref": "#/entities/SiteStats" },
+      "description": "Headline company metrics."
+    },
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Authorized admin UIDs."
+    }
+  }
+}

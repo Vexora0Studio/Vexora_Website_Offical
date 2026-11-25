@@ -1,0 +1,258 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: default deny everything
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL HARDENED HELPERS ---
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        ('email_verified' in request.auth.token &&
+         request.auth.token.email_verified == true &&
+         'email' in request.auth.token &&
+         request.auth.token.email.lower() in ['vexora0studio@gmail.com', 'omarmotaz.develepor@gmail.com']) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidTimestamps(data) {
+      return data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    // --- ENTITY VALIDATION BLUEPRINTS ---
+    function isValidService(data) {
+      return data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 100 &&
+             data.titleAr is string && data.titleAr.size() >= 1 && data.titleAr.size() <= 100 &&
+             data.descriptionEn is string && data.descriptionEn.size() >= 1 && data.descriptionEn.size() <= 600 &&
+             data.descriptionAr is string && data.descriptionAr.size() >= 1 && data.descriptionAr.size() <= 600 &&
+             data.iconKey is string && data.iconKey.size() >= 1 && data.iconKey.size() <= 40 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 40 &&
+             data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 1000 &&
+             data.published is bool &&
+             isValidTimestamps(data);
+    }
+
+    function isValidProject(data) {
+      return data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 100 &&
+             data.nameAr is string && data.nameAr.size() >= 1 && data.nameAr.size() <= 100 &&
+             data.descriptionEn is string && data.descriptionEn.size() >= 1 && data.descriptionEn.size() <= 800 &&
+             data.descriptionAr is string && data.descriptionAr.size() >= 1 && data.descriptionAr.size() <= 800 &&
+             data.imageUrl is string && data.imageUrl.size() <= 500 &&
+             data.presetImageKey is string && data.presetImageKey.size() >= 1 && data.presetImageKey.size() <= 40 &&
+             data.websiteUrl is string && data.websiteUrl.size() <= 500 &&
+             data.technologies is list && data.technologies.size() <= 15 &&
+             (data.technologies.size() == 0 || data.technologies[0] is string) &&
+             data.status in ['available', 'in_development', 'completed'] &&
+             data.featured is bool &&
+             data.published is bool &&
+             isValidTimestamps(data);
+    }
+
+    function isValidTeamMember(data) {
+      return data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 100 &&
+             data.nameAr is string && data.nameAr.size() >= 1 && data.nameAr.size() <= 100 &&
+             data.roleEn is string && data.roleEn.size() >= 1 && data.roleEn.size() <= 100 &&
+             data.roleAr is string && data.roleAr.size() >= 1 && data.roleAr.size() <= 100 &&
+             data.bioEn is string && data.bioEn.size() >= 1 && data.bioEn.size() <= 800 &&
+             data.bioAr is string && data.bioAr.size() >= 1 && data.bioAr.size() <= 800 &&
+             data.skills is list && data.skills.size() <= 20 &&
+             (data.skills.size() == 0 || data.skills[0] is string) &&
+             data.experienceYears is int && data.experienceYears >= 0 && data.experienceYears <= 60 &&
+             data.avatarUrl is string && data.avatarUrl.size() <= 500 &&
+             data.cvSummaryEn is string && data.cvSummaryEn.size() <= 2000 &&
+             data.cvSummaryAr is string && data.cvSummaryAr.size() <= 2000 &&
+             (!('cvFileName' in data) || data.cvFileName == null || (data.cvFileName is string && data.cvFileName.size() <= 150)) &&
+             (!('cvPdfBase64' in data) || data.cvPdfBase64 == null || (data.cvPdfBase64 is string && data.cvPdfBase64.size() <= 900000)) &&
+             data.published is bool &&
+             isValidTimestamps(data);
+    }
+
+    function isValidJobOpening(data) {
+      return data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 100 &&
+             data.titleAr is string && data.titleAr.size() >= 1 && data.titleAr.size() <= 100 &&
+             data.departmentEn is string && data.departmentEn.size() >= 1 && data.departmentEn.size() <= 80 &&
+             data.departmentAr is string && data.departmentAr.size() >= 1 && data.departmentAr.size() <= 80 &&
+             data.descriptionEn is string && data.descriptionEn.size() >= 1 && data.descriptionEn.size() <= 1200 &&
+             data.descriptionAr is string && data.descriptionAr.size() >= 1 && data.descriptionAr.size() <= 1200 &&
+             data.locationEn is string && data.locationEn.size() >= 1 && data.locationEn.size() <= 80 &&
+             data.locationAr is string && data.locationAr.size() >= 1 && data.locationAr.size() <= 80 &&
+             data.employmentType in ['full_time', 'part_time', 'contract', 'remote'] &&
+             data.published is bool &&
+             isValidTimestamps(data);
+    }
+
+    function isValidJobApplication(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             (!('jobId' in data) || data.jobId == null || (data.jobId is string && data.jobId.size() <= 128)) &&
+             data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+             data.phone is string && data.phone.size() >= 5 && data.phone.size() <= 40 &&
+             data.desiredRole is string && data.desiredRole.size() >= 2 && data.desiredRole.size() <= 120 &&
+             data.experienceYears is int && data.experienceYears >= 0 && data.experienceYears <= 60 &&
+             data.skills is string && data.skills.size() >= 2 && data.skills.size() <= 600 &&
+             data.cvFileName is string && data.cvFileName.size() >= 1 && data.cvFileName.size() <= 150 &&
+             data.cvPdfBase64 is string && data.cvPdfBase64.size() >= 10 && data.cvPdfBase64.size() <= 900000 &&
+             data.cvSizeBytes is int && data.cvSizeBytes >= 1 && data.cvSizeBytes <= 700000 &&
+             data.status in ['pending', 'accepted', 'rejected'] &&
+             (!('adminNote' in data) || data.adminNote == null || (data.adminNote is string && data.adminNote.size() <= 500)) &&
+             isValidTimestamps(data);
+    }
+
+    function isValidContactMessage(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.senderName is string && data.senderName.size() >= 2 && data.senderName.size() <= 120 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+             data.subject is string && data.subject.size() >= 2 && data.subject.size() <= 150 &&
+             data.message is string && data.message.size() >= 5 && data.message.size() <= 2000 &&
+             data.status in ['new', 'read', 'replied'] &&
+             isValidTimestamps(data);
+    }
+
+    function isValidSiteStats(data) {
+      return data.projectsDelivered is int && data.projectsDelivered >= 0 && data.projectsDelivered <= 100000 &&
+             data.happyClients is int && data.happyClients >= 0 && data.happyClients <= 100000 &&
+             data.teamExperts is int && data.teamExperts >= 0 && data.teamExperts <= 10000 &&
+             data.yearsExperience is int && data.yearsExperience >= 0 && data.yearsExperience <= 200 &&
+             data.published is bool &&
+             isValidTimestamps(data);
+    }
+
+    // --- COLLECTIONS ---
+
+    match /services/{serviceId} {
+      allow get: if isSignedIn() && isValidId(serviceId) && (isAdmin() || existing().published == true);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow create: if isAdmin() && isValidId(serviceId) &&
+                       incoming().keys().hasAll(['titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'iconKey', 'category', 'sortOrder', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'iconKey', 'category', 'sortOrder', 'published', 'createdAt', 'updatedAt']) &&
+                       isValidService(incoming());
+      allow update: if isAdmin() && isValidId(serviceId) &&
+                       isValidService(incoming()) &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'iconKey', 'category', 'sortOrder', 'published', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(serviceId);
+    }
+
+    match /projects/{projectId} {
+      allow get: if isSignedIn() && isValidId(projectId) && (isAdmin() || existing().published == true);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow create: if isAdmin() && isValidId(projectId) &&
+                       incoming().keys().hasAll(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'createdAt', 'updatedAt']) &&
+                       isValidProject(incoming());
+      allow update: if isAdmin() && isValidId(projectId) &&
+                       isValidProject(incoming()) &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(projectId);
+    }
+
+    match /team_members/{memberId} {
+      allow get: if isSignedIn() && isValidId(memberId) && (isAdmin() || existing().published == true);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow create: if isAdmin() && isValidId(memberId) &&
+                       incoming().keys().hasAll(['nameEn', 'nameAr', 'roleEn', 'roleAr', 'bioEn', 'bioAr', 'skills', 'experienceYears', 'avatarUrl', 'cvSummaryEn', 'cvSummaryAr', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['nameEn', 'nameAr', 'roleEn', 'roleAr', 'bioEn', 'bioAr', 'skills', 'experienceYears', 'avatarUrl', 'cvSummaryEn', 'cvSummaryAr', 'cvFileName', 'cvPdfBase64', 'published', 'createdAt', 'updatedAt']) &&
+                       isValidTeamMember(incoming());
+      allow update: if isAdmin() && isValidId(memberId) &&
+                       isValidTeamMember(incoming()) &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['nameEn', 'nameAr', 'roleEn', 'roleAr', 'bioEn', 'bioAr', 'skills', 'experienceYears', 'avatarUrl', 'cvSummaryEn', 'cvSummaryAr', 'cvFileName', 'cvPdfBase64', 'published', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(memberId);
+    }
+
+    match /jobs/{jobId} {
+      allow get: if isSignedIn() && isValidId(jobId) && (isAdmin() || existing().published == true);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow create: if isAdmin() && isValidId(jobId) &&
+                       incoming().keys().hasAll(['titleEn', 'titleAr', 'departmentEn', 'departmentAr', 'descriptionEn', 'descriptionAr', 'locationEn', 'locationAr', 'employmentType', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['titleEn', 'titleAr', 'departmentEn', 'departmentAr', 'descriptionEn', 'descriptionAr', 'locationEn', 'locationAr', 'employmentType', 'published', 'createdAt', 'updatedAt']) &&
+                       isValidJobOpening(incoming());
+      allow update: if isAdmin() && isValidId(jobId) &&
+                       isValidJobOpening(incoming()) &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['titleEn', 'titleAr', 'departmentEn', 'departmentAr', 'descriptionEn', 'descriptionAr', 'locationEn', 'locationAr', 'employmentType', 'published', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(jobId);
+    }
+
+    match /job_applications/{applicationId} {
+      allow get: if isSignedIn() && isValidId(applicationId) && (isAdmin() || existing().userId == request.auth.uid);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && isValidId(applicationId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'pending' &&
+                       incoming().keys().hasAll(['userId', 'fullName', 'email', 'phone', 'desiredRole', 'experienceYears', 'skills', 'cvFileName', 'cvPdfBase64', 'cvSizeBytes', 'status', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'jobId', 'fullName', 'email', 'phone', 'desiredRole', 'experienceYears', 'skills', 'cvFileName', 'cvPdfBase64', 'cvSizeBytes', 'status', 'adminNote', 'createdAt', 'updatedAt']) &&
+                       isValidJobApplication(incoming()) &&
+                       (!('jobId' in incoming()) || incoming().jobId == null || incoming().jobId == '' || exists(/databases/$(database)/documents/jobs/$(incoming().jobId)));
+      allow update: if isAdmin() && isValidId(applicationId) &&
+                       isValidJobApplication(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['status', 'adminNote', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(applicationId);
+    }
+
+    match /contact_messages/{messageId} {
+      allow get: if isSignedIn() && isValidId(messageId) && (isAdmin() || existing().userId == request.auth.uid);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && isValidId(messageId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'new' &&
+                       incoming().keys().hasAll(['userId', 'senderName', 'email', 'subject', 'message', 'status', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'senderName', 'email', 'subject', 'message', 'status', 'createdAt', 'updatedAt']) &&
+                       isValidContactMessage(incoming());
+      allow update: if isAdmin() && isValidId(messageId) &&
+                       isValidContactMessage(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(messageId);
+    }
+
+    match /site_stats/{statId} {
+      allow get: if isSignedIn() && isValidId(statId) && (isAdmin() || existing().published == true);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow create: if isAdmin() && isValidId(statId) &&
+                       incoming().keys().hasAll(['projectsDelivered', 'happyClients', 'teamExperts', 'yearsExperience', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['projectsDelivered', 'happyClients', 'teamExperts', 'yearsExperience', 'published', 'createdAt', 'updatedAt']) &&
+                       isValidSiteStats(incoming());
+      allow update: if isAdmin() && isValidId(statId) &&
+                       isValidSiteStats(incoming()) &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['projectsDelivered', 'happyClients', 'teamExperts', 'yearsExperience', 'published', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(statId);
+    }
+
+    match /admins/{uid} {
+      allow get: if isSignedIn() && isValidId(uid) && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isAdmin() && isValidId(uid) &&
+                       incoming().keys().hasAll(['email', 'createdAt']) &&
+                       incoming().keys().hasOnly(['email', 'createdAt']) &&
+                       incoming().email is string && incoming().email.size() <= 150 &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time;
+      allow update, delete: if isAdmin() && isValidId(uid);
+    }
+  }
+}

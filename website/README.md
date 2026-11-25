@@ -1,0 +1,18 @@
+# Vexora Studio — Website Files
+
+هذه هي ملفات الموقع الكاملة (Static Website) الخاصة بـ **Vexora Studio** بتصميم Dark Glassmorphism ثنائي اللغة (العربية RTL / الإنجليزية LTR):
+
+- `index.html` — الصفحة الرئيسية وكل الأقسام (البطل، الإحصائيات، الخدمات، المشاريع، الفريق والوظائف، المساعد الذكي، التواصل)
+- `styles.css` — نظام الألوان الداكن (`#050811` و `#00D4FF`) والتصميم المتجاوب
+- `app.js` — التفاعلات، الفلاتر، التبديل بين العربية والإنجليزية، نماذج التوظيف والتواصل، والمساعد الذكي
+
+## طريقة النشر كموقع ويب (Deploy as a Website)
+
+1. **تحميل الملفات**:
+   من قائمة الإعدادات في المشروع اختر **Export as ZIP** ثم استخرج مجلد `website/` فقط (أو ارفع محتويات مجلد `website/`).
+2. **النشر المجاني على GitHub Pages**:
+   - أنشئ مستودعاً (Repository) على GitHub (مثلاً `vexora-website`).
+   - ارفع الملفات الثلاثة (`index.html`, `styles.css`, `app.js`) إلى جذر المستودع.
+   - من **Settings → Pages** اختر فرع `main` ثم Save، وسيعمل موقعك فوراً على رابط `https://<username>.github.io/<repo>/`.
+3. **أو عبر Netlify / Vercel / Firebase Hosting**:
+   - يمكنك سحب وإفلات مجلد `website/` مباشرة في Netlify Drop ليتم نشره خلال ثوانٍ.

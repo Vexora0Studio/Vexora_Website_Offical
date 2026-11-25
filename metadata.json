@@ -1,0 +1,6 @@
+{
+  "name": "Vexora Studio",
+  "description": "Official bilingual (Arabic/English) technology and creative studio platform featuring services, projects portfolio, team & careers with PDF CV upload, Gemini AI assistant, and admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
