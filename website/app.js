@@ -187,7 +187,10 @@ const STUDIO_IMAGES = {
 
 const ADMIN_SESSION_KEY = "vexora_admin_unlocked";
 const ADMIN_CODE_POINTS = [86, 120, 64, 57, 35, 81, 109, 55, 50, 33, 76, 112, 36, 52, 90, 107];
-const STORAGE_KEY = "vexora_studio_state_v1";
+const STORAGE_KEY = "vexora_studio_state_v2";
+const LEGACY_STORAGE_KEY = "vexora_studio_state_v1";
+const REMOVED_DEFAULT_PROJECT_IDS = new Set(["proj_vexora_cloud", "proj_nova_pay", "proj_aether_ai"]);
+const REMOVED_DEFAULT_TEAM_IDS = new Set(["tm_tariq", "tm_layla"]);
 
 function createDefaultState() {
   return {
@@ -289,45 +292,6 @@ function createDefaultState() {
         status: "available",
         featured: true,
         published: true
-      },
-      {
-        id: "proj_vexora_cloud",
-        nameEn: "Vexora Cloud Analytics",
-        nameAr: "منصة فيكسورا كلاود للتحليلات",
-        descriptionEn: "Real-time enterprise SaaS telemetry portal with AI anomaly alerts and multi-tenant dashboards.",
-        descriptionAr: "منصة تحليلات سحابية متقدمة للشركات مع تنبيهات الذكاء الاصطناعي ولوحات بيانات فورية.",
-        presetImageKey: "web",
-        websiteUrl: "https://vexora.studio",
-        technologies: ["React", "TypeScript", "Cloud Run", "Gemini AI"],
-        status: "available",
-        featured: true,
-        published: true
-      },
-      {
-        id: "proj_nova_pay",
-        nameEn: "NovaPay Mobile Suite",
-        nameAr: "تطبيق نوفا باي الذكي",
-        descriptionEn: "Next-generation Android fintech wallet with biometric security, instant transfers, and smart budgeting.",
-        descriptionAr: "تطبيق مالي ذكي لنظام أندرويد يدعم الحماية البيومترية والتحويلات الفورية وإدارة المصروفات.",
-        presetImageKey: "mobile",
-        websiteUrl: "https://vexora.studio/projects/novapay",
-        technologies: ["Kotlin", "Jetpack Compose", "Firebase", "Material 3"],
-        status: "completed",
-        featured: true,
-        published: true
-      },
-      {
-        id: "proj_aether_ai",
-        nameEn: "Aether Support AI Hub",
-        nameAr: "مركز أيثر للدعم الذكي",
-        descriptionEn: "Bilingual Arabic/English customer support copilot grounded in live company knowledge bases.",
-        descriptionAr: "مساعد خدمة عملاء ثنائي اللغة مرتبط بقواعد بيانات الشركات الفعلية بدقة عالية.",
-        presetImageKey: "studio",
-        websiteUrl: "https://vexora.studio/projects/aether",
-        technologies: ["Gemini 3", "TypeScript", "Firestore", "App Check"],
-        status: "in_development",
-        featured: false,
-        published: true
       }
     ],
     team: [
@@ -345,36 +309,6 @@ function createDefaultState() {
         cvSummaryEn: "Site Owner & Chief Executive Officer (CEO) at Vexora Studio (omarmotaz.develepor@gmail.com). Directs platform strategy, full-stack web engineering, Android development, and AI systems.",
         cvSummaryAr: "مالك الموقع والمدير التنفيذي (CEO) في Vexora Studio. يشرف على استراتيجية المنصة وتطوير الويب وتطبيقات Android وأنظمة الذكاء الاصطناعي.",
         published: true
-      },
-      {
-        id: "tm_tariq",
-        nameEn: "Tariq Al-Mansoor",
-        nameAr: "طارق المنصور",
-        roleEn: "Principal Cloud Architect",
-        roleAr: "كبير مهندسي الأنظمة السحابية",
-        bioEn: "Leads full-stack cloud architecture, Android engineering, and AI strategy across Vexora Studio.",
-        bioAr: "يقود هندسة الأنظمة السحابية وتطوير تطبيقات أندرويد واستراتيجية الذكاء الاصطناعي في Vexora Studio.",
-        skills: ["Kotlin", "React", "TypeScript", "Gemini AI", "Cloud Architecture"],
-        experienceYears: 8,
-        avatarUrl: "",
-        cvSummaryEn: "8+ years architecting scalable SaaS web platforms and native Android apps for MENA & global tech startups. B.Sc. in Computer Science.",
-        cvSummaryAr: "خبرة تتجاوز 8 سنوات في هندسة المنصات السحابية وتطبيقات أندرويد الأصلية للشركات التقنية. بكالوريوس علوم الحاسب.",
-        published: true
-      },
-      {
-        id: "tm_layla",
-        nameEn: "Layla Haddad",
-        nameAr: "ليلى حداد",
-        roleEn: "Lead UI/UX & Brand Director",
-        roleAr: "مديرة تصميم واجهات UI/UX والهوية البصرية",
-        bioEn: "Crafts dark-mode luxury digital interfaces, design systems, and distinctive brand identities.",
-        bioAr: "متخصصة في تصميم واجهات المستخدم الفاخرة وأنظمة التصميم والهويات البصرية المبتكرة.",
-        skills: ["Figma", "Design Systems", "UI/UX", "Brand Identity", "Motion"],
-        experienceYears: 7,
-        avatarUrl: "",
-        cvSummaryEn: "7+ years leading product design and visual branding for web and mobile products across fintech and AI sectors.",
-        cvSummaryAr: "خبرة تتجاوز 7 سنوات في قيادة تصميم المنتجات والهويات البصرية لقطاعات التقنية المالية والذكاء الاصطناعي.",
-        published: true
       }
     ],
     messages: []
@@ -383,10 +317,19 @@ function createDefaultState() {
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return createDefaultState();
-    const parsed = JSON.parse(raw);
-    return { ...createDefaultState(), ...parsed };
+    const rawV2 = localStorage.getItem(STORAGE_KEY);
+    if (rawV2) {
+      const parsed = JSON.parse(rawV2);
+      return { ...createDefaultState(), ...parsed };
+    }
+    const rawLegacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (!rawLegacy) return createDefaultState();
+    const parsed = JSON.parse(rawLegacy);
+    const merged = { ...createDefaultState(), ...parsed };
+    merged.projects = (merged.projects || []).filter((p) => !REMOVED_DEFAULT_PROJECT_IDS.has(p.id));
+    merged.team = (merged.team || []).filter((m) => !REMOVED_DEFAULT_TEAM_IDS.has(m.id));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    return merged;
   } catch {
     return createDefaultState();
   }
