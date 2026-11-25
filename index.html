@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vexora Studio — ستوديو التكنولوجيا والابتكار الرقمي</title>
+  <meta name="description" content="Vexora Studio — تصميم وتطوير المواقع، تطبيقات Android، الذكاء الاصطناعي، والهوية البصرية." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="website/styles.css" />
+</head>
+<body>
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="glow glow-cyan"></div>
+    <div class="glow glow-blue"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#home" class="brand" aria-label="Vexora Studio Home">
+        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="vexoraGrad" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#00D4FF" />
+              <stop offset="100%" stop-color="#2979FF" />
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="44" height="44" rx="12" fill="#0B1120" stroke="url(#vexoraGrad)" stroke-width="2" />
+          <path d="M13 15L24 34L35 15" stroke="url(#vexoraGrad)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M19 15L24 24L29 15" stroke="#E2E8F0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        </svg>
+        <div class="brand-text">
+          <span class="brand-name">Vexora Studio</span>
+          <span class="brand-tagline" data-i18n="studioTagline">ستوديو التكنولوجيا والابتكار الرقمي</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" id="mainNav" aria-label="Main Navigation">
+        <a href="#home" class="nav-link" data-i18n="navHome">الرئيسية</a>
+        <a href="#services" class="nav-link" data-i18n="navServices">الخدمات</a>
+        <a href="#projects" class="nav-link" data-i18n="navProjects">المشاريع</a>
+        <a href="#team-careers" class="nav-link" data-i18n="navTeamCareers">الفريق والوظائف</a>
+        <a href="#ai-assistant" class="nav-link" data-i18n="navAi">المساعد الذكي</a>
+        <a href="#contact" class="nav-link" data-i18n="navContact">تواصل معنا</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="langToggleBtn" class="lang-btn" type="button" aria-label="Toggle Language">
+          <span class="lang-dot"></span>
+          <span id="langToggleLabel">EN</span>
+        </button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="home" class="section hero-section">
+      <div class="container">
+        <div class="glass-card hero-card highlight-border">
+          <div class="hero-grid">
+            <div class="hero-content">
+              <div class="status-pill">
+                <span class="pill-dot"></span>
+                <span>Code • Create • Innovate</span>
+              </div>
+              <h1 class="hero-title" data-i18n="heroTitle">نصنع المستقبل الرقمي بإبداع وهندسة فائقة</h1>
+              <p class="hero-subtitle" data-i18n="heroSubtitle">
+                في Vexora Studio نجمع بين هندسة البرمجيات المتقدمة، الذكاء الاصطناعي، وتصميم التجارب البصرية الفاخرة لإطلاق منتجات رقمية عالمية.
+              </p>
+              <div class="hero-actions">
+                <a href="#services" class="btn btn-primary" data-i18n="exploreServices">استكشف الخدمات</a>
+                <a href="#contact" class="btn btn-outline" data-i18n="contactUsCta">تواصل معنا</a>
+                <a href="#ai-assistant" class="btn btn-ghost" data-i18n="askAiCta">اسأل المساعد الذكي</a>
+              </div>
+            </div>
+
+            <div class="hero-visual">
+              <div class="studio-showcase">
+                <div class="showcase-header">
+                  <span class="dot red"></span>
+                  <span class="dot amber"></span>
+                  <span class="dot green"></span>
+                  <span class="showcase-title">vexora.studio — platform</span>
+                </div>
+                <div class="showcase-body">
+                  <svg class="hero-emblem" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="heroRing" x1="20" y1="20" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#00D4FF" />
+                        <stop offset="100%" stop-color="#2979FF" />
+                      </linearGradient>
+                    </defs>
+                    <circle cx="90" cy="90" r="76" stroke="url(#heroRing)" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.55" />
+                    <circle cx="90" cy="90" r="56" fill="#0B1120" stroke="url(#heroRing)" stroke-width="2" />
+                    <path d="M58 66L90 120L122 66" stroke="url(#heroRing)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M74 66L90 94L106 66" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                  </svg>
+                  <div class="showcase-tags">
+                    <span class="tech-chip">Web &amp; SaaS</span>
+                    <span class="tech-chip">Android Kotlin</span>
+                    <span class="tech-chip">Gemini AI</span>
+                    <span class="tech-chip">UI/UX</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-header">
+          <h2 class="section-title-sm" data-i18n="statsTitle">أرقام وإنجازات Vexora Studio</h2>
+        </div>
+        <div class="stats-grid" id="statsGrid">
+          <div class="glass-card stat-card">
+            <div class="stat-value" data-target="48">0+</div>
+            <div class="stat-label" data-i18n="statProjects">مشروعاً منجزاً</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-value" data-target="34">0+</div>
+            <div class="stat-label" data-i18n="statClients">عميلاً سعيداً</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-value" data-target="12">0+</div>
+            <div class="stat-label" data-i18n="statExperts">خبيراً ومبدعاً</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-value" data-target="6">0+</div>
+            <div class="stat-label" data-i18n="statYears">سنوات خبرة</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title" data-i18n="servicesHeadline">خدمات Vexora Studio</h2>
+            <p class="section-subtitle" data-i18n="servicesSubheadline">حلول تقنية وإبداعية متكاملة من الفكرة حتى الإطلاق العالمي.</p>
+          </div>
+          <div class="filter-chips" id="serviceFilters" role="tablist" aria-label="Service Categories"></div>
+        </div>
+        <div class="cards-grid services-grid" id="servicesGrid"></div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title" data-i18n="projectsHeadline">مشاريعنا — Our Projects</h2>
+            <p class="section-subtitle" data-i18n="projectsSubheadline">مواقع ومنصات وتطبيقات صممناها وطورناها بأحدث التقنيات.</p>
+          </div>
+          <div class="filter-chips" id="projectFilters" role="tablist" aria-label="Project Status"></div>
+        </div>
+        <div class="cards-grid projects-grid" id="projectsGrid"></div>
+      </div>
+    </section>
+
+    <!-- Team & Careers Section -->
+    <section id="team-careers" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title" data-i18n="navTeamCareers">الفريق والوظائف</h2>
+            <p class="section-subtitle" data-i18n="teamCareersSubtitle">تعرف على قيادة وفريق Vexora Studio أو قدّم للانضمام إلينا.</p>
+          </div>
+          <div class="segmented-tabs" role="tablist">
+            <button type="button" class="tab-btn active" data-tab="team" data-i18n="tabTeam">فريقنا</button>
+            <button type="button" class="tab-btn" data-tab="careers" data-i18n="tabCareers">التوظيف</button>
+            <button type="button" class="tab-btn" data-tab="apply" data-i18n="applyForJobTitle">التقديم على وظيفة</button>
+          </div>
+        </div>
+
+        <div id="tab-team" class="tab-panel active">
+          <div class="cards-grid team-grid" id="teamGrid"></div>
+        </div>
+
+        <div id="tab-careers" class="tab-panel">
+          <div class="cards-grid jobs-grid" id="jobsGrid"></div>
+        </div>
+
+        <div id="tab-apply" class="tab-panel">
+          <form id="jobApplicationForm" class="glass-card form-card highlight-border" novalidate>
+            <h3 class="form-title" data-i18n="applyForJobTitle">التقديم على وظيفة</h3>
+            <div class="form-grid">
+              <div class="field">
+                <label for="appName" data-i18n="fullNameLabel">الاسم الكامل</label>
+                <input id="appName" type="text" required minlength="2" />
+              </div>
+              <div class="field">
+                <label for="appEmail" data-i18n="emailLabel">البريد الإلكتروني</label>
+                <input id="appEmail" type="email" required />
+              </div>
+              <div class="field">
+                <label for="appPhone" data-i18n="phoneLabel">رقم الهاتف</label>
+                <input id="appPhone" type="tel" required minlength="5" />
+              </div>
+              <div class="field">
+                <label for="appRole" data-i18n="desiredRoleLabel">الوظيفة المطلوبة</label>
+                <input id="appRole" type="text" required minlength="2" />
+              </div>
+              <div class="field">
+                <label for="appExp" data-i18n="experienceYearsLabel">سنوات الخبرة</label>
+                <input id="appExp" type="number" min="0" max="60" value="2" required />
+              </div>
+              <div class="field">
+                <label for="appSkills" data-i18n="skillsLabel">المهارات (مفصولة بفاصلة)</label>
+                <input id="appSkills" type="text" required placeholder="React, Kotlin, UI/UX..." />
+              </div>
+            </div>
+
+            <div class="field file-field">
+              <label for="appCvFile" data-i18n="uploadPdfCv">رفع ملف السيرة الذاتية (PDF)</label>
+              <div class="file-drop">
+                <input id="appCvFile" type="file" accept="application/pdf,.pdf" />
+                <span id="cvFileStatus" class="file-hint" data-i18n="pdfLimitHint">بصيغة PDF فقط (بحد أقصى 650 كيلوبايت)</span>
+              </div>
+            </div>
+
+            <div id="appFormError" class="form-error" role="alert"></div>
+            <button type="submit" class="btn btn-primary btn-full" data-i18n="submitApplication">إرسال طلب التوظيف</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Assistant Section -->
+    <section id="ai-assistant" class="section">
+      <div class="container">
+        <div class="glass-card ai-shell highlight-border">
+          <div class="ai-header">
+            <div>
+              <div class="status-pill">
+                <span class="pill-dot"></span>
+                <span data-i18n="aiGroundedBadge">متصل ببيانات الشركة الحية</span>
+              </div>
+              <h2 class="section-title" data-i18n="aiTitle">مساعد Vexora الذكي</h2>
+              <p class="section-subtitle" data-i18n="aiSubtitle">إجابات دقيقة وفورية مبنية حصرياً على بيانات الشركة الحقيقية</p>
+            </div>
+            <button id="aiClearBtn" type="button" class="btn btn-outline btn-sm" data-i18n="aiClear">محادثة جديدة</button>
+          </div>
+
+          <div class="quick-prompts" id="aiQuickPrompts"></div>
+
+          <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
+
+          <form id="aiChatForm" class="chat-input-row">
+            <input id="aiInput" type="text" data-i18n-placeholder="aiPlaceholder" placeholder="اسألني عن خدماتنا، مشاريعنا، فريقنا أو الوظائف..." autocomplete="off" />
+            <button type="submit" class="btn btn-primary" data-i18n="aiSend">إرسال</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title" data-i18n="contactHeadline">تواصل مع Vexora Studio</h2>
+            <p class="section-subtitle" data-i18n="contactSubheadline">هل لديك فكرة مشروع أو استفسار؟ فريقنا جاهز للرد عليك.</p>
+          </div>
+        </div>
+
+        <div class="contact-layout">
+          <form id="contactForm" class="glass-card form-card highlight-border" novalidate>
+            <div class="field">
+              <label for="contactName" data-i18n="fullNameLabel">الاسم الكامل</label>
+              <input id="contactName" type="text" required minlength="2" />
+            </div>
+            <div class="field">
+              <label for="contactEmail" data-i18n="emailLabel">البريد الإلكتروني</label>
+              <input id="contactEmail" type="email" required />
+            </div>
+            <div class="field">
+              <label for="contactSubject" data-i18n="subjectLabel">موضوع الرسالة</label>
+              <input id="contactSubject" type="text" required minlength="2" />
+            </div>
+            <div class="field">
+              <label for="contactMessage" data-i18n="messageLabel">تفاصيل رسالتك</label>
+              <textarea id="contactMessage" rows="4" required minlength="5"></textarea>
+            </div>
+            <div id="contactFormError" class="form-error" role="alert"></div>
+            <button type="submit" class="btn btn-primary btn-full" data-i18n="sendMessage">إرسال الرسالة</button>
+          </form>
+
+          <div class="contact-side">
+            <div class="glass-card info-card">
+              <h3 data-i18n="directEmailLabel">البريد الإلكتروني الرسمي</h3>
+              <p class="email-highlight">vexora0studio@gmail.com</p>
+              <div class="info-actions">
+                <button id="copyEmailBtn" type="button" class="btn btn-outline btn-sm" data-i18n="copyEmail">نسخ البريد</button>
+                <a href="mailto:vexora0studio@gmail.com" class="btn btn-primary btn-sm" data-i18n="contactUsCta">تواصل معنا</a>
+              </div>
+            </div>
+
+            <div class="glass-card info-card">
+              <h3 data-i18n="socialLinksTitle">منصاتنا الرقمية</h3>
+              <div class="social-grid">
+                <a href="https://vexora.studio" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Website</a>
+                <a href="https://vexora-1studio.github.io/F.cuts/" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">F.cutus</a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub</a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">LinkedIn</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="yearSpan">2026</span> Vexora Studio — Code • Create • Innovate</p>
+      <p class="footer-email">vexora0studio@gmail.com</p>
+    </div>
+  </footer>
+
+  <!-- Team CV Modal -->
+  <div id="cvModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cvModalTitle" hidden>
+    <div class="glass-card modal-card highlight-border">
+      <div class="modal-head">
+        <h3 id="cvModalTitle">CV</h3>
+        <button id="closeCvModal" type="button" class="icon-close" aria-label="Close">✕</button>
+      </div>
+      <div id="cvModalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="website/app.js"></script>
+</body>
+</html>
