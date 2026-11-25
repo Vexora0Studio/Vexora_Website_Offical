@@ -7,11 +7,13 @@ const I18N = {
     navServices: "الخدمات",
     navProjects: "المشاريع",
     navTeam: "فريقنا",
+    navDownload: "تحميل التطبيق",
     navContact: "تواصل معنا",
     navAdmin: "لوحة التحكم",
     heroTitle: "نصنع المستقبل الرقمي بإبداع وهندسة فائقة",
     heroSubtitle: "في Vexora Studio نجمع بين هندسة البرمجيات المتقدمة، الذكاء الاصطناعي، وتصميم التجارب البصرية الفاخرة لإطلاق منتجات رقمية عالمية.",
     exploreServices: "استكشف الخدمات",
+    downloadAppCta: "تحميل تطبيق Android (APK)",
     contactUsCta: "تواصل معنا",
     statsTitle: "أرقام وإنجازات Vexora Studio",
     statProjects: "مشروعاً منجزاً",
@@ -52,6 +54,28 @@ const I18N = {
     myMessagesTitle: "رسائلي المرسلة",
     copyEmail: "نسخ البريد",
     emailCopied: "تم نسخ البريد الإلكتروني",
+    downloadHeadline: "تحميل تطبيق Vexora Studio الرسمي على Android",
+    downloadSubheadline: "احصل على النسخة الرسمية لتطبيق Vexora Studio بصيغة APK مباشرة لهاتفك الأندرويد بتجربة أصلية وسريعة.",
+    downloadBannerTitle: "تطبيق Vexora Studio الرسمي للأندرويد",
+    downloadBannerDesc: "تصفح خدماتنا ومشاريعنا وتواصل معنا مباشرة من تطبيق Android الأصلي. متاح للتحميل بصيغة APK.",
+    downloadApkBtn: "تحميل ملف APK (32 MB)",
+    downloadDetailsBtn: "تفاصيل التطبيق والتثبيت",
+    downloadStartedToast: "بدأ تحميل ملف Vexora-Studio.apk",
+    apkVersionLabel: "الإصدار",
+    apkSizeLabel: "حجم الملف",
+    apkMinAndroidLabel: "التوافق",
+    apkPackageLabel: "معرّف الحزمة",
+    installStepsTitle: "طريقة التثبيت على هاتف Android",
+    installStep1: "اضغط على زر \"تحميل ملف APK\" بالأعلى لتنزيل ملف Vexora-Studio.apk على جهازك.",
+    installStep2: "بعد اكتمال التنزيل، افتح الملف من شريط الإشعارات أو من تطبيق الملفات (Files).",
+    installStep3: "إذا طُلب منك، فعّل خيار \"السماح من هذا المصدر\" ثم اضغط على تثبيت (Install).",
+    appFeaturesTitle: "مميزات تطبيق Vexora Studio الرسمي",
+    appFeatures: [
+      "واجهة Jetpack Compose حديثة بتصميم Dark Glassmorphism",
+      "دعم كامل للغتين العربية (RTL) والإنجليزية (LTR)",
+      "متابعة حية لأحدث المشاريع مثل F.cutus و Noorix",
+      "استعراض الخدمات وفريق العمل والتواصل المباشر"
+    ],
     adminTitle: "لوحة تحكم الإدارة",
     adminLockedTitle: "صلاحيات المدير مطلوبة",
     adminLockedDesc: "هذه اللوحة محمية ومخصصة لإدارة Vexora Studio فقط. أدخل رمز الدخول المخصص للمدير.",
@@ -92,11 +116,13 @@ const I18N = {
     navServices: "Services",
     navProjects: "Projects",
     navTeam: "Team",
+    navDownload: "Get App",
     navContact: "Contact",
     navAdmin: "Admin",
     heroTitle: "Engineering the Digital Future with Precision",
     heroSubtitle: "At Vexora Studio, we unite advanced software engineering, applied AI, and refined dark-glass design to launch global digital products.",
     exploreServices: "Explore Services",
+    downloadAppCta: "Download Android App (APK)",
     contactUsCta: "Contact Us",
     statsTitle: "Vexora Studio in Numbers",
     statProjects: "Projects Delivered",
@@ -137,6 +163,28 @@ const I18N = {
     myMessagesTitle: "My Sent Messages",
     copyEmail: "Copy Email",
     emailCopied: "Email copied to clipboard",
+    downloadHeadline: "Download Official Vexora Studio App for Android",
+    downloadSubheadline: "Get the official Vexora Studio Android application directly as an APK package for mobile devices.",
+    downloadBannerTitle: "Official Vexora Studio Android App",
+    downloadBannerDesc: "Explore our services, featured projects, and team directly from the native Android APK.",
+    downloadApkBtn: "Download APK (32 MB)",
+    downloadDetailsBtn: "Install Guide & Details",
+    downloadStartedToast: "Downloading Vexora-Studio.apk...",
+    apkVersionLabel: "Version",
+    apkSizeLabel: "File Size",
+    apkMinAndroidLabel: "Compatibility",
+    apkPackageLabel: "Package ID",
+    installStepsTitle: "How to Install on Android",
+    installStep1: "Tap the \"Download APK\" button above to save Vexora-Studio.apk to your device.",
+    installStep2: "Open the downloaded APK from your browser notifications or the Files app.",
+    installStep3: "If prompted, allow installation from this source, then tap Install.",
+    appFeaturesTitle: "Official Android App Highlights",
+    appFeatures: [
+      "Native Jetpack Compose UI with Dark Glassmorphism aesthetic",
+      "Full bilingual Arabic (RTL) & English (LTR) support",
+      "Live catalog of projects including F.cutus & Noorix",
+      "Instant access to services, team profiles, and direct contact"
+    ],
     adminTitle: "Admin Dashboard",
     adminLockedTitle: "Administrator Access Required",
     adminLockedDesc: "This dashboard is restricted to authorized Vexora Studio administrators. Enter the admin access code to continue.",
@@ -175,8 +223,13 @@ const ASSET_BASE = window.location.pathname.includes("/website/")
   ? "../app/src/main/res/drawable/"
   : "app/src/main/res/drawable/";
 
+const APK_URL = window.location.pathname.includes("/website/")
+  ? "vexora-studio.apk"
+  : "website/vexora-studio.apk";
+
 const STUDIO_IMAGES = {
   logoBanner: `${ASSET_BASE}img_vexora_official_logo.jpg`,
+  appIcon: `${ASSET_BASE}app_icon_vexora.jpg`,
   omarAvatar: `${ASSET_BASE}img_omar_developer.jpg`,
   f_cutus: `${ASSET_BASE}img_project_fcutus.webp`,
   noorix: `${ASSET_BASE}img_project_noorix.jpg`,
@@ -370,7 +423,7 @@ function saveState() {
 }
 
 function normalizeRoute(r) {
-  const valid = ["home", "services", "projects", "team", "contact", "admin"];
+  const valid = ["home", "services", "projects", "team", "download", "contact", "admin"];
   return valid.includes(r) ? r : null;
 }
 
@@ -469,6 +522,7 @@ function renderChrome() {
     { key: "projects", label: t("navProjects"), icon: "🚀" },
     { key: "team", label: t("navTeam"), icon: "👥" },
     { key: "contact", label: t("navContact"), icon: "✉️" },
+    { key: "download", label: t("navDownload"), icon: "📲" },
     { key: "admin", label: t("navAdmin"), icon: "🛡️" }
   ];
 
@@ -537,7 +591,25 @@ function renderHomeScreen(root) {
         <p class="hero-subtitle">${escapeHtml(t("heroSubtitle"))}</p>
         <div class="btn-row">
           <button type="button" class="btn btn-primary" data-go="services">🚀 ${escapeHtml(t("exploreServices"))}</button>
+          <button type="button" class="btn btn-outline" data-go="download">📲 ${escapeHtml(t("downloadAppCta"))}</button>
           <button type="button" class="btn btn-outline" data-go="contact">✉️ ${escapeHtml(t("contactUsCta"))}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card highlight-border">
+      <div class="app-download-hero">
+        <img class="app-icon-badge" src="${STUDIO_IMAGES.appIcon}" alt="Vexora Studio Android App" onerror="this.style.display='none'" />
+        <div style="flex:1;min-width:220px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h2 class="card-title">${escapeHtml(t("downloadBannerTitle"))}</h2>
+            <span class="status-pill success"><span class="pill-dot"></span>APK v1.0</span>
+          </div>
+          <p class="muted-text" style="margin-top:6px;">${escapeHtml(t("downloadBannerDesc"))}</p>
+          <div class="btn-row" style="margin-top:12px;">
+            <a href="${APK_URL}" download="Vexora-Studio.apk" class="btn btn-primary" data-apk-dl="1">⬇️ ${escapeHtml(t("downloadApkBtn"))}</a>
+            <button type="button" class="btn btn-outline" data-go="download">📲 ${escapeHtml(t("downloadDetailsBtn"))}</button>
+          </div>
         </div>
       </div>
     </div>
@@ -613,6 +685,9 @@ function renderHomeScreen(root) {
 
   root.querySelectorAll("[data-go]").forEach((el) => {
     el.addEventListener("click", () => navigate(el.dataset.go));
+  });
+  root.querySelectorAll("[data-apk-dl]").forEach((el) => {
+    el.addEventListener("click", () => showToast(t("downloadStartedToast")));
   });
 }
 
@@ -822,6 +897,90 @@ function renderTeamScreen(root) {
 
   root.querySelectorAll("[data-view-cv]").forEach((btn) => {
     btn.addEventListener("click", () => openMemberCvModal(btn.dataset.viewCv));
+  });
+}
+
+function renderDownloadScreen(root) {
+  const features = I18N[currentLang].appFeatures || [];
+  root.innerHTML = `
+    <div>
+      <h1 class="screen-title">📲 ${escapeHtml(t("downloadHeadline"))}</h1>
+      <p class="screen-subtitle">${escapeHtml(t("downloadSubheadline"))}</p>
+    </div>
+
+    <div class="glass-card highlight-border stack-list">
+      <div class="app-download-hero">
+        <img class="app-icon-badge" src="${STUDIO_IMAGES.appIcon}" alt="Vexora Studio APK" onerror="this.style.display='none'" />
+        <div style="flex:1;min-width:220px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <h2 class="card-title" style="font-size:1.3rem;">Vexora Studio Official App</h2>
+            <span class="status-pill success"><span class="pill-dot"></span>Android APK</span>
+          </div>
+          <p class="muted-text" style="margin-top:6px;">${escapeHtml(t("studioTagline"))}</p>
+        </div>
+      </div>
+
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="spec-label">${escapeHtml(t("apkVersionLabel"))}</div>
+          <div class="spec-value">v1.0</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">${escapeHtml(t("apkSizeLabel"))}</div>
+          <div class="spec-value">~32 MB (.apk)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">${escapeHtml(t("apkMinAndroidLabel"))}</div>
+          <div class="spec-value">Android 7.0+</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">${escapeHtml(t("apkPackageLabel"))}</div>
+          <div class="spec-value" style="font-size:0.82rem;">com.aistudio.vexorastudio.k7m9p2</div>
+        </div>
+      </div>
+
+      <a id="apkDownloadBtn" href="${APK_URL}" download="Vexora-Studio.apk" class="btn btn-primary btn-full">
+        ⬇️ ${escapeHtml(t("downloadApkBtn"))}
+      </a>
+    </div>
+
+    <div class="glass-card stack-list">
+      <h2 class="card-title">${escapeHtml(t("installStepsTitle"))}</h2>
+      <div class="install-steps">
+        <div class="install-step">
+          <span class="install-step-num">1</span>
+          <p class="muted-text" style="margin:0;">${escapeHtml(t("installStep1"))}</p>
+        </div>
+        <div class="install-step">
+          <span class="install-step-num">2</span>
+          <p class="muted-text" style="margin:0;">${escapeHtml(t("installStep2"))}</p>
+        </div>
+        <div class="install-step">
+          <span class="install-step-num">3</span>
+          <p class="muted-text" style="margin:0;">${escapeHtml(t("installStep3"))}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card stack-list">
+      <h2 class="card-title">${escapeHtml(t("appFeaturesTitle"))}</h2>
+      <div class="stack-list" style="gap:8px;">
+        ${features
+          .map(
+            (feat) => `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="color:var(--neon-cyan);font-weight:700;">✓</span>
+            <span class="muted-text">${escapeHtml(feat)}</span>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("apkDownloadBtn").addEventListener("click", () => {
+    showToast(t("downloadStartedToast"));
   });
 }
 
@@ -1431,6 +1590,9 @@ function renderScreen() {
     case "team":
       renderTeamScreen(root);
       break;
+    case "download":
+      renderDownloadScreen(root);
+      break;
     case "contact":
       renderContactScreen(root);
       break;
@@ -1451,6 +1613,9 @@ function renderAll() {
 document.addEventListener("DOMContentLoaded", () => {
   const fav = document.getElementById("faviconLink");
   if (fav) fav.href = `${ASSET_BASE}app_icon_vexora.jpg`;
+
+  const topDlBtn = document.getElementById("topbarDownloadBtn");
+  if (topDlBtn) topDlBtn.addEventListener("click", () => navigate("download"));
 
   document.getElementById("langToggleBtn").addEventListener("click", () => {
     currentLang = currentLang === "ar" ? "en" : "ar";
