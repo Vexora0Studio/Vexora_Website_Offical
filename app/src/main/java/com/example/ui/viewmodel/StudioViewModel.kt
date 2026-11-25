@@ -56,6 +56,7 @@ class StudioViewModel(
             val admin = repository.checkIsAdmin(currentUserId, userEmail, isEmailVerified)
             _isAdmin.value = admin
             if (admin) {
+                repository.removeLegacyDefaultSamples()
                 repository.ensureCeoMemberPresent()
                 repository.ensureFcutusProjectPresent()
                 repository.seedDefaultStudioDataIfEmpty()

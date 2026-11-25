@@ -36,6 +36,17 @@ class StudioRepository(
         )
     )
 
+    private val removedDefaultProjectIds = setOf(
+        "proj_vexora_cloud",
+        "proj_nova_pay",
+        "proj_aether_ai"
+    )
+
+    private val removedDefaultTeamIds = setOf(
+        "tm_tariq",
+        "tm_layla"
+    )
+
     private fun requireUserId(): String {
         return auth.currentUser?.uid
             ?: throw IllegalStateException("User must be signed in with Google.")
@@ -82,6 +93,7 @@ class StudioRepository(
             query.snapshots()
                 .map { snap ->
                     snap.toObjects(ProjectItem::class.java, DocumentSnapshot.ServerTimestampBehavior.ESTIMATE)
+                        .filterNot { it.id in removedDefaultProjectIds }
                         .sortedWith(compareByDescending<ProjectItem> { it.featured }.thenByDescending { it.id == "proj_f_cutus" })
                 }
                 .catch { error ->
@@ -100,6 +112,7 @@ class StudioRepository(
             query.snapshots()
                 .map { snap ->
                     snap.toObjects(TeamMember::class.java, DocumentSnapshot.ServerTimestampBehavior.ESTIMATE)
+                        .filterNot { it.id in removedDefaultTeamIds }
                         .sortedByDescending { it.experienceYears }
                 }
                 .catch { error ->
@@ -604,83 +617,9 @@ class StudioRepository(
                 }
             }
 
-            val existingProjects = db.collection("projects").limit(1).get().await()
-            if (existingProjects.isEmpty) {
-                val defaultProjects = listOf(
-                    "proj_vexora_cloud" to ProjectItem(
-                        nameEn = "Vexora Cloud Analytics",
-                        nameAr = "منصة فيكسورا كلاود للتحليلات",
-                        descriptionEn = "Real-time enterprise SaaS telemetry portal with AI anomaly alerts and multi-tenant dashboards.",
-                        descriptionAr = "منصة تحليلات سحابية متقدمة للشركات مع تنبيهات الذكاء الاصطناعي ولوحات بيانات فورية.",
-                        presetImageKey = "web",
-                        websiteUrl = "https://vexora.studio",
-                        technologies = listOf("React", "TypeScript", "Cloud Run", "Gemini AI"),
-                        status = "available",
-                        featured = true
-                    ),
-                    "proj_nova_pay" to ProjectItem(
-                        nameEn = "NovaPay Mobile Suite",
-                        nameAr = "تطبيق نوفا باي الذكي",
-                        descriptionEn = "Next-generation Android fintech wallet with biometric security, instant transfers, and smart budgeting.",
-                        descriptionAr = "تطبيق مالي ذكي لنظام أندرويد يدعم الحماية البيومترية والتحويلات الفورية وإدارة المصروفات.",
-                        presetImageKey = "mobile",
-                        websiteUrl = "https://vexora.studio/projects/novapay",
-                        technologies = listOf("Kotlin", "Jetpack Compose", "Firebase", "Material 3"),
-                        status = "completed",
-                        featured = true
-                    ),
-                    "proj_aether_ai" to ProjectItem(
-                        nameEn = "Aether Support AI Hub",
-                        nameAr = "مركز أيثر للدعم الذكي",
-                        descriptionEn = "Bilingual Arabic/English customer support copilot grounded in live company knowledge bases.",
-                        descriptionAr = "مساعد خدمة عملاء ثنائي اللغة مرتبط بقواعد بيانات الشركات الفعلية بدقة عالية.",
-                        presetImageKey = "studio",
-                        websiteUrl = "https://vexora.studio/projects/aether",
-                        technologies = listOf("Gemini 3", "TypeScript", "Firestore", "App Check"),
-                        status = "in_development",
-                        featured = false
-                    )
-                )
-                defaultProjects.forEach { (id, proj) ->
-                    db.collection("projects").document(id).set(proj.toCreateMap()).await()
-                }
-            }
-
             ensureFcutusProjectPresent()
             ensureCeoMemberPresent()
-
-            val existingTeam = db.collection("team_members").limit(2).get().await()
-            if (existingTeam.size() <= 1) {
-                val defaultTeam = listOf(
-                    "tm_tariq" to TeamMember(
-                        nameEn = "Tariq Al-Mansoor",
-                        nameAr = "طارق المنصور",
-                        roleEn = "Principal Cloud Architect",
-                        roleAr = "كبير مهندسي الأنظمة السحابية",
-                        bioEn = "Leads full-stack cloud architecture, Android engineering, and AI strategy across Vexora Studio.",
-                        bioAr = "يقود هندسة الأنظمة السحابية وتطوير تطبيقات أندرويد واستراتيجية الذكاء الاصطناعي في Vexora Studio.",
-                        skills = listOf("Kotlin", "React", "TypeScript", "Gemini AI", "Cloud Architecture"),
-                        experienceYears = 8L,
-                        cvSummaryEn = "8+ years architecting scalable SaaS web platforms and native Android apps for MENA & global tech startups. B.Sc. in Computer Science.",
-                        cvSummaryAr = "خبرة تتجاوز 8 سنوات في هندسة المنصات السحابية وتطبيقات أندرويد الأصلية للشركات التقنية. بكالوريوس علوم الحاسب."
-                    ),
-                    "tm_layla" to TeamMember(
-                        nameEn = "Layla Haddad",
-                        nameAr = "ليلى حداد",
-                        roleEn = "Lead UI/UX & Brand Director",
-                        roleAr = "مديرة تصميم واجهات UI/UX والهوية البصرية",
-                        bioEn = "Crafts dark-mode luxury digital interfaces, design systems, and distinctive brand identities.",
-                        bioAr = "متخصصة في تصميم واجهات المستخدم الفاخرة وأنظمة التصميم والهويات البصرية المبتكرة.",
-                        skills = listOf("Figma", "Design Systems", "UI/UX", "Brand Identity", "Motion"),
-                        experienceYears = 7L,
-                        cvSummaryEn = "7+ years leading product design and visual branding for web and mobile products across fintech and AI sectors.",
-                        cvSummaryAr = "خبرة تتجاوز 7 سنوات في قيادة تصميم المنتجات والهويات البصرية لقطاعات التقنية المالية والذكاء الاصطناعي."
-                    )
-                )
-                defaultTeam.forEach { (id, member) ->
-                    db.collection("team_members").document(id).set(member.toCreateMap()).await()
-                }
-            }
+            removeLegacyDefaultSamples()
 
             val existingJobs = db.collection("jobs").limit(1).get().await()
             if (existingJobs.isEmpty) {
@@ -803,6 +742,30 @@ class StudioRepository(
         } catch (e: Exception) {
             handleFirestoreError(e, OperationType.WRITE, docRef.path)
             Result.failure(e)
+        }
+    }
+
+    suspend fun removeLegacyDefaultSamples() {
+        try {
+            requireUserId()
+            removedDefaultProjectIds.forEach { docId ->
+                try {
+                    db.collection("projects").document(docId).delete().await()
+                } catch (_: Exception) {
+                    // Ignore missing/unauthorized cleanup errors
+                }
+            }
+            removedDefaultTeamIds.forEach { docId ->
+                try {
+                    db.collection("team_members").document(docId).delete().await()
+                } catch (_: Exception) {
+                    // Ignore missing/unauthorized cleanup errors
+                }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // Ignore cleanup errors when unauthenticated
         }
     }
 }
