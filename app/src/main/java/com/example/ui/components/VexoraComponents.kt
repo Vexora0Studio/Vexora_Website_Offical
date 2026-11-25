@@ -365,6 +365,7 @@ fun ProjectPreviewImage(
     val vexora = LocalVexoraColors.current
     val fallbackRes = when (presetImageKey) {
         "f_cutus" -> R.drawable.img_project_fcutus
+        "noorix" -> R.drawable.img_project_noorix
         "mobile" -> R.drawable.img_project_mobile
         "studio" -> R.drawable.img_studio_team
         "hero" -> R.drawable.img_hero_banner
@@ -379,7 +380,7 @@ fun ProjectPreviewImage(
             contentScale = ContentScale.Crop,
             modifier = modifier
         )
-    } else if (presetImageKey == "f_cutus") {
+    } else if (presetImageKey == "f_cutus" || presetImageKey == "noorix") {
         Box(
             modifier = modifier.background(
                 Brush.radialGradient(
@@ -392,7 +393,7 @@ fun ProjectPreviewImage(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(R.drawable.img_project_fcutus),
+                painter = painterResource(fallbackRes),
                 contentDescription = contentDescription,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize().padding(10.dp)

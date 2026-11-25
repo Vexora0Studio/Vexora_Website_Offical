@@ -618,6 +618,7 @@ class StudioRepository(
             }
 
             ensureFcutusProjectPresent()
+            ensureNoorixProjectPresent()
             ensureCeoMemberPresent()
             removeLegacyDefaultSamples()
 
@@ -735,6 +736,35 @@ class StudioRepository(
                     published = true
                 )
                 docRef.set(fcutus.toCreateMap()).await()
+            }
+            Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.WRITE, docRef.path)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun ensureNoorixProjectPresent(): Result<Unit> {
+        val docRef = db.collection("projects").document("proj_noorix")
+        return try {
+            requireUserId()
+            val snap = docRef.get().await()
+            if (!snap.exists()) {
+                val noorix = ProjectItem(
+                    nameEn = "Noorix",
+                    nameAr = "Noorix",
+                    descriptionEn = "Developed by Vexora Studio — Noorix is a modern web platform currently in development with a sleek, distinctive digital experience.",
+                    descriptionAr = "قيد التطوير من قبل Vexora Studio — موقع Noorix بتصميم عصري وهوية رقمية مميزة وتجربة استخدام متطورة.",
+                    presetImageKey = "noorix",
+                    websiteUrl = "",
+                    technologies = listOf("Web Platform", "UI/UX", "Vexora Studio"),
+                    status = "in_development",
+                    featured = true,
+                    published = true
+                )
+                docRef.set(noorix.toCreateMap()).await()
             }
             Result.success(Unit)
         } catch (e: CancellationException) {

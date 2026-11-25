@@ -59,6 +59,7 @@ class StudioViewModel(
                 repository.removeLegacyDefaultSamples()
                 repository.ensureCeoMemberPresent()
                 repository.ensureFcutusProjectPresent()
+                repository.ensureNoorixProjectPresent()
                 repository.seedDefaultStudioDataIfEmpty()
             }
         }

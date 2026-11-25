@@ -179,6 +179,7 @@ const STUDIO_IMAGES = {
   logoBanner: `${ASSET_BASE}img_vexora_official_logo.jpg`,
   omarAvatar: `${ASSET_BASE}img_omar_developer.jpg`,
   f_cutus: `${ASSET_BASE}img_project_fcutus.webp`,
+  noorix: `${ASSET_BASE}img_project_noorix.jpg`,
   web: `${ASSET_BASE}img_project_web.jpg`,
   mobile: `${ASSET_BASE}img_project_mobile.jpg`,
   studio: `${ASSET_BASE}img_studio_team.jpg`,
@@ -187,8 +188,8 @@ const STUDIO_IMAGES = {
 
 const ADMIN_SESSION_KEY = "vexora_admin_unlocked";
 const ADMIN_CODE_POINTS = [86, 120, 64, 57, 35, 81, 109, 55, 50, 33, 76, 112, 36, 52, 90, 107];
-const STORAGE_KEY = "vexora_studio_state_v2";
-const LEGACY_STORAGE_KEY = "vexora_studio_state_v1";
+const STORAGE_KEY = "vexora_studio_state_v3";
+const LEGACY_STORAGE_KEYS = ["vexora_studio_state_v2", "vexora_studio_state_v1"];
 const REMOVED_DEFAULT_PROJECT_IDS = new Set(["proj_vexora_cloud", "proj_nova_pay", "proj_aether_ai"]);
 const REMOVED_DEFAULT_TEAM_IDS = new Set(["tm_tariq", "tm_layla"]);
 
@@ -292,6 +293,19 @@ function createDefaultState() {
         status: "available",
         featured: true,
         published: true
+      },
+      {
+        id: "proj_noorix",
+        nameEn: "Noorix",
+        nameAr: "Noorix",
+        descriptionEn: "Developed by Vexora Studio — Noorix is a modern web platform currently in development with a sleek, distinctive digital experience.",
+        descriptionAr: "قيد التطوير من قبل Vexora Studio — موقع Noorix بتصميم عصري وهوية رقمية مميزة وتجربة استخدام متطورة.",
+        presetImageKey: "noorix",
+        websiteUrl: "",
+        technologies: ["Web Platform", "UI/UX", "Vexora Studio"],
+        status: "in_development",
+        featured: true,
+        published: true
       }
     ],
     team: [
@@ -317,16 +331,21 @@ function createDefaultState() {
 
 function loadState() {
   try {
-    const rawV2 = localStorage.getItem(STORAGE_KEY);
-    if (rawV2) {
-      const parsed = JSON.parse(rawV2);
+    const rawV3 = localStorage.getItem(STORAGE_KEY);
+    if (rawV3) {
+      const parsed = JSON.parse(rawV3);
       return { ...createDefaultState(), ...parsed };
     }
-    const rawLegacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    const rawLegacy = LEGACY_STORAGE_KEYS.map((k) => localStorage.getItem(k)).find(Boolean);
     if (!rawLegacy) return createDefaultState();
     const parsed = JSON.parse(rawLegacy);
-    const merged = { ...createDefaultState(), ...parsed };
+    const defaults = createDefaultState();
+    const merged = { ...defaults, ...parsed };
     merged.projects = (merged.projects || []).filter((p) => !REMOVED_DEFAULT_PROJECT_IDS.has(p.id));
+    if (!merged.projects.some((p) => p.id === "proj_noorix")) {
+      const noorixDefault = defaults.projects.find((p) => p.id === "proj_noorix");
+      if (noorixDefault) merged.projects.push(noorixDefault);
+    }
     merged.team = (merged.team || []).filter((m) => !REMOVED_DEFAULT_TEAM_IDS.has(m.id));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
     return merged;
@@ -576,7 +595,7 @@ function renderHomeScreen(root) {
             const st = statusMeta(proj.status);
             return `
             <div class="glass-card no-pad" style="cursor:pointer;" data-go="projects">
-              <img class="project-img ${proj.presetImageKey === "f_cutus" ? "contain" : ""}" src="${projectImageSrc(proj)}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" onerror="this.style.display='none'" />
+              <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${projectImageSrc(proj)}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" onerror="this.style.display='none'" />
               <div class="card-inner">
                 <div class="row-between">
                   <h3 class="card-title">${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}</h3>
@@ -706,7 +725,7 @@ function renderProjectsScreen(root) {
                 const st = statusMeta(proj.status);
                 return `
             <div class="glass-card no-pad ${proj.featured ? "highlight-border" : ""}">
-              <img class="project-img ${proj.presetImageKey === "f_cutus" ? "contain" : ""}" src="${projectImageSrc(proj)}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" onerror="this.style.display='none'" />
+              <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${projectImageSrc(proj)}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" onerror="this.style.display='none'" />
               <div class="card-inner">
                 <div class="row-between">
                   <h3 class="card-title" style="font-size:1.2rem;">${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}</h3>

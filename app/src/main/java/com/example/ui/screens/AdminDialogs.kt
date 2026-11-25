@@ -135,7 +135,7 @@ fun ProjectEditorDialog(
                 OutlinedTextField(value = descEn, onValueChange = { descEn = it }, label = { Text("Description (EN)") }, minLines = 2, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = websiteUrl, onValueChange = { websiteUrl = it }, label = { Text("Website URL") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = imageUrl, onValueChange = { imageUrl = it }, label = { Text("Preview Image URL (optional)") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = presetKey, onValueChange = { presetKey = it }, label = { Text("Fallback Art (web/mobile/studio/hero/f_cutus)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = presetKey, onValueChange = { presetKey = it }, label = { Text("Fallback Art (web/mobile/studio/hero/f_cutus/noorix)") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = techText, onValueChange = { techText = it }, label = { Text("Technologies (comma-separated)") }, modifier = Modifier.fillMaxWidth())
 
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
