@@ -235,8 +235,12 @@ const APK_URL = window.location.pathname.includes("/website/")
   ? "vexora-studio.apk"
   : "website/vexora-studio.apk";
 
+const WEBSITE_LOGO = window.location.pathname.includes("/website/")
+  ? "vexora-logo.png"
+  : "website/vexora-logo.png";
+
 const STUDIO_IMAGES = {
-  logoBanner: `${ASSET_BASE}img_vexora_official_logo.jpg`,
+  logoBanner: WEBSITE_LOGO,
   appIcon: `${ASSET_BASE}app_icon_vexora.jpg`,
   omarAvatar: `${ASSET_BASE}img_omar_developer.jpg`,
   f_cutus: `${ASSET_BASE}img_project_fcutus.webp`,
@@ -1643,7 +1647,7 @@ function renderAll() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const fav = document.getElementById("faviconLink");
-  if (fav) fav.href = `${ASSET_BASE}app_icon_vexora.jpg`;
+  if (fav) fav.href = WEBSITE_LOGO;
 
   const topDlBtn = document.getElementById("topbarDownloadBtn");
   if (topDlBtn) topDlBtn.addEventListener("click", () => navigate("download"));
