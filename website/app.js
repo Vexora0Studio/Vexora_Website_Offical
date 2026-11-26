@@ -253,10 +253,11 @@ const STUDIO_IMAGES = {
 
 const ADMIN_SESSION_KEY = "vexora_admin_unlocked";
 const ADMIN_CODE_POINTS = [86, 120, 64, 57, 35, 81, 109, 55, 50, 33, 76, 112, 36, 52, 90, 107];
-const STORAGE_KEY = "vexora_studio_state_v3";
-const LEGACY_STORAGE_KEYS = ["vexora_studio_state_v2", "vexora_studio_state_v1"];
+const STORAGE_KEY = "vexora_studio_state_v4";
+const LEGACY_STORAGE_KEYS = ["vexora_studio_state_v3", "vexora_studio_state_v2", "vexora_studio_state_v1"];
 const REMOVED_DEFAULT_PROJECT_IDS = new Set(["proj_vexora_cloud", "proj_nova_pay", "proj_aether_ai"]);
 const REMOVED_DEFAULT_TEAM_IDS = new Set(["tm_tariq", "tm_layla"]);
+const REMOVED_DEFAULT_SERVICE_IDS = new Set(["srv_ai", "srv_graphic", "srv_video", "srv_uiux"]);
 
 function createDefaultState() {
   return {
@@ -290,50 +291,6 @@ function createDefaultState() {
         published: true
       },
       {
-        id: "srv_ai",
-        titleEn: "Artificial Intelligence (AI)",
-        titleAr: "الذكاء الاصطناعي AI",
-        descriptionEn: "Custom Gemini assistants, workflow automation, RAG search systems, and intelligent analytics pipelines.",
-        descriptionAr: "تطوير مساعدات ذكية، أتمتة الأعمال، وحلول الذكاء الاصطناعي التوليدي المخصصة للشركات.",
-        iconKey: "ai",
-        category: "ai",
-        sortOrder: 3,
-        published: true
-      },
-      {
-        id: "srv_graphic",
-        titleEn: "Graphic & Logo Design",
-        titleAr: "تصميم الجرافيك والشعارات",
-        descriptionEn: "Memorable brand identities, geometric logos, brand guidelines, and high-impact visual campaigns.",
-        descriptionAr: "ابتكار هويات بصرية متكاملة، شعارات احترافية، وتصاميم إعلانية تعكس فخامة علامتك التجارية.",
-        iconKey: "palette",
-        category: "design",
-        sortOrder: 4,
-        published: true
-      },
-      {
-        id: "srv_video",
-        titleEn: "Video Editing & Production",
-        titleAr: "المونتاج وصناعة الفيديو",
-        descriptionEn: "Cinematic motion graphics, product launch reels, color grading, and engaging commercial video editing.",
-        descriptionAr: "إنتاج فيديوهات دعائية احترافية، موشن جرافيك سينمائي، ومونتاج متكامل للمحتوى الرقمي.",
-        iconKey: "video",
-        category: "media",
-        sortOrder: 5,
-        published: true
-      },
-      {
-        id: "srv_uiux",
-        titleEn: "UI/UX Experience Design",
-        titleAr: "تصميم واجهات UI/UX",
-        descriptionEn: "User-centered wireframes, interactive Figma prototypes, and sleek dark/light design systems.",
-        descriptionAr: "تصميم واجهات مستخدم عصرية وتجارب استخدام سلسة مدروسة لزيادة تفاعل العملاء.",
-        iconKey: "uiux",
-        category: "design",
-        sortOrder: 6,
-        published: true
-      },
-      {
         id: "srv_software",
         titleEn: "Custom Software Engineering",
         titleAr: "تطوير البرمجيات",
@@ -341,7 +298,7 @@ function createDefaultState() {
         descriptionAr: "تطوير أنظمة برمجية متكاملة، واجهات برمجة تطبيقات آمنة، وبنية سحابية قابلة للتوسع.",
         iconKey: "code",
         category: "engineering",
-        sortOrder: 7,
+        sortOrder: 3,
         published: true
       }
     ],
@@ -396,9 +353,9 @@ function createDefaultState() {
 
 function loadState() {
   try {
-    const rawV3 = localStorage.getItem(STORAGE_KEY);
-    if (rawV3) {
-      const parsed = JSON.parse(rawV3);
+    const rawV4 = localStorage.getItem(STORAGE_KEY);
+    if (rawV4) {
+      const parsed = JSON.parse(rawV4);
       return { ...createDefaultState(), ...parsed };
     }
     const rawLegacy = LEGACY_STORAGE_KEYS.map((k) => localStorage.getItem(k)).find(Boolean);
@@ -406,6 +363,7 @@ function loadState() {
     const parsed = JSON.parse(rawLegacy);
     const defaults = createDefaultState();
     const merged = { ...defaults, ...parsed };
+    merged.services = (merged.services || []).filter((s) => !REMOVED_DEFAULT_SERVICE_IDS.has(s.id));
     merged.projects = (merged.projects || []).filter((p) => !REMOVED_DEFAULT_PROJECT_IDS.has(p.id));
     if (!merged.projects.some((p) => p.id === "proj_noorix")) {
       const noorixDefault = defaults.projects.find((p) => p.id === "proj_noorix");
@@ -708,9 +666,6 @@ function renderServicesScreen(root) {
     { key: "all", label: t("allCategories") },
     { key: "web", label: isArabic() ? "الويب" : "Web" },
     { key: "mobile", label: "Android" },
-    { key: "ai", label: isArabic() ? "ذكاء اصطناعي" : "AI" },
-    { key: "design", label: isArabic() ? "التصميم" : "Design" },
-    { key: "media", label: isArabic() ? "المونتاج" : "Video" },
     { key: "engineering", label: isArabic() ? "البرمجيات" : "Software" }
   ];
 
@@ -1455,7 +1410,7 @@ function openServiceEditor(initial) {
       <div class="field"><label>Description (AR)</label><textarea id="eDescAr" rows="2" required>${escapeHtml(item.descriptionAr)}</textarea></div>
       <div class="field"><label>Category</label>
         <select id="eCat">
-          ${["web", "mobile", "ai", "design", "media", "engineering"]
+          ${["web", "mobile", "engineering"]
             .map((c) => `<option value="${c}" ${item.category === c ? "selected" : ""}>${c}</option>`)
             .join("")}
         </select>

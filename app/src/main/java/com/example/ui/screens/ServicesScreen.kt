@@ -52,7 +52,7 @@ fun ServicesScreen(
     val vexora = LocalVexoraColors.current
     var selectedCategory by remember { mutableStateOf("all") }
 
-    val categories = listOf("all", "web", "mobile", "ai", "design", "media", "engineering")
+    val categories = listOf("all", "web", "mobile", "engineering")
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -172,9 +172,6 @@ private fun categoryLabel(key: String, isArabic: Boolean, allLabel: String): Str
     "all" -> allLabel
     "web" -> if (isArabic) "الويب" else "Web"
     "mobile" -> if (isArabic) "Android" else "Android"
-    "ai" -> if (isArabic) "ذكاء اصطناعي" else "AI"
-    "design" -> if (isArabic) "التصميم" else "Design"
-    "media" -> if (isArabic) "المونتاج" else "Video"
     "engineering" -> if (isArabic) "البرمجيات" else "Software"
     else -> key
 }

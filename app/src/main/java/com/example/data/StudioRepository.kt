@@ -47,6 +47,13 @@ class StudioRepository(
         "tm_layla"
     )
 
+    private val removedDefaultServiceIds = setOf(
+        "srv_ai",
+        "srv_graphic",
+        "srv_video",
+        "srv_uiux"
+    )
+
     private fun requireUserId(): String {
         return auth.currentUser?.uid
             ?: throw IllegalStateException("User must be signed in with Google.")
@@ -75,6 +82,7 @@ class StudioRepository(
             query.snapshots()
                 .map { snap ->
                     snap.toObjects(ServiceItem::class.java, DocumentSnapshot.ServerTimestampBehavior.ESTIMATE)
+                        .filterNot { it.id in removedDefaultServiceIds }
                         .sortedBy { it.sortOrder }
                 }
                 .catch { error ->
@@ -566,42 +574,6 @@ class StudioRepository(
                         category = "mobile",
                         sortOrder = 2L
                     ),
-                    "srv_ai" to ServiceItem(
-                        titleEn = "Artificial Intelligence (AI)",
-                        titleAr = "الذكاء الاصطناعي AI",
-                        descriptionEn = "Custom Gemini assistants, workflow automation, RAG search systems, and intelligent analytics pipelines.",
-                        descriptionAr = "تطوير مساعدات ذكية، أتمتة الأعمال، وحلول الذكاء الاصطناعي التوليدي المخصصة للشركات.",
-                        iconKey = "ai",
-                        category = "ai",
-                        sortOrder = 3L
-                    ),
-                    "srv_graphic" to ServiceItem(
-                        titleEn = "Graphic & Logo Design",
-                        titleAr = "تصميم الجرافيك والشعارات",
-                        descriptionEn = "Memorable brand identities, geometric logos, brand guidelines, and high-impact visual campaigns.",
-                        descriptionAr = "ابتكار هويات بصرية متكاملة، شعارات احترافية، وتصاميم إعلانية تعكس فخامة علامتك التجارية.",
-                        iconKey = "palette",
-                        category = "design",
-                        sortOrder = 4L
-                    ),
-                    "srv_video" to ServiceItem(
-                        titleEn = "Video Editing & Production",
-                        titleAr = "المونتاج وصناعة الفيديو",
-                        descriptionEn = "Cinematic motion graphics, product launch reels, color grading, and engaging commercial video editing.",
-                        descriptionAr = "إنتاج فيديوهات دعائية احترافية، موشن جرافيك سينمائي، ومونتاج متكامل للمحتوى الرقمي.",
-                        iconKey = "video",
-                        category = "media",
-                        sortOrder = 5L
-                    ),
-                    "srv_uiux" to ServiceItem(
-                        titleEn = "UI/UX Experience Design",
-                        titleAr = "تصميم واجهات UI/UX",
-                        descriptionEn = "User-centered wireframes, interactive Figma prototypes, and sleek dark/light design systems.",
-                        descriptionAr = "تصميم واجهات مستخدم عصرية وتجارب استخدام سلسة مدروسة لزيادة تفاعل العملاء.",
-                        iconKey = "uiux",
-                        category = "design",
-                        sortOrder = 6L
-                    ),
                     "srv_software" to ServiceItem(
                         titleEn = "Custom Software Engineering",
                         titleAr = "تطوير البرمجيات",
@@ -609,7 +581,7 @@ class StudioRepository(
                         descriptionAr = "تطوير أنظمة برمجية متكاملة، واجهات برمجة تطبيقات آمنة، وبنية سحابية قابلة للتوسع.",
                         iconKey = "code",
                         category = "engineering",
-                        sortOrder = 7L
+                        sortOrder = 3L
                     )
                 )
                 defaultServices.forEach { (id, srv) ->
@@ -788,6 +760,13 @@ class StudioRepository(
             removedDefaultTeamIds.forEach { docId ->
                 try {
                     db.collection("team_members").document(docId).delete().await()
+                } catch (_: Exception) {
+                    // Ignore missing/unauthorized cleanup errors
+                }
+            }
+            removedDefaultServiceIds.forEach { docId ->
+                try {
+                    db.collection("services").document(docId).delete().await()
                 } catch (_: Exception) {
                     // Ignore missing/unauthorized cleanup errors
                 }

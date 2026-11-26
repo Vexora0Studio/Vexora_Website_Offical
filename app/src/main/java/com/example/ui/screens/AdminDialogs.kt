@@ -70,8 +70,8 @@ fun ServiceEditorDialog(
                 OutlinedTextField(value = titleEn, onValueChange = { titleEn = it }, label = { Text("Title (EN)") }, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = descAr, onValueChange = { descAr = it }, label = { Text("الوصف (AR)") }, minLines = 2, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(value = descEn, onValueChange = { descEn = it }, label = { Text("Description (EN)") }, minLines = 2, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Category (web/mobile/ai/design/media/engineering)") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = iconKey, onValueChange = { iconKey = it }, label = { Text("Icon (web/android/ai/palette/video/uiux/code)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Category (web/mobile/engineering)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = iconKey, onValueChange = { iconKey = it }, label = { Text("Icon (web/android/code)") }, modifier = Modifier.fillMaxWidth())
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(if (isArabic) "منشور" else "Published")
                     Switch(checked = published, onCheckedChange = { published = it })
