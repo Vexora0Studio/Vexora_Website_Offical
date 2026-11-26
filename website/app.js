@@ -809,9 +809,21 @@ function renderHomeScreen(root) {
   const faqItems = I18N[currentLang].faqItems || [];
 
   root.innerHTML = `
-    <div class="glass-card no-pad highlight-border">
+    <div class="glass-card no-pad highlight-border" data-tilt-3d="subtle">
       <div class="hero-banner-wrap">
         <img class="hero-banner-img" src="${STUDIO_IMAGES.logoBanner}" alt="Vexora Studio" onerror="this.style.display='none'" />
+        <div class="hero-3d-stage" id="hero3dStage" title="Vexora 3D Core">
+          <div class="hero-3d-orbit"></div>
+          <div class="hero-3d-orbit ring-2"></div>
+          <div class="hero-3d-cube">
+            <span class="hero-cube-face front">VX</span>
+            <span class="hero-cube-face back">&lt;/&gt;</span>
+            <span class="hero-cube-face right">KT</span>
+            <span class="hero-cube-face left">JS</span>
+            <span class="hero-cube-face top">PY</span>
+            <span class="hero-cube-face bottom">{ }</span>
+          </div>
+        </div>
         <div class="hero-banner-gradient"></div>
         <div class="hero-banner-overlay">
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -834,7 +846,7 @@ function renderHomeScreen(root) {
       </div>
     </div>
 
-    <div class="glass-card highlight-border">
+    <div class="glass-card highlight-border" data-tilt-3d="1">
       <div class="app-download-hero">
         <img class="app-icon-badge" src="${STUDIO_IMAGES.appIcon}" alt="Vexora Studio Android App" onerror="this.style.display='none'" />
         <div style="flex:1;min-width:220px;">
@@ -854,19 +866,19 @@ function renderHomeScreen(root) {
     <div class="section-block">
       <h2 class="card-title">${escapeHtml(t("statsTitle"))}</h2>
       <div class="stats-grid">
-        <div class="glass-card">
+        <div class="glass-card" data-tilt-3d="1">
           <div class="stat-value">${stats.projectsDelivered}+</div>
           <div class="stat-label">${escapeHtml(t("statProjects"))}</div>
         </div>
-        <div class="glass-card">
+        <div class="glass-card" data-tilt-3d="1">
           <div class="stat-value">${stats.happyClients}+</div>
           <div class="stat-label">${escapeHtml(t("statClients"))}</div>
         </div>
-        <div class="glass-card">
+        <div class="glass-card" data-tilt-3d="1">
           <div class="stat-value">${stats.teamExperts}+</div>
           <div class="stat-label">${escapeHtml(t("statExperts"))}</div>
         </div>
-        <div class="glass-card">
+        <div class="glass-card" data-tilt-3d="1">
           <div class="stat-value">${stats.yearsExperience}+</div>
           <div class="stat-label">${escapeHtml(t("statYears"))}</div>
         </div>
@@ -882,7 +894,7 @@ function renderHomeScreen(root) {
         ${featuredServices
           .map(
             (srv) => `
-          <div class="glass-card featured-srv-card" data-go="services">
+          <div class="glass-card featured-srv-card" data-tilt-3d="1" data-go="services">
             <div class="service-icon-box">${serviceIconGlyph(srv.iconKey)}</div>
             <h3 class="card-title" style="margin-top:12px;">${escapeHtml(isArabic() ? srv.titleAr : srv.titleEn)}</h3>
             <p class="muted-text" style="margin-top:6px;">${escapeHtml(isArabic() ? srv.descriptionAr : srv.descriptionEn)}</p>
@@ -902,7 +914,7 @@ function renderHomeScreen(root) {
         ${techGroups
           .map(
             (grp) => `
-          <div class="glass-card tech-cat-card">
+          <div class="glass-card tech-cat-card" data-tilt-3d="1">
             <div class="tech-cat-head">
               <div class="tech-cat-icon">${grp.icon}</div>
               <h3 class="card-title">${escapeHtml(grp.title)}</h3>
@@ -926,7 +938,7 @@ function renderHomeScreen(root) {
         ${processSteps
           .map(
             (step) => `
-          <div class="glass-card process-card">
+          <div class="glass-card process-card" data-tilt-3d="1">
             <div class="process-top">
               <span class="process-num">${escapeHtml(step.num)}</span>
               <span class="status-pill cyan">${escapeHtml(step.badge)}</span>
@@ -950,7 +962,7 @@ function renderHomeScreen(root) {
           .map((proj) => {
             const st = statusMeta(proj.status);
             return `
-            <div class="glass-card no-pad" style="cursor:pointer;" data-go="projects">
+            <div class="glass-card no-pad" data-tilt-3d="subtle" style="cursor:pointer;" data-go="projects">
               <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${projectImageSrc(proj)}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" onerror="this.style.display='none'" />
               <div class="card-inner">
                 <div class="row-between">
@@ -975,7 +987,7 @@ function renderHomeScreen(root) {
         ${guarantees
           .map(
             (g) => `
-          <div class="glass-card guarantee-card">
+          <div class="glass-card guarantee-card" data-tilt-3d="1">
             <div class="guarantee-icon">${g.icon}</div>
             <div>
               <h3 class="card-title">${escapeHtml(g.title)}</h3>
@@ -1064,7 +1076,7 @@ function renderServicesScreen(root) {
           : list
               .map(
                 (srv) => `
-        <div class="glass-card">
+        <div class="glass-card" data-tilt-3d="1">
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <div class="service-icon-box" style="flex-shrink:0;">${serviceIconGlyph(srv.iconKey)}</div>
             <div style="flex:1;">
@@ -1132,7 +1144,7 @@ function renderProjectsScreen(root) {
               .map((proj) => {
                 const st = statusMeta(proj.status);
                 return `
-            <div class="glass-card no-pad ${proj.featured ? "highlight-border" : ""}">
+            <div class="glass-card no-pad ${proj.featured ? "highlight-border" : ""}" data-tilt-3d="subtle">
               <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${projectImageSrc(proj)}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" onerror="this.style.display='none'" />
               <div class="card-inner">
                 <div class="row-between">
@@ -1201,7 +1213,7 @@ function renderTeamScreen(root) {
             : `<div class="member-avatar-fallback">${escapeHtml(initials)}</div>`;
 
           return `
-          <div class="glass-card ${isCeo ? "highlight-border" : ""}">
+          <div class="glass-card ${isCeo ? "highlight-border" : ""}" data-tilt-3d="subtle">
             <div class="member-row">
               ${avatarHtml}
               <div style="flex:1;">
@@ -2008,6 +2020,41 @@ function renderFooter(root) {
   root.appendChild(footer);
 }
 
+function bind3DEffects(root) {
+  const prefersReduced =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReduced) return;
+
+  const cubeStage = document.getElementById("hero3dStage");
+  if (cubeStage) {
+    cubeStage.addEventListener("click", (e) => {
+      e.stopPropagation();
+      cubeStage.classList.toggle("boosted");
+    });
+  }
+
+  root.querySelectorAll("[data-tilt-3d]").forEach((card) => {
+    const strength = card.dataset.tilt3d === "subtle" ? 4.5 : 8;
+    card.addEventListener("pointermove", (e) => {
+      if (e.pointerType === "touch") return;
+      const rect = card.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const px = x / rect.width;
+      const py = y / rect.height;
+      const rx = (0.5 - py) * strength;
+      const ry = (px - 0.5) * strength;
+      card.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
+      card.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
+      card.style.transform = `perspective(950px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateZ(6px)`;
+    });
+    card.addEventListener("pointerleave", () => {
+      card.style.transform = "";
+    });
+  });
+}
+
 function renderScreen() {
   const root = document.getElementById("screenContainer");
   switch (currentRoute) {
@@ -2034,6 +2081,7 @@ function renderScreen() {
       break;
   }
   renderFooter(root);
+  bind3DEffects(root);
 }
 
 function renderAll() {
