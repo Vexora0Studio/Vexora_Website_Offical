@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +24,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FilterChip
@@ -42,7 +47,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -123,6 +131,16 @@ fun AdminDashboardScreen(
         return
     }
 
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    val receivedMessages = (messagesState as? UiState.Success)?.data.orEmpty()
+    val unreadMessagesCount = receivedMessages.count { it.status != "replied" }
+    val messagesChipLabel = if (unreadMessagesCount > 0) {
+        "${strings.adminMessages} ($unreadMessagesCount)"
+    } else {
+        strings.adminMessages
+    }
+
     var selectedSection by remember { mutableIntStateOf(0) }
     val sections = listOf(
         strings.adminOverview,
@@ -131,7 +149,7 @@ fun AdminDashboardScreen(
         strings.adminTeam,
         strings.adminJobs,
         strings.adminApplications,
-        strings.adminMessages
+        messagesChipLabel
     )
 
     var showServiceDialog by remember { mutableStateOf<Pair<Boolean, ServiceItem?>>(false to null) }
@@ -329,39 +347,80 @@ fun AdminDashboardScreen(
                         }
                     }
                 }
-                else -> { // Messages
-                    val msgs = (messagesState as? UiState.Success)?.data.orEmpty()
-                    items(msgs, key = { it.id }) { msg ->
-                        GlassCard(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(msg.subject, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Text("${msg.senderName} • ${msg.email}", style = MaterialTheme.typography.bodyMedium, color = vexora.neonCyan)
-                                }
-                                StatusPill(
-                                    label = msg.status,
-                                    color = if (msg.status == "replied") vexora.success else vexora.warning
-                                )
+                else -> { // Received Messages from Contact Us
+                    if (receivedMessages.isEmpty()) {
+                        item {
+                            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                                Text(strings.noReceivedMessages, color = vexora.mutedText)
                             }
-                            Spacer(Modifier.height(6.dp))
-                            Text(msg.message, style = MaterialTheme.typography.bodyMedium)
-                            Spacer(Modifier.height(10.dp))
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                                NeonPrimaryButton(
-                                    text = strings.markReplied,
-                                    icon = Icons.Filled.Check,
-                                    onClick = { onUpdateMessageStatus(msg.id, "replied") },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                IconButton(
-                                    onClick = { onDeleteMessage(msg.id) },
-                                    modifier = Modifier.minimumInteractiveComponentSize()
+                        }
+                    } else {
+                        items(receivedMessages, key = { it.id }) { msg ->
+                            val isReplied = msg.status == "replied"
+                            GlassCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                highlightBorder = !isReplied
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(Icons.Filled.Delete, contentDescription = strings.delete, tint = vexora.error)
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(msg.subject, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                                        Text("${msg.senderName} • ${msg.email}", style = MaterialTheme.typography.bodyMedium, color = vexora.neonCyan)
+                                    }
+                                    StatusPill(
+                                        label = if (isReplied) strings.messageStatusReplied else strings.messageStatusNew,
+                                        color = if (isReplied) vexora.success else vexora.warning
+                                    )
+                                }
+                                Spacer(Modifier.height(6.dp))
+                                Text(msg.message, style = MaterialTheme.typography.bodyMedium)
+                                Spacer(Modifier.height(12.dp))
+                                NeonPrimaryButton(
+                                    text = strings.replyToClient,
+                                    icon = Icons.Filled.Email,
+                                    onClick = {
+                                        val mailtoUri = Uri.parse(
+                                            "mailto:${Uri.encode(msg.email)}?subject=${Uri.encode("Re: ${msg.subject}")}"
+                                        )
+                                        val intent = Intent(Intent.ACTION_SENDTO, mailtoUri)
+                                        try {
+                                            context.startActivity(intent)
+                                            onUpdateMessageStatus(msg.id, "replied")
+                                        } catch (_: Exception) {
+                                            clipboard.setText(AnnotatedString(msg.email))
+                                            Toast.makeText(context, strings.emailCopied, Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth().testTag("reply_msg_${msg.id}")
+                                )
+                                Spacer(Modifier.height(8.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                                    GlassOutlinedButton(
+                                        text = strings.copyEmail,
+                                        icon = Icons.Filled.ContentCopy,
+                                        onClick = {
+                                            clipboard.setText(AnnotatedString(msg.email))
+                                            Toast.makeText(context, strings.emailCopied, Toast.LENGTH_SHORT).show()
+                                        },
+                                        modifier = Modifier.weight(1f).testTag("copy_msg_email_${msg.id}")
+                                    )
+                                    if (!isReplied) {
+                                        GlassOutlinedButton(
+                                            text = strings.markReplied,
+                                            icon = Icons.Filled.Check,
+                                            onClick = { onUpdateMessageStatus(msg.id, "replied") },
+                                            modifier = Modifier.weight(1f).testTag("mark_replied_${msg.id}")
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = { onDeleteMessage(msg.id) },
+                                        modifier = Modifier.minimumInteractiveComponentSize().testTag("delete_msg_${msg.id}")
+                                    ) {
+                                        Icon(Icons.Filled.Delete, contentDescription = strings.delete, tint = vexora.error)
+                                    }
                                 }
                             }
                         }

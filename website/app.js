@@ -90,7 +90,11 @@ const I18N = {
     adminServices: "الخدمات",
     adminProjects: "المشاريع",
     adminTeam: "الموظفون",
-    adminMessages: "الرسائل",
+    adminMessages: "الرسائل المستقبلة",
+    replyToClient: "التواصل مع العميل",
+    noReceivedMessages: "لا توجد رسائل مستقبلة من قسم تواصل معنا حتى الآن.",
+    messageStatusNew: "جديدة",
+    messageStatusReplied: "تم الرد",
     addNew: "إضافة جديد",
     edit: "تعديل",
     delete: "حذف",
@@ -199,7 +203,11 @@ const I18N = {
     adminServices: "Services",
     adminProjects: "Projects",
     adminTeam: "Team",
-    adminMessages: "Messages",
+    adminMessages: "Received Messages",
+    replyToClient: "Contact Client",
+    noReceivedMessages: "No received messages from Contact Us yet.",
+    messageStatusNew: "New",
+    messageStatusReplied: "Replied",
     addNew: "Add New",
     edit: "Edit",
     delete: "Delete",
@@ -1132,12 +1140,13 @@ function renderAdminScreen(root) {
     return;
   }
 
+  const unreadCount = studioState.messages.filter((m) => m.status !== "replied").length;
   const sections = [
     { key: "stats", label: t("adminOverview") },
     { key: "services", label: t("adminServices") },
     { key: "projects", label: t("adminProjects") },
     { key: "team", label: t("adminTeam") },
-    { key: "messages", label: t("adminMessages") }
+    { key: "messages", label: unreadCount > 0 ? `${t("adminMessages")} (${unreadCount})` : t("adminMessages") }
   ];
 
   root.innerHTML = `
@@ -1308,28 +1317,50 @@ function renderAdminScreen(root) {
     const msgs = studioState.messages;
     body.innerHTML =
       msgs.length === 0
-        ? `<div class="glass-card"><p class="muted-text">0</p></div>`
+        ? `<div class="glass-card"><p class="muted-text" style="margin:0;">${escapeHtml(t("noReceivedMessages"))}</p></div>`
         : msgs
-            .map(
-              (m) => `
-        <div class="glass-card stack-list">
+            .map((m) => {
+              const isReplied = m.status === "replied";
+              const mailtoHref = `mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`;
+              return `
+        <div class="glass-card stack-list ${!isReplied ? "highlight-border" : ""}">
           <div class="row-between">
-            <div>
+            <div style="min-width:0;">
               <h3 class="card-title">${escapeHtml(m.subject)}</h3>
-              <div style="color:var(--neon-cyan);font-size:0.88rem;">${escapeHtml(m.senderName)} • ${escapeHtml(m.email)}</div>
+              <div style="color:var(--neon-cyan);font-size:0.88rem;word-break:break-word;">${escapeHtml(m.senderName)} • ${escapeHtml(m.email)}</div>
             </div>
-            <span class="status-pill ${m.status === "replied" ? "success" : "warning"}"><span class="pill-dot"></span>${escapeHtml(m.status)}</span>
+            <span class="status-pill ${isReplied ? "success" : "warning"}"><span class="pill-dot"></span>${escapeHtml(isReplied ? t("messageStatusReplied") : t("messageStatusNew"))}</span>
           </div>
-          <p class="muted-text">${escapeHtml(m.message)}</p>
+          <p class="muted-text" style="margin:0;white-space:pre-wrap;">${escapeHtml(m.message)}</p>
           <div class="btn-row">
-            <button type="button" class="btn btn-primary btn-sm" data-rep-msg="${m.id}">✓ ${escapeHtml(t("markReplied"))}</button>
+            <a href="${mailtoHref}" class="btn btn-primary btn-sm" data-reply-client="${m.id}">✉️ ${escapeHtml(t("replyToClient"))}</a>
+            <button type="button" class="btn btn-outline btn-sm" data-copy-msg-email="${escapeHtml(m.email)}">📋 ${escapeHtml(t("copyEmail"))}</button>
+            ${!isReplied ? `<button type="button" class="btn btn-outline btn-sm" data-rep-msg="${m.id}">✓ ${escapeHtml(t("markReplied"))}</button>` : ""}
             <button type="button" class="icon-btn danger" data-del-msg="${m.id}">🗑️</button>
           </div>
         </div>
-      `
-            )
+      `;
+            })
             .join("");
 
+    body.querySelectorAll("[data-reply-client]").forEach((link) =>
+      link.addEventListener("click", () => {
+        const m = studioState.messages.find((x) => x.id === link.dataset.replyClient);
+        if (m) m.status = "replied";
+        saveState();
+        setTimeout(() => renderScreen(), 250);
+      })
+    );
+    body.querySelectorAll("[data-copy-msg-email]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(b.dataset.copyMsgEmail || "");
+        } catch {
+          // Fallback
+        }
+        showToast(t("emailCopied"));
+      })
+    );
     body.querySelectorAll("[data-rep-msg]").forEach((b) =>
       b.addEventListener("click", () => {
         const m = studioState.messages.find((x) => x.id === b.dataset.repMsg);
