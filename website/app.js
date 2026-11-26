@@ -11,7 +11,13 @@ const I18N = {
     navContact: "تواصل معنا",
     navAdmin: "لوحة التحكم",
     heroTitle: "نصنع المستقبل الرقمي بإبداع وهندسة فائقة",
-    heroSubtitle: "في Vexora Studio نجمع بين هندسة البرمجيات المتقدمة، الذكاء الاصطناعي، وتصميم التجارب البصرية الفاخرة لإطلاق منتجات رقمية عالمية.",
+    heroSubtitle: "في Vexora Studio نطوّر مواقع الويب، تطبيقات Android الأصلية، والأنظمة البرمجية المتقدمة بأعلى معايير الأداء والأمان والجودة الهندسية.",
+    heroTrustBadges: [
+      "بنية برمجية نظيفة",
+      "تسليم الكود المصدري",
+      "أمان وأداء عالٍ",
+      "دعم عربي وإنجليزي RTL/LTR"
+    ],
     exploreServices: "استكشف الخدمات",
     downloadAppCta: "تحميل تطبيق Android (APK)",
     contactUsCta: "تواصل معنا",
@@ -23,6 +29,129 @@ const I18N = {
     featuredServicesTitle: "أبرز خدماتنا",
     featuredProjectsTitle: "مشاريع مختارة",
     viewAll: "عرض الكل",
+    techStackTitle: "التقنيات ولغات البرمجة",
+    techStackSubtitle: "نعتمد أحدث اللغات وأطر العمل الهندسية لبناء أنظمة مستقرة وقابلة للتوسع.",
+    techStackGroups: [
+      {
+        icon: "🌐",
+        title: "تطوير الويب والواجهات",
+        items: ["HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Next.js"]
+      },
+      {
+        icon: "📱",
+        title: "تطوير تطبيقات Android",
+        items: ["Kotlin", "Jetpack Compose", "Material 3", "Coroutines", "Room", "Android SDK"]
+      },
+      {
+        icon: "⚙️",
+        title: "البرمجيات الأساسية والخوادم",
+        items: ["Python", "C++", "Java", "Node.js", "REST APIs", "System Architecture"]
+      },
+      {
+        icon: "☁️",
+        title: "السحابة وقواعد البيانات والأمان",
+        items: ["Firebase Firestore", "Cloud Hosting", "Git / GitHub", "CI/CD", "Zero-Trust Rules", "Performance QA"]
+      }
+    ],
+    processTitle: "منهجية العمل الهندسية",
+    processSubtitle: "دورة تطوير منظمة تضمن الوضوح والجودة من الفكرة الأولى وحتى ما بعد الإطلاق.",
+    processSteps: [
+      {
+        num: "01",
+        badge: "التخطيط",
+        title: "التحليل وتخطيط البنية",
+        desc: "فهم متطلبات مشروعك بدقة، تحديد النطاق التقني، واختيار أفضل بنية برمجية مناسبة للنمو."
+      },
+      {
+        num: "02",
+        badge: "التطوير",
+        title: "البرمجة وبناء النظام",
+        desc: "تطوير الواجهات والأنظمة الخلفية بكود نظيف وموثّق على مراحل واضحة قابلة للمتابعة."
+      },
+      {
+        num: "03",
+        badge: "الجودة",
+        title: "الاختبار والأمان والأداء",
+        desc: "اختبار التوافق على مختلف الشاشات والأجهزة وفحص الثغرات وسرعة الاستجابة قبل النشر."
+      },
+      {
+        num: "04",
+        badge: "الإطلاق",
+        title: "النشر والتسليم والدعم",
+        desc: "إطلاق الموقع أو التطبيق، تسليم الكود المصدري بالكامل، وتوفير الدعم الفني والتحديثات."
+      }
+    ],
+    guaranteesTitle: "لماذا تختار Vexora Studio؟",
+    guaranteesSubtitle: "معايير هندسية والتزام احترافي في كل مشروع برمجي ننفذه.",
+    guarantees: [
+      {
+        icon: "🧱",
+        title: "كود نظيف وقابل للتوسع",
+        desc: "نكتب برمجيات وفق معمارية منظمة تسهّل الصيانة وإضافة الميزات مستقبلاً دون تعقيد."
+      },
+      {
+        icon: "🔑",
+        title: "ملكية كاملة للكود المصدري",
+        desc: "تحصل على كامل حقوق المشروع والكود المصدري ومستودع التطوير عند التسليم."
+      },
+      {
+        icon: "⚡",
+        title: "أداء سريع وأمان موثوق",
+        desc: "تحسين سرعة التحميل، حماية البيانات، وتوافق كامل مع الهواتف والحواسيب."
+      },
+      {
+        icon: "🤝",
+        title: "إشراف هندسي وتواصل مباشر",
+        desc: "متابعة مستمرة وتقارير واضحة لكل مرحلة بإشراف مباشر من قيادة التطوير في الاستوديو."
+      }
+    ],
+    faqTitle: "الأسئلة الشائعة حول مشاريع البرمجة",
+    faqSubtitle: "إجابات سريعة على أكثر استفسارات العملاء قبل بدء المشروع.",
+    faqItems: [
+      {
+        q: "كم يستغرق تنفيذ موقع ويب أو تطبيق Android؟",
+        a: "تتراوح مدة تنفيذ المواقع التعريفية والمنصات السريعة بين أسبوع إلى 3 أسابيع، بينما تستغرق تطبيقات Android والأنظمة المتكاملة من 3 إلى 8 أسابيع حسب الميزات المطلوبة."
+      },
+      {
+        q: "هل أستلم الكود المصدري الكامل بعد انتهاء المشروع؟",
+        a: "نعم، نسلمك الكود المصدري كاملاً عبر GitHub أو ملف مضغوط مع توثيق طريقة التشغيل والنشر."
+      },
+      {
+        q: "هل توفرون صيانة وتطوير بعد الإطلاق؟",
+        a: "بالتأكيد، نقدم متابعة تقنية، إصلاح أعطال، وتحديثات مستقبلية لإضافة أي ميزات جديدة مع توسع مشروعك."
+      },
+      {
+        q: "هل يمكن بناء موقع ويب وتطبيق Android مرتبطين بقاعدة بيانات واحدة؟",
+        a: "نعم، نطور الموقع وتطبيق Android الأصلي مع مزامنة فورية للبيانات ولوحة إدارة موحدة لمتابعة العملاء والمحتوى."
+      },
+      {
+        q: "كيف أبدأ مشروعي مع Vexora Studio؟",
+        a: "انتقل إلى قسم تواصل معنا وحدد نوع مشروعك وتفاصيل الفكرة، وسيتم مراجعتها والرد عليك بخطة التنفيذ خلال 24 ساعة."
+      }
+    ],
+    ctaBannerTitle: "هل لديك فكرة مشروع برمجي أو موقع؟",
+    ctaBannerDesc: "شاركنا متطلباتك الآن لنحوّل فكرتك إلى منتج رقمي حقيقي بأعلى جودة هندسية.",
+    ctaBannerBtn: "ابدأ مشروعك الآن",
+    projectTypeLabel: "نوع المشروع المطلوب",
+    projectTypes: [
+      "تطوير موقع ويب احترافي",
+      "تطوير تطبيق Android أصلي",
+      "نظام برمجي مخصص / لوحة إدارة",
+      "موقع + تطبيق Android متكاملان",
+      "تطوير وتحديث مشروع قائم"
+    ],
+    projectScopeLabel: "حجم المشروع",
+    projectScopes: [
+      "مشروع ناشئ / نسخة أولى (MVP)",
+      "منصة متكاملة للشركات والأعمال",
+      "تحسين أو إضافة ميزات",
+      "استشارة تقنية"
+    ],
+    responseSlaNote: "متوسط سرعة الرد: خلال 24 ساعة عمل عبر البريد الرسمي vexora0studio@gmail.com",
+    footerDesc: "شركة هندسة برمجيات متخصصة في تطوير المواقع، تطبيقات Android، والأنظمة البرمجية المتكاملة.",
+    footerQuickLinks: "روابط سريعة",
+    footerContactTitle: "التواصل الرسمي",
+    footerRights: "© 2026 Vexora Studio — جميع الحقوق محفوظة.",
     servicesHeadline: "خدمات Vexora Studio",
     servicesSubheadline: "حلول تقنية وإبداعية متكاملة من الفكرة حتى الإطلاق العالمي.",
     allCategories: "الكل",
@@ -124,7 +253,13 @@ const I18N = {
     navContact: "Contact",
     navAdmin: "Admin",
     heroTitle: "Engineering the Digital Future with Precision",
-    heroSubtitle: "At Vexora Studio, we unite advanced software engineering, applied AI, and refined dark-glass design to launch global digital products.",
+    heroSubtitle: "At Vexora Studio, we engineer high-performance web platforms, native Android apps, and scalable custom software built for real-world reliability.",
+    heroTrustBadges: [
+      "Clean Architecture",
+      "Full Source Ownership",
+      "High Security & Speed",
+      "RTL & LTR Ready"
+    ],
     exploreServices: "Explore Services",
     downloadAppCta: "Download Android App (APK)",
     contactUsCta: "Contact Us",
@@ -136,6 +271,129 @@ const I18N = {
     featuredServicesTitle: "Core Services",
     featuredProjectsTitle: "Featured Projects",
     viewAll: "View All",
+    techStackTitle: "Technology Stack & Languages",
+    techStackSubtitle: "Modern engineering languages, frameworks, and cloud tools built for stability and scale.",
+    techStackGroups: [
+      {
+        icon: "🌐",
+        title: "Web & Frontend Engineering",
+        items: ["HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Next.js"]
+      },
+      {
+        icon: "📱",
+        title: "Native Android Development",
+        items: ["Kotlin", "Jetpack Compose", "Material 3", "Coroutines", "Room", "Android SDK"]
+      },
+      {
+        icon: "⚙️",
+        title: "Core Software & Backends",
+        items: ["Python", "C++", "Java", "Node.js", "REST APIs", "System Architecture"]
+      },
+      {
+        icon: "☁️",
+        title: "Cloud, Databases & Security",
+        items: ["Firebase Firestore", "Cloud Hosting", "Git / GitHub", "CI/CD", "Zero-Trust Rules", "Performance QA"]
+      }
+    ],
+    processTitle: "Our Engineering Process",
+    processSubtitle: "A structured software lifecycle from technical discovery to production launch.",
+    processSteps: [
+      {
+        num: "01",
+        badge: "Discovery",
+        title: "Requirements & Architecture",
+        desc: "We define product scope, user flows, and scalable system architecture tailored to your goals."
+      },
+      {
+        num: "02",
+        badge: "Build",
+        title: "Agile Software Development",
+        desc: "Clean, modular code written in transparent milestones with regular progress reviews."
+      },
+      {
+        num: "03",
+        badge: "QA",
+        title: "Testing, Security & Performance",
+        desc: "Cross-device testing, security validation, and speed optimization before release."
+      },
+      {
+        num: "04",
+        badge: "Launch",
+        title: "Deployment & Ongoing Support",
+        desc: "Production launch, full source-code handover, and reliable post-launch maintenance."
+      }
+    ],
+    guaranteesTitle: "Why Choose Vexora Studio",
+    guaranteesSubtitle: "Engineering guarantees baked into every website, app, and custom platform we ship.",
+    guarantees: [
+      {
+        icon: "🧱",
+        title: "Clean, Maintainable Codebase",
+        desc: "Modular architecture that makes future features and scaling effortless."
+      },
+      {
+        icon: "🔑",
+        title: "Full Source Code Ownership",
+        desc: "Complete repository handover and intellectual property ownership upon delivery."
+      },
+      {
+        icon: "⚡",
+        title: "Speed & Security First",
+        desc: "Fast loading times, hardened security rules, and responsive UX across all viewports."
+      },
+      {
+        icon: "🤝",
+        title: "Direct Engineering Leadership",
+        desc: "Clear communication and direct oversight from concept through production release."
+      }
+    ],
+    faqTitle: "Software Development FAQ",
+    faqSubtitle: "Answers to common questions before starting your software project.",
+    faqItems: [
+      {
+        q: "How long does it take to build a website or Android app?",
+        a: "Modern company websites and landing platforms typically take 1–3 weeks, while native Android apps and full custom software systems take 3–8 weeks depending on scope."
+      },
+      {
+        q: "Do I receive the full source code upon completion?",
+        a: "Yes. You receive full access to the source code repository, build configuration, and deployment documentation."
+      },
+      {
+        q: "Do you provide post-launch support and updates?",
+        a: "Yes, we offer ongoing technical maintenance, bug fixes, and feature expansion as your product grows."
+      },
+      {
+        q: "Can you build a unified web platform and Android app together?",
+        a: "Yes, we architect synchronized web dashboards and native Android apps backed by a shared real-time database."
+      },
+      {
+        q: "How do I start a project with Vexora Studio?",
+        a: "Head to the Contact section, select your project type, and share your idea — we respond with an action plan within 24 business hours."
+      }
+    ],
+    ctaBannerTitle: "Ready to Build Your Next Software Product?",
+    ctaBannerDesc: "Share your project goals with Vexora Studio and get a clear engineering roadmap.",
+    ctaBannerBtn: "Start Your Project",
+    projectTypeLabel: "Project Type",
+    projectTypes: [
+      "Professional Website / Web App",
+      "Native Android Application",
+      "Custom Software / Admin System",
+      "Unified Web + Android Suite",
+      "Upgrade / Maintenance of Existing Project"
+    ],
+    projectScopeLabel: "Project Scope",
+    projectScopes: [
+      "Startup / MVP Launch",
+      "Full Business Platform",
+      "Feature Upgrades & Fixes",
+      "Technical Consultation"
+    ],
+    responseSlaNote: "Average response time: within 24 business hours via vexora0studio@gmail.com",
+    footerDesc: "Software engineering studio specializing in web platforms, native Android apps, and scalable custom software.",
+    footerQuickLinks: "Quick Links",
+    footerContactTitle: "Official Contact",
+    footerRights: "© 2026 Vexora Studio — All Rights Reserved.",
     servicesHeadline: "Vexora Studio Services",
     servicesSubheadline: "End-to-end engineering and creative capabilities built for scale.",
     allCategories: "All",
@@ -544,13 +802,19 @@ function renderHomeScreen(root) {
   const featuredServices = studioState.services.filter((s) => s.published).slice(0, 4);
   const featuredProjects = studioState.projects.filter((p) => p.published).slice(0, 3);
 
+  const trustBadges = I18N[currentLang].heroTrustBadges || [];
+  const techGroups = I18N[currentLang].techStackGroups || [];
+  const processSteps = I18N[currentLang].processSteps || [];
+  const guarantees = I18N[currentLang].guarantees || [];
+  const faqItems = I18N[currentLang].faqItems || [];
+
   root.innerHTML = `
     <div class="glass-card no-pad highlight-border">
       <div class="hero-banner-wrap">
         <img class="hero-banner-img" src="${STUDIO_IMAGES.logoBanner}" alt="Vexora Studio" onerror="this.style.display='none'" />
         <div class="hero-banner-gradient"></div>
         <div class="hero-banner-overlay">
-          <div style="display:flex;align-items:center;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <span class="brand-name" style="color:var(--neon-cyan)">Vexora Studio</span>
             <span class="muted-text" style="font-size:0.8rem">${escapeHtml(t("studioTagline"))}</span>
           </div>
@@ -560,9 +824,12 @@ function renderHomeScreen(root) {
       <div class="hero-body">
         <p class="hero-subtitle">${escapeHtml(t("heroSubtitle"))}</p>
         <div class="btn-row">
-          <button type="button" class="btn btn-primary" data-go="services">🚀 ${escapeHtml(t("exploreServices"))}</button>
+          <button type="button" class="btn btn-primary" data-go="contact">🚀 ${escapeHtml(t("ctaBannerBtn"))}</button>
+          <button type="button" class="btn btn-outline" data-go="services">🛠️ ${escapeHtml(t("exploreServices"))}</button>
           <button type="button" class="btn btn-outline" data-go="download">📲 ${escapeHtml(t("downloadAppCta"))}</button>
-          <button type="button" class="btn btn-outline" data-go="contact">✉️ ${escapeHtml(t("contactUsCta"))}</button>
+        </div>
+        <div class="hero-trust-row">
+          ${trustBadges.map((b) => `<span class="trust-badge">✓ ${escapeHtml(b)}</span>`).join("")}
         </div>
       </div>
     </div>
@@ -584,8 +851,8 @@ function renderHomeScreen(root) {
       </div>
     </div>
 
-    <div>
-      <h2 class="card-title" style="margin-bottom:12px;">${escapeHtml(t("statsTitle"))}</h2>
+    <div class="section-block">
+      <h2 class="card-title">${escapeHtml(t("statsTitle"))}</h2>
       <div class="stats-grid">
         <div class="glass-card">
           <div class="stat-value">${stats.projectsDelivered}+</div>
@@ -606,8 +873,8 @@ function renderHomeScreen(root) {
       </div>
     </div>
 
-    <div>
-      <div class="section-header-row" style="margin-bottom:12px;">
+    <div class="section-block">
+      <div class="section-header-row">
         <h2 class="card-title">${escapeHtml(t("featuredServicesTitle"))}</h2>
         <button type="button" class="btn btn-text" data-go="services">${escapeHtml(t("viewAll"))} →</button>
       </div>
@@ -626,8 +893,55 @@ function renderHomeScreen(root) {
       </div>
     </div>
 
-    <div>
-      <div class="section-header-row" style="margin-bottom:12px;">
+    <div class="section-block">
+      <div>
+        <h2 class="card-title">${escapeHtml(t("techStackTitle"))}</h2>
+        <p class="section-desc">${escapeHtml(t("techStackSubtitle"))}</p>
+      </div>
+      <div class="tech-stack-grid">
+        ${techGroups
+          .map(
+            (grp) => `
+          <div class="glass-card tech-cat-card">
+            <div class="tech-cat-head">
+              <div class="tech-cat-icon">${grp.icon}</div>
+              <h3 class="card-title">${escapeHtml(grp.title)}</h3>
+            </div>
+            <div class="chips-wrap">
+              ${grp.items.map((tech) => `<span class="tech-chip">${escapeHtml(tech)}</span>`).join("")}
+            </div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div>
+        <h2 class="card-title">${escapeHtml(t("processTitle"))}</h2>
+        <p class="section-desc">${escapeHtml(t("processSubtitle"))}</p>
+      </div>
+      <div class="process-grid">
+        ${processSteps
+          .map(
+            (step) => `
+          <div class="glass-card process-card">
+            <div class="process-top">
+              <span class="process-num">${escapeHtml(step.num)}</span>
+              <span class="status-pill cyan">${escapeHtml(step.badge)}</span>
+            </div>
+            <h3 class="card-title">${escapeHtml(step.title)}</h3>
+            <p class="muted-text">${escapeHtml(step.desc)}</p>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-header-row">
         <h2 class="card-title">${escapeHtml(t("featuredProjectsTitle"))}</h2>
         <button type="button" class="btn btn-text" data-go="projects">${escapeHtml(t("viewAll"))} →</button>
       </div>
@@ -649,6 +963,58 @@ function renderHomeScreen(root) {
           `;
           })
           .join("")}
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div>
+        <h2 class="card-title">${escapeHtml(t("guaranteesTitle"))}</h2>
+        <p class="section-desc">${escapeHtml(t("guaranteesSubtitle"))}</p>
+      </div>
+      <div class="guarantees-grid">
+        ${guarantees
+          .map(
+            (g) => `
+          <div class="glass-card guarantee-card">
+            <div class="guarantee-icon">${g.icon}</div>
+            <div>
+              <h3 class="card-title">${escapeHtml(g.title)}</h3>
+              <p class="muted-text" style="margin-top:4px;">${escapeHtml(g.desc)}</p>
+            </div>
+          </div>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div>
+        <h2 class="card-title">${escapeHtml(t("faqTitle"))}</h2>
+        <p class="section-desc">${escapeHtml(t("faqSubtitle"))}</p>
+      </div>
+      <div class="faq-list">
+        ${faqItems
+          .map(
+            (item, idx) => `
+          <details class="faq-item" ${idx === 0 ? "open" : ""}>
+            <summary>${escapeHtml(item.q)}</summary>
+            <p class="faq-answer">${escapeHtml(item.a)}</p>
+          </details>
+        `
+          )
+          .join("")}
+      </div>
+    </div>
+
+    <div class="glass-card highlight-border cta-banner">
+      <div style="flex:1;min-width:220px;">
+        <h2 class="card-title" style="font-size:1.2rem;color:var(--neon-cyan);">${escapeHtml(t("ctaBannerTitle"))}</h2>
+        <p class="muted-text" style="margin-top:6px;">${escapeHtml(t("ctaBannerDesc"))}</p>
+      </div>
+      <div class="btn-row" style="flex:0 0 auto;">
+        <button type="button" class="btn btn-primary" data-go="contact">✉️ ${escapeHtml(t("ctaBannerBtn"))}</button>
+        <button type="button" class="btn btn-outline" data-go="projects">🚀 ${escapeHtml(t("navProjects"))}</button>
       </div>
     </div>
   `;
@@ -953,20 +1319,44 @@ function renderDownloadScreen(root) {
 
 function renderContactScreen(root) {
   const msgs = studioState.messages;
+  const projectTypes = I18N[currentLang].projectTypes || [];
+  const projectScopes = I18N[currentLang].projectScopes || [];
+
   root.innerHTML = `
     <div>
       <h1 class="screen-title">${escapeHtml(t("contactHeadline"))}</h1>
       <p class="screen-subtitle">${escapeHtml(t("contactSubheadline"))}</p>
     </div>
 
+    <div class="sla-pill">
+      <span>⚡</span>
+      <span>${escapeHtml(t("responseSlaNote"))}</span>
+    </div>
+
     <form id="contactForm" class="glass-card highlight-border stack-list" novalidate>
-      <div class="field">
-        <label for="cName">${escapeHtml(t("fullNameLabel"))}</label>
-        <input id="cName" type="text" value="" required />
+      <div class="form-two-col">
+        <div class="field">
+          <label for="cName">${escapeHtml(t("fullNameLabel"))}</label>
+          <input id="cName" type="text" value="" required />
+        </div>
+        <div class="field">
+          <label for="cEmail">${escapeHtml(t("emailLabel"))}</label>
+          <input id="cEmail" type="email" value="" required />
+        </div>
       </div>
-      <div class="field">
-        <label for="cEmail">${escapeHtml(t("emailLabel"))}</label>
-        <input id="cEmail" type="email" value="" required />
+      <div class="form-two-col">
+        <div class="field">
+          <label for="cType">${escapeHtml(t("projectTypeLabel"))}</label>
+          <select id="cType">
+            ${projectTypes.map((opt) => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label for="cScope">${escapeHtml(t("projectScopeLabel"))}</label>
+          <select id="cScope">
+            ${projectScopes.map((opt) => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join("")}
+          </select>
+        </div>
       </div>
       <div class="field">
         <label for="cSubject">${escapeHtml(t("subjectLabel"))}</label>
@@ -992,10 +1382,9 @@ function renderContactScreen(root) {
     <div class="glass-card stack-list">
       <div class="card-title">${escapeHtml(t("socialLinksTitle"))}</div>
       <div class="chips-scroll">
-        <a href="https://vexora.studio" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Website ↗</a>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub ↗</a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">LinkedIn ↗</a>
-        <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">X / Twitter ↗</a>
+        <a href="https://vexora0studio.github.io/Vexora_Website_Offical/" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Website ↗</a>
+        <a href="https://github.com/Vexora0studio" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub ↗</a>
+        <a href="mailto:vexora0studio@gmail.com" class="btn btn-outline btn-sm">Email ↗</a>
       </div>
     </div>
 
@@ -1012,7 +1401,7 @@ function renderContactScreen(root) {
               <h3 class="card-title">${escapeHtml(m.subject)}</h3>
               <span class="status-pill ${m.status === "replied" ? "success" : "cyan"}"><span class="pill-dot"></span>${escapeHtml(m.status)}</span>
             </div>
-            <p class="muted-text" style="margin-top:6px;">${escapeHtml(m.message)}</p>
+            <p class="muted-text" style="margin-top:6px;white-space:pre-wrap;">${escapeHtml(m.message)}</p>
           </div>
         `
           )
@@ -1027,6 +1416,8 @@ function renderContactScreen(root) {
     e.preventDefault();
     const senderName = document.getElementById("cName").value.trim();
     const email = document.getElementById("cEmail").value.trim();
+    const projectType = document.getElementById("cType").value;
+    const projectScope = document.getElementById("cScope").value;
     const subject = document.getElementById("cSubject").value.trim();
     const message = document.getElementById("cMessage").value.trim();
     const err = document.getElementById("cErr");
@@ -1036,12 +1427,13 @@ function renderContactScreen(root) {
       return;
     }
     err.textContent = "";
+    const structuredMessage = `[${projectType} • ${projectScope}]\n\n${message}`;
     studioState.messages.unshift({
       id: `msg_${Date.now()}`,
       senderName,
       email,
       subject,
-      message,
+      message: structuredMessage,
       status: "new",
       createdAt: new Date().toISOString()
     });
@@ -1568,6 +1960,54 @@ function openTeamEditor(initial) {
   });
 }
 
+function renderFooter(root) {
+  const footer = document.createElement("footer");
+  footer.className = "site-footer";
+  footer.innerHTML = `
+    <div class="footer-grid">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <img class="brand-svg" src="${STUDIO_IMAGES.logoBanner}" alt="Vexora Studio" onerror="this.style.display='none'" />
+          <div>
+            <div class="brand-name">Vexora Studio</div>
+            <div class="brand-sub">Code • Create • Innovate</div>
+          </div>
+        </div>
+        <p class="muted-text" style="font-size:0.86rem;">${escapeHtml(t("footerDesc"))}</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="card-title" style="font-size:0.95rem;">${escapeHtml(t("footerQuickLinks"))}</div>
+        <div class="footer-links">
+          <button type="button" class="footer-link-btn" data-footer-go="home">${escapeHtml(t("navHome"))}</button>
+          <button type="button" class="footer-link-btn" data-footer-go="services">${escapeHtml(t("navServices"))}</button>
+          <button type="button" class="footer-link-btn" data-footer-go="projects">${escapeHtml(t("navProjects"))}</button>
+          <button type="button" class="footer-link-btn" data-footer-go="team">${escapeHtml(t("navTeam"))}</button>
+          <button type="button" class="footer-link-btn" data-footer-go="download">${escapeHtml(t("navDownload"))}</button>
+          <button type="button" class="footer-link-btn" data-footer-go="contact">${escapeHtml(t("navContact"))}</button>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="card-title" style="font-size:0.95rem;">${escapeHtml(t("footerContactTitle"))}</div>
+        <a href="mailto:vexora0studio@gmail.com" style="color:var(--neon-cyan);font-size:0.88rem;text-decoration:none;word-break:break-all;">vexora0studio@gmail.com</a>
+        <div class="footer-links">
+          <a href="${APK_URL}" download="Vexora-Studio.apk" class="footer-link-btn">📲 APK</a>
+          <a href="https://github.com/Vexora0studio" target="_blank" rel="noopener noreferrer" class="footer-link-btn">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>${escapeHtml(t("footerRights"))}</span>
+      <span>Web • Android • Custom Software</span>
+    </div>
+  `;
+  footer.querySelectorAll("[data-footer-go]").forEach((btn) => {
+    btn.addEventListener("click", () => navigate(btn.dataset.footerGo));
+  });
+  root.appendChild(footer);
+}
+
 function renderScreen() {
   const root = document.getElementById("screenContainer");
   switch (currentRoute) {
@@ -1593,6 +2033,7 @@ function renderScreen() {
       renderHomeScreen(root);
       break;
   }
+  renderFooter(root);
 }
 
 function renderAll() {
