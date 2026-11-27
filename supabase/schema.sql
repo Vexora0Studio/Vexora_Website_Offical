@@ -203,7 +203,60 @@ create policy "Only admins can delete contact messages"
   to authenticated
   using (public.is_vexora_admin());
 
--- 7. Supabase Storage Bucket for Project & Team Images
+-- 7. Company Knowledge Base (Feeds Vexora AI Assistant — public read published, admin write)
+create table if not exists public.knowledge_base (
+  id text primary key,
+  topic text not null default 'general',
+  title_en text not null,
+  title_ar text not null,
+  content_en text not null,
+  content_ar text not null,
+  keywords text[] not null default '{}',
+  sort_order int not null default 1,
+  published boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.knowledge_base enable row level security;
+
+create policy "Public can view published knowledge base"
+  on public.knowledge_base for select
+  to anon, authenticated
+  using (published = true or public.is_vexora_admin());
+
+create policy "Admins can manage knowledge base"
+  on public.knowledge_base for all
+  to authenticated
+  using (public.is_vexora_admin())
+  with check (public.is_vexora_admin());
+
+-- 8. Frequently Asked Questions (Public read published, admin write)
+create table if not exists public.faqs (
+  id text primary key,
+  question_en text not null,
+  question_ar text not null,
+  answer_en text not null,
+  answer_ar text not null,
+  category text not null default 'general',
+  sort_order int not null default 1,
+  published boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.faqs enable row level security;
+
+create policy "Public can view published faqs"
+  on public.faqs for select
+  to anon, authenticated
+  using (published = true or public.is_vexora_admin());
+
+create policy "Admins can manage faqs"
+  on public.faqs for all
+  to authenticated
+  using (public.is_vexora_admin())
+  with check (public.is_vexora_admin());
+
+-- 9. Supabase Storage Bucket for Project & Team Images
 insert into storage.buckets (id, name, public)
 values ('vexora-media', 'vexora-media', true)
 on conflict (id) do nothing;
@@ -228,7 +281,7 @@ create policy "Admins can delete Vexora media"
   to authenticated
   using (bucket_id = 'vexora-media' and public.is_vexora_admin());
 
--- 8. Seed Default Real Baseline Data
+-- 10. Seed Default Real Baseline Data
 insert into public.site_settings (id)
 values ('main')
 on conflict (id) do nothing;

@@ -279,6 +279,148 @@
           sortOrder: 1
         }
       ],
+      knowledgeBase: [
+        {
+          id: "kb_identity",
+          topic: "company",
+          titleEn: "Vexora Studio Core Identity & Focus",
+          titleAr: "هوية شركة Vexora Studio وتخصصها",
+          contentEn:
+            "Vexora Studio is a Software Development & Technology Company ('Building The Future Through Code.'). It focuses strictly on websites, native Android apps, software engineering, databases, APIs, UI/UX development, and AI integration — never video editing, graphic design, or marketing.",
+          contentAr:
+            "شركة Vexora Studio هي شركة تطوير برمجيات وتكنولوجيا تحت شعار Building The Future Through Code، وتتخصص حصرياً في تطوير المواقع، تطبيقات Android، هندسة البرمجيات، قواعد البيانات، APIs، والذكاء الاصطناعي.",
+          keywords: ["identity", "company", "vexora", "about", "هوية", "تخصص", "شركة"],
+          sortOrder: 1,
+          published: true
+        },
+        {
+          id: "kb_founder",
+          topic: "team",
+          titleEn: "Founder & Engineering Leadership",
+          titleAr: "المؤسس والقيادة الهندسية",
+          contentEn:
+            "Vexora Studio was founded and is directed by Omar Moataz (omar_develepor), specializing in Python, C++, Java, Kotlin, JavaScript, web architecture, Android development, and AI integration.",
+          contentAr:
+            "أسس شركة Vexora Studio ويديرها عمر معتز (Omar Moataz)، ويقود هندسة الويب وتطبيقات Android والأنظمة المخصصة وتكاملات الذكاء الاصطناعي بلغات Python وC++ وJava وKotlin وJavaScript.",
+          keywords: ["omar", "moataz", "founder", "ceo", "عمر", "مؤسس", "مدير"],
+          sortOrder: 2,
+          published: true
+        },
+        {
+          id: "kb_security",
+          topic: "security",
+          titleEn: "Data Security, RLS & Backend AI Keys",
+          titleAr: "أمان البيانات وقواعد RLS وحماية مفاتيح AI",
+          contentEn:
+            "Vexora Studio protects all database tables with PostgreSQL Row Level Security (RLS), stores Gemini API keys strictly on backend servers (Supabase Edge Functions or secure backend proxies), validates contact inputs, and restricts admin CRUD to authenticated admin_users.",
+          contentAr:
+            "تلتزم Vexora Studio بحماية البيانات عبر قواعد Row Level Security في PostgreSQL، وتشغيل مفاتيح Gemini API من الخادم فقط عبر Edge Functions أو بوابة خلفية آمنة دون كشفها في المتصفح، مع قصر صلاحيات الإدارة على الحسابات المصرح لها.",
+          keywords: ["security", "rls", "api", "key", "gemini", "privacy", "أمان", "حماية", "مفتاح"],
+          sortOrder: 3,
+          published: true
+        },
+        {
+          id: "kb_projects_real",
+          topic: "projects",
+          titleEn: "Published Projects Policy & Portfolio",
+          titleAr: "سياسة المشاريع الحقيقية ومعرض الأعمال",
+          contentEn:
+            "Vexora Studio publishes only verified real projects: F.cutus (Completed modern responsive website at https://vexora-1studio.github.io/F.cuts/) and Noorix (In Progress web platform), plus any live projects added by the admin.",
+          contentAr:
+            "تعرض Vexora Studio المشاريع الحقيقية فقط: مشروع F.cutus (موقع مكتمل متجاوب على https://vexora-1studio.github.io/F.cuts/) ومشروع Noorix (موقع ويب قيد التطوير)، إلى جانب ما يضيفه المدير في لوحة التحكم.",
+          keywords: ["projects", "f.cutus", "noorix", "portfolio", "مشاريع", "معرض"],
+          sortOrder: 4,
+          published: true
+        },
+        {
+          id: "kb_android_apk",
+          topic: "mobile",
+          titleEn: "Official Android Companion App (APK)",
+          titleAr: "تطبيق Vexora Studio الرسمي على Android",
+          contentEn:
+            "Visitors can download the official Vexora Studio Android APK (v1.0, Android 7.0+, package com.aistudio.vexorastudio.k7m9p2) directly from the Android App page (#download) or top navigation bar.",
+          contentAr:
+            "يمكن تحميل تطبيق Vexora Studio الرسمي بصيغة APK (الإصدار v1.0 متوافق مع Android 7.0+ ومعرّف الحزمة com.aistudio.vexorastudio.k7m9p2) مباشرة من صفحة تطبيق Android (#download) أو زر APK في الشريط العلوي.",
+          keywords: ["android", "apk", "download", "app", "mobile", "تحميل", "تطبيق", "أندرويد"],
+          sortOrder: 5,
+          published: true
+        },
+        {
+          id: "kb_request_workflow",
+          topic: "workflow",
+          titleEn: "How to Request a Software Project",
+          titleAr: "خطوات طلب مشروع برمجي من Vexora Studio",
+          contentEn:
+            "To request a website, Android app, API, or AI integration: select the service from #services (using Request This Service) or fill out the #contact form, or email vexora0studio@gmail.com with your project scope. Pricing is evaluated per technical requirements rather than fixed generic tiers.",
+          contentAr:
+            "لطلب موقع ويب أو تطبيق Android أو نظام برمجي أو دمج ذكاء اصطناعي: اختر الخدمة من صفحة #services واضغط اطلب هذه الخدمة، أو أرسل تفاصيل مشروعك عبر نموذج #contact أو البريد الرسمي vexora0studio@gmail.com، ويتم تقييم النطاق حسب المتطلبات الفعلية.",
+          keywords: ["request", "contact", "price", "cost", "workflow", "طلب", "تواصل", "سعر", "تكلفة"],
+          sortOrder: 6,
+          published: true
+        }
+      ],
+      faqs: [
+        {
+          id: "faq_services",
+          category: "services",
+          questionEn: "What software services does Vexora Studio specialize in?",
+          questionAr: "ما هي الخدمات البرمجية التي تقدمها Vexora Studio؟",
+          answerEn:
+            "We provide 11 focused software services: Web Development, Android App Development, Software Engineering, Artificial Intelligence, AI Integration, Frontend, Backend, Database Development, API Development, Custom Software Solutions, and UI/UX Development.",
+          answerAr:
+            "نقدم 11 خدمة برمجية متخصصة: تطوير المواقع، تطبيقات Android، هندسة البرمجيات، الذكاء الاصطناعي، دمج الذكاء الاصطناعي، تطوير الواجهات الأمامية، الأنظمة الخلفية، قواعد البيانات، تطوير APIs، الحلول البرمجية المخصصة، وتطوير UI/UX.",
+          sortOrder: 1,
+          published: true
+        },
+        {
+          id: "faq_platforms",
+          category: "technologies",
+          questionEn: "Which technologies do you use for websites and Android apps?",
+          questionAr: "ما التقنيات التي تستخدمونها في المواقع وتطبيقات Android؟",
+          answerEn:
+            "For web we build with HTML5, CSS3, JavaScript, TypeScript, React, and Next.js. For native Android we use Kotlin, Jetpack Compose, Material 3, and Room alongside Supabase/PostgreSQL, Firebase Firestore, Python, C++, Java, and Gemini API.",
+          answerAr:
+            "في الويب نعتمد على HTML5 وCSS3 وJavaScript وTypeScript وReact وNext.js. وفي تطبيقات Android الأصلية نستخدم Kotlin وJetpack Compose وMaterial 3 وRoom، مع قواعد بيانات PostgreSQL/Supabase وFirestore وPython وC++ وJava وGemini API.",
+          sortOrder: 2,
+          published: true
+        },
+        {
+          id: "faq_ai_security",
+          category: "security",
+          questionEn: "How does Vexora Studio secure user data and Gemini API keys?",
+          questionAr: "كيف تحمي Vexora Studio بيانات العملاء ومفاتيح Gemini API؟",
+          answerEn:
+            "Database access uses PostgreSQL Row Level Security (RLS) so visitors cannot read other inquiries, while Gemini API keys stay strictly server-side inside Supabase Edge Functions or a protected backend proxy—never exposed in client HTML/JS.",
+          answerAr:
+            "نطبق قواعد Row Level Security (RLS) على قاعدة البيانات لمنع وصول أي زائر لرسائل غيره، وتُحفظ مفاتيح Gemini API على الخادم فقط داخل Edge Functions أو بوابة خلفية آمنة دون تضمينها في كود الواجهة.",
+          sortOrder: 3,
+          published: true
+        },
+        {
+          id: "faq_request",
+          category: "workflow",
+          questionEn: "How can I request a project or contact the team?",
+          questionAr: "كيف أطلب بناء موقع أو تطبيق أو أتواصل مع الفريق؟",
+          answerEn:
+            "Open the Services page (#services) and tap 'Request This Service', submit your details in Contact Us (#contact), or email vexora0studio@gmail.com directly.",
+          answerAr:
+            "يمكنك اختيار الخدمة من صفحة خدماتنا والضغط على 'اطلب هذه الخدمة'، أو إرسال تفاصيل مشروعك عبر صفحة تواصل معنا، أو مراسلتنا مباشرة على vexora0studio@gmail.com.",
+          sortOrder: 4,
+          published: true
+        },
+        {
+          id: "faq_apk",
+          category: "mobile",
+          questionEn: "Is there an official Android app for Vexora Studio?",
+          questionAr: "هل يتوفر تطبيق Android رسمي لشركة Vexora Studio؟",
+          answerEn:
+            "Yes. Visit the Android App section (#download) or tap the APK button in the top bar to download the official Vexora-Studio.apk package for Android 7.0 and higher.",
+          answerAr:
+            "نعم، يمكنك تنزيل تطبيق Vexora Studio الرسمي بصيغة APK مباشرة من قسم تطبيق Android (#download) أو عبر زر APK في الشريط العلوي للهواتف العاملة بنظام Android 7.0 فأحدث.",
+          sortOrder: 5,
+          published: true
+        }
+      ],
       messages: []
     };
   }
@@ -292,7 +434,9 @@
         return {
           ...def,
           ...parsed,
-          settings: { ...def.settings, ...(parsed.settings || {}) }
+          settings: { ...def.settings, ...(parsed.settings || {}) },
+          knowledgeBase: Array.isArray(parsed.knowledgeBase) && parsed.knowledgeBase.length > 0 ? parsed.knowledgeBase : def.knowledgeBase,
+          faqs: Array.isArray(parsed.faqs) && parsed.faqs.length > 0 ? parsed.faqs : def.faqs
         };
       }
       // Preserve any visitor messages from previous version while upgrading services/projects/team schema cleanly
@@ -318,9 +462,13 @@
   let projectCategoryFilter = "all";
   let projectStatusFilter = "all";
   let projectSearchQuery = "";
+  let techCategoryFilter = "all";
   let contactPreselectedService = "";
   let adminSection = "dashboard";
+  let adminMsgSearch = "";
+  let adminMsgStatusFilter = "all";
   let dbSyncStatus = { tested: false, ok: false, latencyMs: null, message: "" };
+  let aiSyncStatus = { tested: false, ok: false, latencyMs: null, mode: "", message: "" };
   let aiChatHistory = [];
   let aiBusy = false;
 
@@ -339,6 +487,7 @@
       "about",
       "services",
       "projects",
+      "technologies",
       "team",
       "ai",
       "download",
@@ -466,6 +615,14 @@
     document.getElementById("drawerSheet").hidden = true;
   }
 
+  function updateDocumentSeo() {
+    const titles = I18N[currentLang]?.seoTitles || {};
+    const title = titles[currentRoute] || titles.home || "Vexora Studio";
+    document.title = title;
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute("content", title);
+  }
+
   /* =========================================================
      Chrome / Navigation
      ========================================================= */
@@ -473,6 +630,7 @@
     document.documentElement.lang = currentLang;
     document.documentElement.dir = isArabic() ? "rtl" : "ltr";
     document.getElementById("langToggleLabel").textContent = t("langToggleLabel");
+    updateDocumentSeo();
 
     const settings = studioState.settings;
     const tagline = isArabic() ? settings.taglineAr : settings.taglineEn;
@@ -482,6 +640,7 @@
       { key: "about", label: t("navAbout"), icon: "🏢" },
       { key: "services", label: t("navServices"), icon: "🛠️" },
       { key: "projects", label: t("navProjects"), icon: "🚀" },
+      { key: "technologies", label: t("navTechnologies"), icon: "💻" },
       { key: "team", label: t("navTeam"), icon: "👥" },
       { key: "ai", label: t("navAi"), icon: "🤖" },
       { key: "download", label: t("navDownload"), icon: "📲" },
@@ -492,7 +651,7 @@
     document.getElementById("navRail").innerHTML = navItems
       .map(
         (item) => `
-        <button type="button" class="rail-item ${currentRoute === item.key ? "active" : ""}" data-route="${item.key}">
+        <button type="button" class="rail-item ${currentRoute === item.key ? "active" : ""}" data-route="${item.key}" ${currentRoute === item.key ? 'aria-current="page"' : ""}>
           <span class="rail-icon">${item.icon}</span>
           <span>${escapeHtml(item.label)}</span>
         </button>
@@ -506,7 +665,7 @@
       .filter((i) => mobileBottomKeys.includes(i.key))
       .map(
         (item) => `
-        <button type="button" class="bottom-item ${currentRoute === item.key ? "active" : ""}" data-route="${item.key}">
+        <button type="button" class="bottom-item ${currentRoute === item.key ? "active" : ""}" data-route="${item.key}" ${currentRoute === item.key ? 'aria-current="page"' : ""}>
           <span style="font-size:1.15rem;line-height:1">${item.icon}</span>
           <span>${escapeHtml(item.label)}</span>
         </button>
@@ -518,7 +677,7 @@
     document.getElementById("drawerNavList").innerHTML = navItems
       .map(
         (item) => `
-        <button type="button" class="drawer-item ${currentRoute === item.key ? "active" : ""}" data-route="${item.key}">
+        <button type="button" class="drawer-item ${currentRoute === item.key ? "active" : ""}" data-route="${item.key}" ${currentRoute === item.key ? 'aria-current="page"' : ""}>
           <span>${item.icon}</span>
           <span>${escapeHtml(item.label)}</span>
         </button>
@@ -673,9 +832,15 @@
       </section>
 
       <section class="section-block">
-        <div>
-          <h2 class="card-title">${escapeHtml(t("whyChooseTitle"))}</h2>
-          <p class="section-desc">${escapeHtml(t("whyChooseSubtitle"))}</p>
+        <div class="section-header-row" style="align-items:flex-end;">
+          <div>
+            <h2 class="card-title">${escapeHtml(t("whyChooseTitle"))}</h2>
+            <p class="section-desc">${escapeHtml(t("whyChooseSubtitle"))}</p>
+          </div>
+          <div class="btn-row" style="flex:0 0 auto;">
+            <button type="button" class="btn btn-outline btn-sm" data-go="technologies">💻 ${escapeHtml(t("whyChooseTechCta"))}</button>
+            <button type="button" class="btn btn-primary btn-sm" data-go="contact">✉️ ${escapeHtml(t("whyChooseContactCta"))}</button>
+          </div>
         </div>
         <div class="guarantees-grid">
           ${whyChoose
@@ -693,6 +858,8 @@
             .join("")}
         </div>
       </section>
+
+      ${renderFaqSectionHtml()}
 
       <section class="glass-card highlight-border" data-tilt-3d="1">
         <div class="app-download-hero">
@@ -729,6 +896,36 @@
     root.querySelectorAll("[data-apk-dl]").forEach((el) => {
       el.addEventListener("click", () => showToast(t("downloadStartedToast")));
     });
+  }
+
+  function renderFaqSectionHtml() {
+    const publishedFaqs = (studioState.faqs || [])
+      .filter((f) => f.published !== false)
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    if (publishedFaqs.length === 0) return "";
+    return `
+      <section class="section-block" id="faqSection">
+        <div class="section-header-row" style="align-items:flex-end;">
+          <div>
+            <h2 class="card-title">❓ ${escapeHtml(t("faqTitle"))}</h2>
+            <p class="section-desc">${escapeHtml(t("faqSubtitle"))}</p>
+          </div>
+          <button type="button" class="btn btn-text" data-go="ai">🤖 ${escapeHtml(t("faqAskAiCta"))} →</button>
+        </div>
+        <div class="faq-list">
+          ${publishedFaqs
+            .map(
+              (f, idx) => `
+            <details class="faq-item" ${idx === 0 ? "open" : ""}>
+              <summary>${escapeHtml(isArabic() ? f.questionAr : f.questionEn)}</summary>
+              <p class="faq-answer">${escapeHtml(isArabic() ? f.answerAr : f.answerEn)}</p>
+            </details>
+          `
+            )
+            .join("")}
+        </div>
+      </section>
+    `;
   }
 
   /* =========================================================
@@ -1062,6 +1259,139 @@
   }
 
   /* =========================================================
+     4B. TECHNOLOGIES SCREEN
+     ========================================================= */
+  function renderTechnologiesScreen(root) {
+    const groups = I18N[currentLang].techGroups || [];
+    const publishedServices = studioState.services.filter((s) => s.published);
+    const publishedProjects = studioState.projects.filter((p) => p.published);
+
+    const visibleGroups =
+      techCategoryFilter === "all"
+        ? groups
+        : groups.filter((g) => g.key === techCategoryFilter);
+
+    root.innerHTML = `
+      <div>
+        <h1 class="screen-title">💻 ${escapeHtml(t("techHeadline"))}</h1>
+        <p class="screen-subtitle">${escapeHtml(t("techSubheadline"))}</p>
+      </div>
+
+      <div class="chips-scroll">
+        <button type="button" class="chip-btn ${techCategoryFilter === "all" ? "active" : ""}" data-tcat="all">
+          ${escapeHtml(t("techCategoryAll"))}
+        </button>
+        ${groups
+          .map(
+            (g) => `
+          <button type="button" class="chip-btn ${techCategoryFilter === g.key ? "active" : ""}" data-tcat="${escapeHtml(g.key)}">
+            ${g.icon} ${escapeHtml(g.title.split(" (")[0])}
+          </button>
+        `
+          )
+          .join("")}
+      </div>
+
+      <div class="tech-stack-grid">
+        ${visibleGroups
+          .map((g) => {
+            const tokens = g.items.map((x) => x.toLowerCase());
+            const relatedServices = publishedServices
+              .filter((s) => (s.technologies || []).some((st) => tokens.some((tk) => st.toLowerCase().includes(tk) || tk.includes(st.toLowerCase()))))
+              .slice(0, 3);
+            const relatedProjects = publishedProjects
+              .filter((p) => {
+                const techMatch = (p.technologies || []).some((pt) => {
+                  const low = pt.toLowerCase();
+                  return (
+                    tokens.some((tk) => low.includes(tk) || tk.includes(low)) ||
+                    (g.key === "frontend" && (low.includes("web") || low.includes("ui/ux")))
+                  );
+                });
+                const catMatch =
+                  (g.key === "frontend" && p.category === "Websites") ||
+                  (g.key === "mobile" && p.category === "Android Applications") ||
+                  (g.key === "ai" && p.category === "AI Projects");
+                return techMatch || catMatch;
+              })
+              .slice(0, 3);
+
+            return `
+          <article class="glass-card tech-cat-card" data-tilt-3d="1">
+            <div class="tech-cat-head">
+              <div class="tech-cat-icon">${g.icon}</div>
+              <h2 class="card-title">${escapeHtml(g.title)}</h2>
+            </div>
+            <p class="muted-text" style="margin:0;">${escapeHtml(g.desc)}</p>
+            <div class="chips-wrap">
+              ${g.items.map((item) => `<span class="tech-chip">${escapeHtml(item)}</span>`).join("")}
+            </div>
+            ${
+              relatedServices.length > 0
+                ? `<div class="tech-rel-row">
+                    <span class="tech-rel-label">${escapeHtml(t("techLinkedServices"))}:</span>
+                    <div class="chips-wrap">
+                      ${relatedServices
+                        .map((s) => `<button type="button" class="footer-link-btn" data-go-srv="${escapeHtml(s.category || "all")}">${escapeHtml(isArabic() ? s.titleAr.split(" (")[0] : s.titleEn)}</button>`)
+                        .join("")}
+                    </div>
+                  </div>`
+                : ""
+            }
+            ${
+              relatedProjects.length > 0
+                ? `<div class="tech-rel-row">
+                    <span class="tech-rel-label">${escapeHtml(t("techLinkedProjects"))}:</span>
+                    <div class="chips-wrap">
+                      ${relatedProjects
+                        .map((p) => `<button type="button" class="footer-link-btn" data-go-proj="${escapeHtml(p.nameEn)}">🚀 ${escapeHtml(isArabic() ? p.nameAr : p.nameEn)}</button>`)
+                        .join("")}
+                    </div>
+                  </div>`
+                : ""
+            }
+            <div style="margin-top:auto;padding-top:6px;">
+              <button type="button" class="btn btn-outline btn-full btn-sm" data-req-stack="${escapeHtml(g.title)}">
+                ✉️ ${escapeHtml(t("techRequestWithStack"))}
+              </button>
+            </div>
+          </article>
+        `;
+          })
+          .join("")}
+      </div>
+    `;
+
+    root.querySelectorAll("[data-tcat]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        techCategoryFilter = btn.dataset.tcat;
+        renderScreen();
+      });
+    });
+
+    root.querySelectorAll("[data-go-srv]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        serviceCategory = btn.dataset.goSrv || "all";
+        navigate("services");
+      });
+    });
+
+    root.querySelectorAll("[data-go-proj]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        projectSearchQuery = btn.dataset.goProj || "";
+        navigate("projects");
+      });
+    });
+
+    root.querySelectorAll("[data-req-stack]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        contactPreselectedService = btn.dataset.reqStack || "";
+        navigate("contact");
+      });
+    });
+  }
+
+  /* =========================================================
      5. TEAM SCREEN (No CV / No Hiring)
      ========================================================= */
   function renderTeamCardHtml(m) {
@@ -1146,7 +1476,7 @@
   }
 
   /* =========================================================
-     6. VEXORA AI ASSISTANT SCREEN
+     6. VEXORA AI ASSISTANT SCREEN (Knowledge Base + Multi-Turn)
      ========================================================= */
   function buildPublicCatalogForAI() {
     return {
@@ -1165,6 +1495,8 @@
           titleAr: s.titleAr,
           descriptionEn: s.descriptionEn,
           descriptionAr: s.descriptionAr,
+          detailsEn: s.detailsEn,
+          detailsAr: s.detailsAr,
           technologies: s.technologies
         })),
       projects: studioState.projects
@@ -1189,25 +1521,88 @@
           specializationEn: m.specializationEn,
           specializationAr: m.specializationAr,
           skills: m.skills
-        }))
+        })),
+      knowledgeBase: (studioState.knowledgeBase || [])
+        .filter((k) => k.published !== false)
+        .map((k) => ({
+          topic: k.topic,
+          titleEn: k.titleEn,
+          titleAr: k.titleAr,
+          contentEn: k.contentEn,
+          contentAr: k.contentAr,
+          keywords: k.keywords
+        })),
+      faqs: (studioState.faqs || [])
+        .filter((f) => f.published !== false)
+        .map((f) => ({
+          questionEn: f.questionEn,
+          questionAr: f.questionAr,
+          answerEn: f.answerEn,
+          answerAr: f.answerAr
+        })),
+      technologies: (I18N[currentLang].techGroups || []).map((g) => ({
+        category: g.title,
+        items: g.items
+      }))
     };
   }
 
-  // Honest grounded local fallback when Supabase/Gemini Edge Function isn't configured yet
-  function answerLocallyGrounded(question, lang) {
+  function resolveConversationContext(question, history) {
+    const recentText = (history || [])
+      .slice(-6)
+      .map((m) => m.text || "")
+      .join(" ")
+      .toLowerCase();
+    const isFollowUp = /(أكتر|أكثر|تفاصيل|عنه|عنها|فيه|فيها|هذا|هذه|التي ذكرت|more|details|about it|this project|this service|how to request|request it|tech|stack|link|url|رابط)/i.test(
+      question
+    );
+    if (!isFollowUp) return { project: null, service: null };
+
+    const projects = studioState.projects.filter((p) => p.published);
+    const services = studioState.services.filter((s) => s.published);
+    const ctxProject = [...projects]
+      .reverse()
+      .find((p) => recentText.includes(p.nameEn.toLowerCase()) || recentText.includes(p.nameAr.toLowerCase()));
+    const ctxService = [...services]
+      .reverse()
+      .find(
+        (s) =>
+          recentText.includes(s.titleEn.toLowerCase()) ||
+          (s.titleAr && recentText.includes(s.titleAr.toLowerCase().split(" (")[0]))
+      );
+    return { project: ctxProject || null, service: ctxService || null };
+  }
+
+  // Honest grounded local fallback powered by Company Knowledge Base, FAQs, Catalog & Multi-Turn Context
+  function answerLocallyGrounded(question, lang, history = []) {
     const q = question.toLowerCase();
     const ar = lang === "ar";
     const services = studioState.services.filter((s) => s.published);
     const projects = studioState.projects.filter((p) => p.published);
     const team = studioState.team.filter((m) => m.published);
+    const kb = (studioState.knowledgeBase || []).filter((k) => k.published !== false);
+    const faqs = (studioState.faqs || []).filter((f) => f.published !== false);
     const settings = studioState.settings;
 
-    // 1. Check specific service name match
-    const matchedService = services.find(
+    // 1. Direct service match
+    let matchedService = services.find(
       (s) =>
         q.includes(s.titleEn.toLowerCase()) ||
         (s.titleAr && q.includes(s.titleAr.toLowerCase().split(" (")[0]))
     );
+
+    // 2. Direct project match
+    let matchedProject = projects.find(
+      (p) => q.includes(p.nameEn.toLowerCase()) || q.includes(p.nameAr.toLowerCase())
+    );
+
+    // 3. Multi-turn context resolution when user sends a follow-up question
+    if (!matchedProject && !matchedService) {
+      const ctx = resolveConversationContext(question, history);
+      matchedProject = ctx.project;
+      matchedService = ctx.service;
+    }
+
     if (matchedService) {
       const title = ar ? matchedService.titleAr : matchedService.titleEn;
       const desc = ar ? matchedService.descriptionAr : matchedService.descriptionEn;
@@ -1215,29 +1610,26 @@
       const techs = (matchedService.technologies || []).join("، ");
       return {
         text: ar
-          ? `${title}: ${desc}\n${details}${techs ? `\nالتقنيات: ${techs}` : ""}\nيمكنك طلبها مباشرة من صفحة الخدمات أو تواصل معنا.`
-          : `${title}: ${desc}\n${details}${techs ? `\nTechnologies: ${techs}` : ""}\nYou can request this service directly from the Services or Contact Us page.`,
-        links: ["services", "contact"]
+          ? `${title}: ${desc}${details ? `\n${details}` : ""}${techs ? `\nالتقنيات: ${techs}` : ""}\nيمكنك طلب هذه الخدمة مباشرة من صفحة الخدمات أو تواصل معنا.`
+          : `${title}: ${desc}${details ? `\n${details}` : ""}${techs ? `\nTechnologies: ${techs}` : ""}\nYou can request this service from Services or Contact Us.`,
+        links: ["services", "technologies", "contact"]
       };
     }
 
-    // 2. Check specific project match (e.g., F.cutus / Noorix / custom added)
-    const matchedProject = projects.find(
-      (p) => q.includes(p.nameEn.toLowerCase()) || q.includes(p.nameAr.toLowerCase())
-    );
     if (matchedProject) {
       const name = ar ? matchedProject.nameAr : matchedProject.nameEn;
       const desc = ar ? matchedProject.descriptionAr : matchedProject.descriptionEn;
+      const techs = (matchedProject.technologies || []).join("، ");
       const urlInfo = matchedProject.websiteUrl ? `\n${matchedProject.websiteUrl}` : "";
       return {
         text: ar
-          ? `مشروع ${name} (${matchedProject.category} — ${matchedProject.status}): ${desc}${urlInfo}`
-          : `${name} (${matchedProject.category} — ${matchedProject.status}): ${desc}${urlInfo}`,
-        links: ["projects"]
+          ? `مشروع ${name} (${matchedProject.category} — ${matchedProject.status}): ${desc}${techs ? `\nالتقنيات: ${techs}` : ""}${urlInfo}`
+          : `${name} (${matchedProject.category} — ${matchedProject.status}): ${desc}${techs ? `\nTechnologies: ${techs}` : ""}${urlInfo}`,
+        links: ["projects", "technologies"]
       };
     }
 
-    // 3. Pricing / Dates / Private / Unknown info (honest admission)
+    // 4. Pricing / Private / Unknown info (strict factual grounding)
     if (/(سعر|أسعار|تكلف|كم يكلف|ميزانية|price|cost|budget|how much|salary|password|كلمة السر|رسائل)/i.test(q)) {
       return {
         text: ar
@@ -1247,7 +1639,43 @@
       };
     }
 
-    // 4. Services list query
+    // 5. Company Knowledge Base keyword match
+    let bestKb = null;
+    let bestKbScore = 0;
+    for (const item of kb) {
+      const kws = (item.keywords || []).map((k) => String(k).toLowerCase());
+      let score = 0;
+      for (const kw of kws) {
+        if (kw && q.includes(kw)) score += 2;
+      }
+      if (item.titleEn && q.includes(item.titleEn.toLowerCase())) score += 3;
+      if (item.titleAr && q.includes(item.titleAr.toLowerCase())) score += 3;
+      if (score > bestKbScore) {
+        bestKbScore = score;
+        bestKb = item;
+      }
+    }
+    if (bestKb && bestKbScore >= 2) {
+      return {
+        text: ar ? `${bestKb.titleAr}:\n${bestKb.contentAr}` : `${bestKb.titleEn}:\n${bestKb.contentEn}`,
+        links: bestKb.topic === "projects" ? ["projects"] : bestKb.topic === "mobile" ? ["download"] : ["about", "contact"]
+      };
+    }
+
+    // 6. Published FAQs match
+    const qWords = q.split(/\s+/).filter((w) => w.length >= 3);
+    const matchedFaq = faqs.find((f) => {
+      const hay = `${f.questionEn} ${f.questionAr} ${f.answerEn} ${f.answerAr}`.toLowerCase();
+      return qWords.filter((w) => hay.includes(w)).length >= 2;
+    });
+    if (matchedFaq) {
+      return {
+        text: ar ? `${matchedFaq.questionAr}\n${matchedFaq.answerAr}` : `${matchedFaq.questionEn}\n${matchedFaq.answerEn}`,
+        links: ["services", "technologies", "contact"]
+      };
+    }
+
+    // 7. Services list query
     if (/(خدم|services|service|تقدمون|بتعملوا|مجالات|تخصص)/i.test(q)) {
       const names = services.map((s, i) => `${i + 1}. ${ar ? s.titleAr : s.titleEn}`).join("\n");
       return {
@@ -1258,7 +1686,7 @@
       };
     }
 
-    // 5. Projects list query
+    // 8. Projects list query
     if (/(مشاريع|مشروع|project|projects|portfolio|اعمال|أعمال|noorix|f\.cut|fcutus)/i.test(q)) {
       if (projects.length === 0) {
         return {
@@ -1275,7 +1703,7 @@
       };
     }
 
-    // 6. Team / Founder query
+    // 9. Team / Founder query
     if (/(فريق|مؤسس|مدير|عمر|omar|team|founder|ceo|من انتم|من أنتم|about)/i.test(q)) {
       const teamText = team
         .map((m) => `• ${ar ? m.nameAr : m.nameEn} — ${ar ? m.roleAr : m.roleEn} (${(m.skills || []).join(", ")})`)
@@ -1288,18 +1716,18 @@
       };
     }
 
-    // 7. Tech stack query
+    // 10. Tech stack query
     if (/(تقني|لغات|برمجة|tech|stack|python|kotlin|java|c\+\+|react|database|قواعد|api)/i.test(q)) {
       const allTech = [...new Set(services.flatMap((s) => s.technologies || []))];
       return {
         text: ar
-          ? `تعتمد Vexora Studio على التقنيات التالية: ${allTech.join("، ")}.`
-          : `Vexora Studio works with: ${allTech.join(", ")}.`,
-        links: ["services", "about"]
+          ? `تعتمد Vexora Studio على التقنيات التالية: ${allTech.join("، ")}. يمكنك تصفح التفاصيل الكاملة في صفحة التقنيات.`
+          : `Vexora Studio works with: ${allTech.join(", ")}. Explore full categories on our Technologies page.`,
+        links: ["technologies", "services"]
       };
     }
 
-    // 8. Contact / Request / Android APK
+    // 11. Contact / Request / Android APK
     if (/(تواصل|طلب|بريد|ايميل|إيميل|contact|email|apk|تطبيق|تحميل|download)/i.test(q)) {
       return {
         text: ar
@@ -1309,12 +1737,12 @@
       };
     }
 
-    // 9. General fallback admitting boundary without repeating boilerplate
+    // 12. General fallback admitting boundary without repeating boilerplate
     return {
       text: ar
-        ? "يمكنني مساعدتك بمعلومات موثقة عن خدمات Vexora Studio الـ 11، مشاريعنا المنشورة، الفريق، أو طريقة التواصل. ما النقطة البرمجية المحددة التي تود معرفتها؟"
-        : "I can answer specific questions about Vexora Studio's 11 software services, published projects, team, tech stack, or how to contact us. What would you like to know?",
-      links: ["services", "projects", "about"]
+        ? "يمكنني مساعدتك بمعلومات موثقة من قاعدة معرفة Vexora Studio عن الخدمات الـ 11، المشاريع، التقنيات، الأمان، أو التواصل. ما السؤال المحدد الذي تود معرفته؟"
+        : "I can answer specific questions from Vexora Studio's Knowledge Base about our 11 services, published projects, tech stack, security, or contacting the team. What would you like to know?",
+      links: ["services", "projects", "technologies"]
     };
   }
 
@@ -1323,12 +1751,20 @@
       aiChatHistory.push({
         role: "assistant",
         text: t("aiGreeting"),
-        links: ["services", "projects", "about"]
+        links: ["services", "projects", "technologies"],
+        source: "knowledge"
       });
     }
 
     const suggestions = I18N[currentLang].aiSuggestions || [];
-    const backendConfigured = Backend.isConfigured();
+    const cfg = Backend.getConfig();
+    const aiReady = Backend.isAiConfigured ? Backend.isAiConfigured() : Backend.isConfigured();
+    const statusText = cfg.aiEndpointUrl
+      ? t("aiStatusCustomProxy")
+      : Backend.isConfigured()
+      ? t("aiStatusConnected")
+      : t("aiStatusLocal");
+    const activeKbCount = (studioState.knowledgeBase || []).filter((k) => k.published !== false).length;
 
     root.innerHTML = `
       <div class="row-between" style="flex-wrap:wrap;">
@@ -1336,10 +1772,13 @@
           <h1 class="screen-title">🤖 ${escapeHtml(t("aiHeadline"))}</h1>
           <p class="screen-subtitle">${escapeHtml(t("aiSubheadline"))}</p>
         </div>
-        <span class="status-pill ${backendConfigured ? "success" : "cyan"}">
-          <span class="pill-dot"></span>
-          ${escapeHtml(backendConfigured ? t("aiStatusConnected") : t("aiStatusLocal"))}
-        </span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span class="status-pill cyan">📚 ${activeKbCount} ${escapeHtml(t("aiKbCountLabel"))}</span>
+          <span class="status-pill ${aiReady ? "success" : "cyan"}">
+            <span class="pill-dot"></span>
+            ${escapeHtml(statusText)}
+          </span>
+        </div>
       </div>
 
       <div class="chips-scroll">
@@ -1355,6 +1794,12 @@
           ${aiChatHistory
             .map((msg) => {
               const cls = msg.role === "user" ? "user" : "bot";
+              const sourcePill =
+                msg.role === "assistant" && msg.source
+                  ? `<div style="font-size:0.72rem;color:var(--neon-cyan);margin-bottom:4px;font-weight:700;">${escapeHtml(
+                      msg.source === "gemini" ? t("aiSourceGemini") : t("aiSourceKnowledge")
+                    )}</div>`
+                  : "";
               const routeButtons =
                 msg.role === "assistant" && Array.isArray(msg.links) && msg.links.length
                   ? `<div class="chips-wrap" style="margin-top:10px;">
@@ -1363,7 +1808,7 @@
                         .join("")}
                     </div>`
                   : "";
-              return `<div class="chat-bubble ${cls}">${escapeHtml(msg.text)}${routeButtons}</div>`;
+              return `<div class="chat-bubble ${cls}">${sourcePill}${escapeHtml(msg.text)}${routeButtons}</div>`;
             })
             .join("")}
           ${aiBusy ? `<div class="chat-bubble bot">${escapeHtml(t("aiThinking"))}</div>` : ""}
@@ -1374,7 +1819,7 @@
           <button type="submit" class="btn btn-primary" ${aiBusy ? "disabled" : ""}>${escapeHtml(t("aiSendBtn"))}</button>
         </form>
         <div class="row-between">
-          <span class="muted-text" style="font-size:0.78rem;">Gemini API runs via secure backend Edge Function only (no frontend API key).</span>
+          <span class="muted-text" style="font-size:0.78rem;">Gemini API runs strictly via secure backend (Edge Function or Proxy) grounded with Knowledge Base + chat context.</span>
           <button id="aiClearBtn" type="button" class="btn btn-text btn-sm">${escapeHtml(t("aiClearBtn"))}</button>
         </div>
       </div>
@@ -1392,7 +1837,7 @@
     });
 
     document.getElementById("aiClearBtn").addEventListener("click", () => {
-      aiChatHistory = [{ role: "assistant", text: t("aiGreeting"), links: ["services", "projects"] }];
+      aiChatHistory = [{ role: "assistant", text: t("aiGreeting"), links: ["services", "projects", "technologies"], source: "knowledge" }];
       renderScreen();
     });
 
@@ -1410,6 +1855,7 @@
       case "about": return t("navAbout");
       case "services": return t("navServices");
       case "projects": return t("navProjects");
+      case "technologies": return t("navTechnologies");
       case "team": return t("navTeam");
       case "download": return t("navDownload");
       case "contact": return t("navContact");
@@ -1421,31 +1867,29 @@
     const clean = String(promptText || "").trim();
     if (!clean || aiBusy) return;
 
+    const priorHistory = aiChatHistory.slice(-10).map((m) => ({ role: m.role, text: m.text }));
     aiChatHistory.push({ role: "user", text: clean });
     aiBusy = true;
     renderScreen();
 
     try {
       const catalog = buildPublicCatalogForAI();
-      const remote = await Backend.askVexoraAI(
-        clean,
-        currentLang,
-        aiChatHistory.slice(-6).map((m) => ({ role: m.role, text: m.text })),
-        catalog
-      );
+      const remote = await Backend.askVexoraAI(clean, currentLang, priorHistory, catalog);
 
       if (remote.ok && remote.reply) {
         aiChatHistory.push({
           role: "assistant",
           text: remote.reply,
-          links: inferSuggestedRoutes(remote.reply)
+          links: inferSuggestedRoutes(remote.reply),
+          source: "gemini"
         });
       } else {
-        const localAns = answerLocallyGrounded(clean, currentLang);
+        const localAns = answerLocallyGrounded(clean, currentLang, priorHistory);
         aiChatHistory.push({
           role: "assistant",
           text: localAns.text,
-          links: localAns.links
+          links: localAns.links,
+          source: "knowledge"
         });
       }
     } finally {
@@ -1459,8 +1903,10 @@
     const out = [];
     if (lower.includes("#services") || lower.includes("service")) out.push("services");
     if (lower.includes("#projects") || lower.includes("f.cutus") || lower.includes("noorix")) out.push("projects");
+    if (lower.includes("#technologies") || lower.includes("kotlin") || lower.includes("react") || lower.includes("python")) out.push("technologies");
     if (lower.includes("#contact") || lower.includes("vexora0studio@gmail.com")) out.push("contact");
-    return out.slice(0, 3);
+    if (lower.includes("#download") || lower.includes("apk")) out.push("download");
+    return [...new Set(out)].slice(0, 3);
   }
 
   /* =========================================================
@@ -1803,6 +2249,7 @@
       { key: "projects", label: t("adminTabProjects") },
       { key: "services", label: t("adminTabServices") },
       { key: "team", label: t("adminTabTeam") },
+      { key: "knowledge", label: t("adminTabKnowledge") },
       { key: "messages", label: unreadCount > 0 ? `${t("adminTabMessages")} (${unreadCount})` : t("adminTabMessages") },
       { key: "settings", label: t("adminTabSettings") }
     ];
@@ -1863,6 +2310,15 @@
         ? `<span class="status-pill error"><span class="pill-dot"></span>${escapeHtml(t("dbErrorMsg"))}: ${escapeHtml(dbSyncStatus.message)}</span>`
         : `<span class="status-pill cyan"><span class="pill-dot"></span>Supabase Configured</span>`;
 
+      const aiConfigured = Backend.isAiConfigured ? Backend.isAiConfigured() : cloudConfigured;
+      const aiBadge = !aiConfigured
+        ? `<span class="status-pill cyan"><span class="pill-dot"></span>${escapeHtml(t("aiStatusLocal"))}</span>`
+        : aiSyncStatus.tested && aiSyncStatus.ok
+        ? `<span class="status-pill success"><span class="pill-dot"></span>${escapeHtml(t("aiEndpointOkMsg"))} (${aiSyncStatus.latencyMs}ms)</span>`
+        : aiSyncStatus.tested && !aiSyncStatus.ok
+        ? `<span class="status-pill error"><span class="pill-dot"></span>${escapeHtml(t("aiEndpointErrorMsg"))}: ${escapeHtml(aiSyncStatus.message)}</span>`
+        : `<span class="status-pill cyan"><span class="pill-dot"></span>AI Endpoint Configured</span>`;
+
       body.innerHTML = `
         <div class="stats-grid">
           <div class="glass-card">
@@ -1874,8 +2330,8 @@
             <div class="stat-label">${escapeHtml(t("adminTabServices"))}</div>
           </div>
           <div class="glass-card">
-            <div class="stat-value">${studioState.team.length}</div>
-            <div class="stat-label">${escapeHtml(t("adminTabTeam"))}</div>
+            <div class="stat-value">${(studioState.knowledgeBase || []).length + (studioState.faqs || []).length}</div>
+            <div class="stat-label">${escapeHtml(t("adminTabKnowledge"))}</div>
           </div>
           <div class="glass-card">
             <div class="stat-value">${studioState.messages.length}</div>
@@ -1885,9 +2341,10 @@
 
         <div class="glass-card highlight-border stack-list">
           <h2 class="card-title">${escapeHtml(t("backendStatusTitle"))}</h2>
-          <div>${dbBadge}</div>
+          <div class="chips-wrap">${dbBadge}${aiBadge}</div>
           <div class="btn-row">
             <button id="testDbBtn" type="button" class="btn btn-primary">🔌 ${escapeHtml(t("testDbBtn"))}</button>
+            <button id="testAiBtn" type="button" class="btn btn-outline">🤖 ${escapeHtml(t("testAiBtn"))}</button>
             <button id="seedCatalogBtn" type="button" class="btn btn-outline">🔄 ${escapeHtml(t("resetCatalogBtn"))}</button>
           </div>
         </div>
@@ -1905,11 +2362,26 @@
         renderScreen();
       });
 
+      document.getElementById("testAiBtn").addEventListener("click", async () => {
+        const res = await Backend.testAiEndpoint();
+        aiSyncStatus = {
+          tested: true,
+          ok: res.ok,
+          latencyMs: res.latencyMs || null,
+          mode: res.mode || "",
+          message: res.reason || ""
+        };
+        showToast(res.ok ? `${t("aiEndpointOkMsg")} (${res.latencyMs}ms)` : res.reason || t("aiEndpointErrorMsg"));
+        renderScreen();
+      });
+
       document.getElementById("seedCatalogBtn").addEventListener("click", async () => {
         const def = createDefaultState();
         studioState.services = def.services;
         studioState.projects = def.projects;
         studioState.team = def.team;
+        studioState.knowledgeBase = def.knowledgeBase;
+        studioState.faqs = def.faqs;
         saveState();
         if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
           try {
@@ -1917,7 +2389,9 @@
               Backend.updateSiteSettings(studioState.settings),
               ...studioState.services.map((s) => Backend.upsertService(s)),
               ...studioState.projects.map((p) => Backend.upsertProject(p)),
-              ...studioState.team.map((m) => Backend.upsertTeamMember(m))
+              ...studioState.team.map((m) => Backend.upsertTeamMember(m)),
+              ...studioState.knowledgeBase.map((k) => Backend.upsertKnowledgeItem(k)),
+              ...studioState.faqs.map((f) => Backend.upsertFaq(f))
             ]);
           } catch (err) {
             showToast(err?.message || "Sync warning");
@@ -1936,9 +2410,10 @@
           <div class="glass-card row-between">
             <div style="min-width:0;">
               <h3 class="card-title">${escapeHtml(isArabic() ? p.nameAr : p.nameEn)}</h3>
-              <p class="muted-text" style="word-break:break-word;">${escapeHtml(p.category)} • ${escapeHtml(normalizeProjectStatus(p.status))} ${p.websiteUrl ? `• ${escapeHtml(p.websiteUrl)}` : ""}</p>
+              <p class="muted-text" style="word-break:break-word;">${escapeHtml(p.category)} • ${escapeHtml(normalizeProjectStatus(p.status))} • ${p.published ? "Published" : "Draft"}</p>
             </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;">
+            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
+              <button type="button" class="btn btn-outline btn-sm" data-pub-proj="${escapeHtml(p.id)}">${escapeHtml(p.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
               <button type="button" class="icon-btn" data-edit-proj="${escapeHtml(p.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
               <button type="button" class="icon-btn danger" data-del-proj="${escapeHtml(p.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
             </div>
@@ -1949,6 +2424,18 @@
       `;
 
       document.getElementById("addProjBtn").addEventListener("click", () => openProjectEditor(null));
+      body.querySelectorAll("[data-pub-proj]").forEach((b) =>
+        b.addEventListener("click", async () => {
+          const item = studioState.projects.find((x) => x.id === b.dataset.pubProj);
+          if (!item) return;
+          item.published = !item.published;
+          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+            try { await Backend.upsertProject(item); } catch (err) { showToast(err.message); return; }
+          }
+          saveState();
+          renderScreen();
+        })
+      );
       body.querySelectorAll("[data-edit-proj]").forEach((b) =>
         b.addEventListener("click", () => openProjectEditor(studioState.projects.find((x) => x.id === b.dataset.editProj)))
       );
@@ -1980,7 +2467,8 @@
               <h3 class="card-title">${serviceIconGlyph(s.iconKey)} ${escapeHtml(isArabic() ? s.titleAr : s.titleEn)}</h3>
               <p class="muted-text">${escapeHtml(s.category)} • ${s.published ? "Published" : "Draft"}</p>
             </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;">
+            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
+              <button type="button" class="btn btn-outline btn-sm" data-pub-srv="${escapeHtml(s.id)}">${escapeHtml(s.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
               <button type="button" class="icon-btn" data-edit-srv="${escapeHtml(s.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
               <button type="button" class="icon-btn danger" data-del-srv="${escapeHtml(s.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
             </div>
@@ -1991,6 +2479,18 @@
       `;
 
       document.getElementById("addSrvBtn").addEventListener("click", () => openServiceEditor(null));
+      body.querySelectorAll("[data-pub-srv]").forEach((b) =>
+        b.addEventListener("click", async () => {
+          const item = studioState.services.find((x) => x.id === b.dataset.pubSrv);
+          if (!item) return;
+          item.published = !item.published;
+          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+            try { await Backend.upsertService(item); } catch (err) { showToast(err.message); return; }
+          }
+          saveState();
+          renderScreen();
+        })
+      );
       body.querySelectorAll("[data-edit-srv]").forEach((b) =>
         b.addEventListener("click", () => openServiceEditor(studioState.services.find((x) => x.id === b.dataset.editSrv)))
       );
@@ -2019,9 +2519,10 @@
           <div class="glass-card row-between">
             <div style="min-width:0;">
               <h3 class="card-title">${escapeHtml(isArabic() ? m.nameAr : m.nameEn)}</h3>
-              <p class="muted-text">${escapeHtml(isArabic() ? m.roleAr : m.roleEn)}</p>
+              <p class="muted-text">${escapeHtml(isArabic() ? m.roleAr : m.roleEn)} • ${m.published ? "Published" : "Draft"}</p>
             </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;">
+            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
+              <button type="button" class="btn btn-outline btn-sm" data-pub-tm="${escapeHtml(m.id)}">${escapeHtml(m.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
               <button type="button" class="icon-btn" data-edit-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
               <button type="button" class="icon-btn danger" data-del-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
             </div>
@@ -2032,6 +2533,18 @@
       `;
 
       document.getElementById("addTeamBtn").addEventListener("click", () => openTeamEditor(null));
+      body.querySelectorAll("[data-pub-tm]").forEach((b) =>
+        b.addEventListener("click", async () => {
+          const item = studioState.team.find((x) => x.id === b.dataset.pubTm);
+          if (!item) return;
+          item.published = !item.published;
+          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+            try { await Backend.upsertTeamMember(item); } catch (err) { showToast(err.message); return; }
+          }
+          saveState();
+          renderScreen();
+        })
+      );
       body.querySelectorAll("[data-edit-tm]").forEach((b) =>
         b.addEventListener("click", () => openTeamEditor(studioState.team.find((x) => x.id === b.dataset.editTm)))
       );
@@ -2051,35 +2564,176 @@
           renderScreen();
         })
       );
-    } else if (adminSection === "messages") {
-      const msgs = studioState.messages;
-      body.innerHTML =
-        msgs.length === 0
-          ? `<div class="glass-card"><p class="muted-text" style="margin:0;">${escapeHtml(t("noReceivedMessages"))}</p></div>`
-          : msgs
-              .map((m) => {
-                const isReplied = m.status === "replied";
-                const mailtoHref = `mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`;
-                return `
-          <div class="glass-card stack-list ${!isReplied ? "highlight-border" : ""}">
-            <div class="row-between">
-              <div style="min-width:0;">
-                <h3 class="card-title">${escapeHtml(m.subject)}</h3>
-                <div style="color:var(--neon-cyan);font-size:0.86rem;word-break:break-word;">${escapeHtml(m.senderName)} • ${escapeHtml(m.email)}</div>
-              </div>
-              <span class="status-pill ${isReplied ? "success" : "warning"}"><span class="pill-dot"></span>${escapeHtml(isReplied ? t("messageStatusReplied") : t("messageStatusNew"))}</span>
+    } else if (adminSection === "knowledge") {
+      const kbItems = (studioState.knowledgeBase || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      const faqItems = (studioState.faqs || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      body.innerHTML = `
+        <div class="glass-card highlight-border stack-list">
+          <div class="row-between">
+            <div>
+              <h2 class="card-title">📚 ${escapeHtml(t("adminKbTitle"))}</h2>
+              <p class="muted-text" style="margin:4px 0 0;font-size:0.86rem;">${escapeHtml(t("adminKbDesc"))}</p>
             </div>
-            <p class="muted-text" style="margin:0;white-space:pre-wrap;">${escapeHtml(m.message)}</p>
-            <div class="btn-row">
-              <button type="button" class="btn btn-outline btn-sm" data-view-msg="${escapeHtml(m.id)}">👁️ ${escapeHtml(t("viewDetails"))}</button>
-              <a href="${mailtoHref}" class="btn btn-primary btn-sm" data-reply-client="${escapeHtml(m.id)}">✉️ ${escapeHtml(t("replyToClient"))}</a>
-              ${!isReplied ? `<button type="button" class="btn btn-outline btn-sm" data-rep-msg="${escapeHtml(m.id)}">✓ ${escapeHtml(t("markReplied"))}</button>` : ""}
-              <button type="button" class="icon-btn danger" data-del-msg="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-            </div>
+            <button id="addKbBtn" type="button" class="btn btn-primary btn-sm">+ ${escapeHtml(t("addNew"))}</button>
           </div>
-        `;
-              })
-              .join("");
+          ${kbItems
+            .map(
+              (k) => `
+            <div class="glass-card row-between">
+              <div style="min-width:0;">
+                <h3 class="card-title">${escapeHtml(isArabic() ? k.titleAr : k.titleEn)}</h3>
+                <p class="muted-text" style="margin-top:4px;">${escapeHtml(k.topic)} • ${k.published !== false ? "Published" : "Draft"}</p>
+              </div>
+              <div style="display:flex;gap:4px;flex-shrink:0;">
+                <button type="button" class="icon-btn" data-edit-kb="${escapeHtml(k.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
+                <button type="button" class="icon-btn danger" data-del-kb="${escapeHtml(k.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
+              </div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+
+        <div class="glass-card stack-list">
+          <div class="row-between">
+            <h2 class="card-title">❓ ${escapeHtml(t("adminFaqTitle"))}</h2>
+            <button id="addFaqBtn" type="button" class="btn btn-outline btn-sm">+ ${escapeHtml(t("addNew"))}</button>
+          </div>
+          ${faqItems
+            .map(
+              (f) => `
+            <div class="glass-card row-between">
+              <div style="min-width:0;">
+                <h3 class="card-title">${escapeHtml(isArabic() ? f.questionAr : f.questionEn)}</h3>
+                <p class="muted-text" style="margin-top:4px;">${escapeHtml(f.category || "general")} • ${f.published !== false ? "Published" : "Draft"}</p>
+              </div>
+              <div style="display:flex;gap:4px;flex-shrink:0;">
+                <button type="button" class="icon-btn" data-edit-faq="${escapeHtml(f.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
+                <button type="button" class="icon-btn danger" data-del-faq="${escapeHtml(f.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
+              </div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      `;
+
+      document.getElementById("addKbBtn").addEventListener("click", () => openKbEditor(null));
+      body.querySelectorAll("[data-edit-kb]").forEach((b) =>
+        b.addEventListener("click", () => openKbEditor((studioState.knowledgeBase || []).find((x) => x.id === b.dataset.editKb)))
+      );
+      body.querySelectorAll("[data-del-kb]").forEach((b) =>
+        b.addEventListener("click", async () => {
+          const id = b.dataset.delKb;
+          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+            try { await Backend.deleteKnowledgeItem(id); } catch (err) { showToast(err.message); return; }
+          }
+          studioState.knowledgeBase = (studioState.knowledgeBase || []).filter((x) => x.id !== id);
+          saveState();
+          renderScreen();
+        })
+      );
+
+      document.getElementById("addFaqBtn").addEventListener("click", () => openFaqEditor(null));
+      body.querySelectorAll("[data-edit-faq]").forEach((b) =>
+        b.addEventListener("click", () => openFaqEditor((studioState.faqs || []).find((x) => x.id === b.dataset.editFaq)))
+      );
+      body.querySelectorAll("[data-del-faq]").forEach((b) =>
+        b.addEventListener("click", async () => {
+          const id = b.dataset.delFaq;
+          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+            try { await Backend.deleteFaq(id); } catch (err) { showToast(err.message); return; }
+          }
+          studioState.faqs = (studioState.faqs || []).filter((x) => x.id !== id);
+          saveState();
+          renderScreen();
+        })
+      );
+    } else if (adminSection === "messages") {
+      const mq = adminMsgSearch.trim().toLowerCase();
+      const filteredMsgs = studioState.messages
+        .filter((m) => adminMsgStatusFilter === "all" || (adminMsgStatusFilter === "replied" ? m.status === "replied" : m.status !== "replied"))
+        .filter((m) => {
+          if (!mq) return true;
+          return `${m.senderName} ${m.email} ${m.subject} ${m.message}`.toLowerCase().includes(mq);
+        });
+
+      body.innerHTML = `
+        <div class="glass-card stack-list">
+          <div class="field">
+            <input id="adminMsgSearchInput" type="search" value="${escapeHtml(adminMsgSearch)}" placeholder="${escapeHtml(t("msgSearchPlaceholder"))}" />
+          </div>
+          <div class="row-between">
+            <div class="chips-scroll">
+              <button type="button" class="chip-btn ${adminMsgStatusFilter === "all" ? "active" : ""}" data-mstat="all">${escapeHtml(t("msgFilterAll"))} (${studioState.messages.length})</button>
+              <button type="button" class="chip-btn ${adminMsgStatusFilter === "new" ? "active" : ""}" data-mstat="new">${escapeHtml(t("msgFilterNew"))} (${unreadCount})</button>
+              <button type="button" class="chip-btn ${adminMsgStatusFilter === "replied" ? "active" : ""}" data-mstat="replied">${escapeHtml(t("msgFilterReplied"))} (${studioState.messages.length - unreadCount})</button>
+            </div>
+            ${
+              studioState.messages.length > 0
+                ? `<button id="exportMsgsBtn" type="button" class="btn btn-outline btn-sm">📥 ${escapeHtml(t("exportMessagesBtn"))}</button>`
+                : ""
+            }
+          </div>
+        </div>
+        ${
+          filteredMsgs.length === 0
+            ? `<div class="glass-card"><p class="muted-text" style="margin:0;">${escapeHtml(t("noReceivedMessages"))}</p></div>`
+            : filteredMsgs
+                .map((m) => {
+                  const isReplied = m.status === "replied";
+                  const mailtoHref = `mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`;
+                  return `
+            <div class="glass-card stack-list ${!isReplied ? "highlight-border" : ""}">
+              <div class="row-between">
+                <div style="min-width:0;">
+                  <h3 class="card-title">${escapeHtml(m.subject)}</h3>
+                  <div style="color:var(--neon-cyan);font-size:0.86rem;word-break:break-word;">${escapeHtml(m.senderName)} • ${escapeHtml(m.email)}</div>
+                </div>
+                <span class="status-pill ${isReplied ? "success" : "warning"}"><span class="pill-dot"></span>${escapeHtml(isReplied ? t("messageStatusReplied") : t("messageStatusNew"))}</span>
+              </div>
+              <p class="muted-text" style="margin:0;white-space:pre-wrap;">${escapeHtml(m.message)}</p>
+              <div class="btn-row">
+                <button type="button" class="btn btn-outline btn-sm" data-view-msg="${escapeHtml(m.id)}">👁️ ${escapeHtml(t("viewDetails"))}</button>
+                <a href="${mailtoHref}" class="btn btn-primary btn-sm" data-reply-client="${escapeHtml(m.id)}">✉️ ${escapeHtml(t("replyToClient"))}</a>
+                ${!isReplied ? `<button type="button" class="btn btn-outline btn-sm" data-rep-msg="${escapeHtml(m.id)}">✓ ${escapeHtml(t("markReplied"))}</button>` : ""}
+                <button type="button" class="icon-btn danger" data-del-msg="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
+              </div>
+            </div>
+          `;
+                })
+                .join("")
+        }
+      `;
+
+      const msgSearchEl = document.getElementById("adminMsgSearchInput");
+      if (msgSearchEl) {
+        msgSearchEl.addEventListener("input", () => {
+          adminMsgSearch = msgSearchEl.value;
+          renderScreen();
+        });
+      }
+      body.querySelectorAll("[data-mstat]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          adminMsgStatusFilter = btn.dataset.mstat;
+          renderScreen();
+        });
+      });
+      const exportBtn = document.getElementById("exportMsgsBtn");
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          const textOut = studioState.messages
+            .map((m) => `[${m.status}] ${m.createdAt} | ${m.senderName} <${m.email}>\nSubject: ${m.subject}\n${m.message}\n---`)
+            .join("\n");
+          const blob = new Blob([textOut], { type: "text/plain;charset=utf-8" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `vexora-messages-${new Date().toISOString().slice(0, 10)}.txt`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          showToast(t("msgExportedToast"));
+        });
+      }
 
       body.querySelectorAll("[data-view-msg]").forEach((b) =>
         b.addEventListener("click", () => {
@@ -2173,6 +2827,7 @@
           <div class="field"><label>Supabase Project URL</label><input id="cfgSbUrl" placeholder="https://xxxx.supabase.co" value="${escapeHtml(cfg.supabaseUrl)}" /></div>
           <div class="field"><label>Supabase Public Anon Key</label><input id="cfgSbKey" placeholder="eyJ..." value="${escapeHtml(cfg.supabaseAnonKey)}" /></div>
           <div class="field"><label>AI Edge Function Name</label><input id="cfgAiFn" value="${escapeHtml(cfg.aiFunctionName)}" /></div>
+          <div class="field"><label>${escapeHtml(t("aiEndpointUrlLabel"))}</label><input id="cfgAiUrl" placeholder="https://your-secure-proxy.workers.dev/vexora-ai" value="${escapeHtml(cfg.aiEndpointUrl || "")}" /></div>
           <div class="btn-row">
             <button type="submit" class="btn btn-outline">💾 Save Backend Config</button>
             <button id="cfgResetBtn" type="button" class="btn btn-text">Reset</button>
@@ -2213,7 +2868,8 @@
         Backend.savePublicConfigOverride({
           supabaseUrl: document.getElementById("cfgSbUrl").value,
           supabaseAnonKey: document.getElementById("cfgSbKey").value,
-          aiFunctionName: document.getElementById("cfgAiFn").value
+          aiFunctionName: document.getElementById("cfgAiFn").value,
+          aiEndpointUrl: document.getElementById("cfgAiUrl").value
         });
         const check = await Backend.testConnection();
         dbSyncStatus = {
@@ -2522,6 +3178,117 @@
     });
   }
 
+  function openKbEditor(initial) {
+    const item = initial || {
+      id: `kb_${Date.now()}`,
+      topic: "general",
+      titleEn: "",
+      titleAr: "",
+      contentEn: "",
+      contentAr: "",
+      keywords: [],
+      sortOrder: (studioState.knowledgeBase || []).length + 1,
+      published: true
+    };
+    openModal(
+      t("adminKbTitle"),
+      `
+      <form id="kbEditor" class="stack-list">
+        <div class="form-two-col">
+          <div class="field"><label>Topic</label><input id="kbTopic" value="${escapeHtml(item.topic)}" required /></div>
+          <div class="field"><label>Order</label><input id="kbOrder" type="number" value="${item.sortOrder || 1}" /></div>
+        </div>
+        <div class="field"><label>Title (EN)</label><input id="kbTitleEn" value="${escapeHtml(item.titleEn)}" required /></div>
+        <div class="field"><label>Title (AR)</label><input id="kbTitleAr" value="${escapeHtml(item.titleAr)}" required /></div>
+        <div class="field"><label>Content (EN)</label><textarea id="kbBodyEn" rows="3" required>${escapeHtml(item.contentEn)}</textarea></div>
+        <div class="field"><label>Content (AR)</label><textarea id="kbBodyAr" rows="3" required>${escapeHtml(item.contentAr)}</textarea></div>
+        <div class="field"><label>Keywords (comma-separated)</label><input id="kbKeys" value="${escapeHtml((item.keywords || []).join(", "))}" /></div>
+        <label class="checkbox-row"><input id="kbPub" type="checkbox" ${item.published !== false ? "checked" : ""} /> ${escapeHtml(t("publishedLabel"))}</label>
+        <button type="submit" class="btn btn-primary btn-full">${escapeHtml(t("save"))}</button>
+      </form>
+    `
+    );
+
+    document.getElementById("kbEditor").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const updated = {
+        ...item,
+        topic: document.getElementById("kbTopic").value.trim() || "general",
+        titleEn: document.getElementById("kbTitleEn").value.trim(),
+        titleAr: document.getElementById("kbTitleAr").value.trim(),
+        contentEn: document.getElementById("kbBodyEn").value.trim(),
+        contentAr: document.getElementById("kbBodyAr").value.trim(),
+        keywords: document.getElementById("kbKeys").value.split(",").map((x) => x.trim()).filter(Boolean),
+        sortOrder: Number(document.getElementById("kbOrder").value || 1),
+        published: document.getElementById("kbPub").checked
+      };
+      if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+        try { await Backend.upsertKnowledgeItem(updated); } catch (err) { showToast(err.message); return; }
+      }
+      if (!Array.isArray(studioState.knowledgeBase)) studioState.knowledgeBase = [];
+      const idx = studioState.knowledgeBase.findIndex((x) => x.id === item.id);
+      if (idx >= 0) studioState.knowledgeBase[idx] = updated;
+      else studioState.knowledgeBase.push(updated);
+      saveState();
+      closeModal();
+      renderScreen();
+    });
+  }
+
+  function openFaqEditor(initial) {
+    const item = initial || {
+      id: `faq_${Date.now()}`,
+      category: "general",
+      questionEn: "",
+      questionAr: "",
+      answerEn: "",
+      answerAr: "",
+      sortOrder: (studioState.faqs || []).length + 1,
+      published: true
+    };
+    openModal(
+      t("adminFaqTitle"),
+      `
+      <form id="faqEditor" class="stack-list">
+        <div class="form-two-col">
+          <div class="field"><label>Category</label><input id="fqCat" value="${escapeHtml(item.category || "general")}" required /></div>
+          <div class="field"><label>Order</label><input id="fqOrder" type="number" value="${item.sortOrder || 1}" /></div>
+        </div>
+        <div class="field"><label>Question (EN)</label><input id="fqQEn" value="${escapeHtml(item.questionEn)}" required /></div>
+        <div class="field"><label>Question (AR)</label><input id="fqQAr" value="${escapeHtml(item.questionAr)}" required /></div>
+        <div class="field"><label>Answer (EN)</label><textarea id="fqAEn" rows="3" required>${escapeHtml(item.answerEn)}</textarea></div>
+        <div class="field"><label>Answer (AR)</label><textarea id="fqAAr" rows="3" required>${escapeHtml(item.answerAr)}</textarea></div>
+        <label class="checkbox-row"><input id="fqPub" type="checkbox" ${item.published !== false ? "checked" : ""} /> ${escapeHtml(t("publishedLabel"))}</label>
+        <button type="submit" class="btn btn-primary btn-full">${escapeHtml(t("save"))}</button>
+      </form>
+    `
+    );
+
+    document.getElementById("faqEditor").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const updated = {
+        ...item,
+        category: document.getElementById("fqCat").value.trim() || "general",
+        questionEn: document.getElementById("fqQEn").value.trim(),
+        questionAr: document.getElementById("fqQAr").value.trim(),
+        answerEn: document.getElementById("fqAEn").value.trim(),
+        answerAr: document.getElementById("fqAAr").value.trim(),
+        sortOrder: Number(document.getElementById("fqOrder").value || 1),
+        published: document.getElementById("fqPub").checked
+      };
+      if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+        try { await Backend.upsertFaq(updated); } catch (err) { showToast(err.message); return; }
+      }
+      if (!Array.isArray(studioState.faqs)) studioState.faqs = [];
+      const idx = studioState.faqs.findIndex((x) => x.id === item.id);
+      if (idx >= 0) studioState.faqs[idx] = updated;
+      else studioState.faqs.push(updated);
+      saveState();
+      closeModal();
+      renderScreen();
+    });
+  }
+
   /* =========================================================
      10. LEGAL SCREENS (Privacy & Terms)
      ========================================================= */
@@ -2582,6 +3349,7 @@
             <button type="button" class="footer-link-btn" data-footer-go="about">${escapeHtml(t("navAbout"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="services">${escapeHtml(t("navServices"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="projects">${escapeHtml(t("navProjects"))}</button>
+            <button type="button" class="footer-link-btn" data-footer-go="technologies">${escapeHtml(t("navTechnologies"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="team">${escapeHtml(t("navTeam"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="ai">${escapeHtml(t("navAi"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="contact">${escapeHtml(t("navContact"))}</button>
@@ -2691,6 +3459,9 @@
       case "projects":
         renderProjectsScreen(root);
         break;
+      case "technologies":
+        renderTechnologiesScreen(root);
+        break;
       case "team":
         renderTeamScreen(root);
         break;
@@ -2734,6 +3505,8 @@
       if (Array.isArray(live.services) && live.services.length > 0) studioState.services = live.services;
       if (Array.isArray(live.projects) && live.projects.length > 0) studioState.projects = live.projects;
       if (Array.isArray(live.team) && live.team.length > 0) studioState.team = live.team;
+      if (Array.isArray(live.knowledgeBase) && live.knowledgeBase.length > 0) studioState.knowledgeBase = live.knowledgeBase;
+      if (Array.isArray(live.faqs) && live.faqs.length > 0) studioState.faqs = live.faqs;
       dbSyncStatus = { tested: true, ok: true, latencyMs: null, message: "" };
       saveState();
       renderAll();

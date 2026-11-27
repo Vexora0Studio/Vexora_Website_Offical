@@ -7,5 +7,6 @@ window.VEXORA_CONFIG = {
   supabaseUrl: "",
   supabaseAnonKey: "",
   aiFunctionName: "vexora-ai",
+  aiEndpointUrl: "",
   storageBucket: "vexora-media"
 };

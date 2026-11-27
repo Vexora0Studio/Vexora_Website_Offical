@@ -8,6 +8,7 @@ window.VEXORA_I18N = {
     navAbout: "من نحن",
     navServices: "خدماتنا",
     navProjects: "المشاريع",
+    navTechnologies: "التقنيات",
     navTeam: "فريق العمل",
     navAi: "المساعد الذكي",
     navDownload: "تطبيق Android",
@@ -41,27 +42,84 @@ window.VEXORA_I18N = {
     learnMoreAboutUs: "تعرّف على Vexora Studio",
 
     whyChooseTitle: "لماذا تختار Vexora Studio؟",
-    whyChooseSubtitle: "معايير هندسية احترافية في تصميم وبناء كل نظام وموقع وتطبيق.",
+    whyChooseSubtitle: "معايير هندسية احترافية في تصميم وبناء كل موقع وتطبيق ونظام برمجي من البداية حتى الإطلاق.",
+    whyChooseTechCta: "استكشف تقنياتنا",
+    whyChooseContactCta: "ابدأ مشروعك",
     whyChooseItems: [
       {
         icon: "🧱",
         title: "هندسة برمجية نظيفة وقابلة للتوسع",
-        desc: "نلتزم ببنية كود منظمة وموثوقة تسهّل الصيانة والتطوير المستقبلي."
+        desc: "بنية كود معيارية تفصل طبقات الواجهة والمنطق والبيانات لتسهيل الصيانة والتطوير المستمر."
       },
       {
         icon: "⚡",
-        title: "أداء فائق وتجربة Mobile First",
-        desc: "سرعة تحميل عالية وتوافق دقيق مع الهواتف الحديثة والأجهزة اللوحية والحواسيب."
+        title: "أداء فائق وتجربة Mobile-First",
+        desc: "سرعة تحميل عالية وتوافق دقيق مع الهواتف الحديثة والأجهزة اللوحية والحواسيب مع دعم كامل لـ RTL وLTR."
       },
       {
         icon: "🔐",
         title: "أمان البيانات وحماية الأنظمة",
-        desc: "تطبيق معايير التحقق من المدخلات، صلاحيات RLS، وحماية مفاتيح API في الخادم."
+        desc: "تحقق صارم من المدخلات، صلاحيات Row Level Security، وإدارة مفاتيح API من الخادم فقط دون كشفها للمستخدم."
       },
       {
         icon: "🤖",
-        title: "دمج الذكاء الاصطناعي والواجهات البرمجية",
-        desc: "ربط الأنظمة والمواقع مع حلول AI وAPIs وقواعد البيانات الحديثة بكفاءة."
+        title: "دمج عملي للذكاء الاصطناعي وAPIs",
+        desc: "ربط الأنظمة والمواقع مع Gemini API وواجهات REST وقواعد البيانات السحابية بسلاسة واستقرار."
+      }
+    ],
+
+    faqTitle: "الأسئلة الشائعة — FAQ",
+    faqSubtitle: "إجابات سريعة وواضحة حول خدمات Vexora Studio وآلية العمل والأنظمة والتواصل.",
+    faqAskAiCta: "لم تجد إجابتك؟ اسأل Vexora AI",
+
+    techHeadline: "التقنيات والأدوات — Technologies",
+    techSubheadline: "حزمة التقنيات الفعلية التي نعتمدها في بناء مواقع الويب، تطبيقات Android، الأنظمة الخلفية، والذكاء الاصطناعي.",
+    techCategoryAll: "كل التقنيات",
+    techLinkedServices: "الخدمات المرتبطة",
+    techLinkedProjects: "مشاريع مستخدمة لها",
+    techRequestWithStack: "اطلب مشروعاً بهذه التقنيات",
+    techGroups: [
+      {
+        key: "frontend",
+        icon: "🌐",
+        title: "تطوير الويب والواجهات (Web & Frontend)",
+        desc: "واجهات سريعة ومتجاوبة تدعم العربية RTL والإنجليزية LTR بمعايير SEO وأداء عالٍ.",
+        items: ["HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Next.js", "Responsive CSS"]
+      },
+      {
+        key: "mobile",
+        icon: "📱",
+        title: "تطوير تطبيقات Android الأصلية",
+        desc: "تطبيقات أصلية سريعة ومستقرة مبنية بأحدث تقنيات Jetpack وMaterial Design 3.",
+        items: ["Kotlin", "Jetpack Compose", "Material 3", "Android SDK", "Room"]
+      },
+      {
+        key: "backend",
+        icon: "🛡️",
+        title: "الأنظمة الخلفية وواجهات API",
+        desc: "خوادم آمنة، مصادقة مستخدمين، وواجهات REST API تربط الويب وتطبيقات الهاتف.",
+        items: ["Supabase", "Deno Edge Functions", "Node.js", "Python", "REST APIs", "Auth & Security"]
+      },
+      {
+        key: "database",
+        icon: "🗄️",
+        title: "قواعد البيانات السحابية والمحلية",
+        desc: "هيكلة بيانات دقيقة محمية بقواعد Row Level Security واستعلامات سريعة.",
+        items: ["PostgreSQL", "Firebase Firestore", "SQL", "RLS", "Room"]
+      },
+      {
+        key: "ai",
+        icon: "🧠",
+        title: "الذكاء الاصطناعي والتكامل الذكي",
+        desc: "مساعدات ذكية، سياق محادثات متعدد الخطوات، ومعالجة بيانات مبنية على المعرفة الموثقة.",
+        items: ["Gemini API", "Prompt Engineering", "Edge Functions", "JSON"]
+      },
+      {
+        key: "languages",
+        icon: "⚙️",
+        title: "لغات البرمجة الأساسية والهندسة",
+        desc: "أساس برمجي قوي لبناء الأنظمة المخصصة، الحلول الهندسية، والأدوات عالية الأداء.",
+        items: ["Python", "C++", "Java", "Kotlin", "JavaScript", "Clean Architecture", "Git"]
       }
     ],
 
@@ -153,20 +211,24 @@ window.VEXORA_I18N = {
 
     /* AI Assistant */
     aiHeadline: "Vexora AI Assistant",
-    aiSubheadline: "مساعد ذكي للإجابة عن خدمات Vexora Studio ومشاريعها وفريقها وتخصصاتها البرمجية اعتماداً على البيانات المنشورة.",
-    aiStatusConnected: "متصل بالخادم الآمن (Gemini API)",
-    aiStatusLocal: "الوضع المحلي المباشر (لم يتم ربط خادم Gemini بعد)",
-    aiInputPlaceholder: "اسأل عن خدماتنا، المشاريع، الفريق، أو التقنيات...",
+    aiSubheadline: "مساعد ذكي مدعوم بقاعدة معرفة Vexora Studio وسياق المحادثة للإجابة بدقة عن الخدمات والمشاريع والتقنيات.",
+    aiStatusConnected: "متصل بخادم Gemini الآمن",
+    aiStatusCustomProxy: "متصل ببوابة Gemini الآمنة",
+    aiStatusLocal: "قاعدة المعرفة المحلية (اربط خادم Gemini لتفعيل النموذج السحابي)",
+    aiSourceGemini: "Gemini + قاعدة المعرفة",
+    aiSourceKnowledge: "قاعدة المعرفة الموثقة",
+    aiKbCountLabel: "مقالات قاعدة المعرفة النشطة",
+    aiInputPlaceholder: "اسأل عن خدماتنا، المشاريع، التقنيات، أو اطلب شرحاً لخدمة...",
     aiSendBtn: "إرسال",
     aiClearBtn: "محادثة جديدة",
-    aiThinking: "جاري تحليل سؤالك...",
+    aiThinking: "جاري تحليل سؤالك وسياق المحادثة...",
     aiGreeting:
-      "أهلاً بك في Vexora Studio. اسألني مباشرة عن خدماتنا البرمجية، المشاريع الحالية (مثل F.cutus وNoorix)، فريق العمل، التقنيات التي نستخدمها، أو كيفية طلب خدمة.",
+      "أهلاً بك في Vexora Studio. أعتمد على قاعدة معرفة الشركة المحدثة وسياق محادثتك للإجابة بدقة عن خدماتنا الـ 11، المشاريع (F.cutus وNoorix)، التقنيات، والفريق. كيف أساعدك؟",
     aiSuggestions: [
       "ما هي خدمات Vexora Studio؟",
-      "ما المشاريع الموجودة حالياً؟",
-      "من هو مؤسس Vexora Studio؟",
-      "ما هي التقنيات التي تستخدمونها؟",
+      "ما هي المشاريع الحالية مثل F.cutus وNoorix؟",
+      "ما التقنيات التي تستخدمونها في الويب وAndroid؟",
+      "كيف تؤمّنون البيانات ومفاتيح API؟",
       "كيف أطلب تطوير موقع أو تطبيق Android؟"
     ],
 
@@ -225,15 +287,31 @@ window.VEXORA_I18N = {
     adminTabProjects: "المشاريع",
     adminTabServices: "الخدمات",
     adminTabTeam: "الفريق",
+    adminTabKnowledge: "قاعدة المعرفة وFAQ",
     adminTabMessages: "الرسائل",
     adminTabSettings: "إعدادات الموقع",
 
     backendStatusTitle: "حالة قاعدة البيانات والمساعد الذكي",
     testDbBtn: "اختبار الاتصال بقاعدة البيانات",
+    testAiBtn: "فحص خادم Gemini AI",
     dbConnectedMsg: "الاتصال بـ Supabase يعمل بنجاح",
     dbNotConfiguredMsg: "Supabase غير مضبوط بعد — البيانات الحالية محفوظة محلياً فقط.",
     dbErrorMsg: "تعذر الاتصال بـ Supabase",
-    resetCatalogBtn: "استعادة قائمة الخدمات والمشاريع الأساسية",
+    aiEndpointOkMsg: "خادم Gemini AI جاهز ويعمل",
+    aiEndpointErrorMsg: "تعذر فحص خادم AI",
+    resetCatalogBtn: "استعادة البيانات الأساسية للشركة",
+
+    adminKbTitle: "قاعدة معرفة Vexora AI",
+    adminKbDesc: "أضف حقائق وسياسات وإرشادات عن الشركة لتزويد المساعد الذكي بإجابات أدق.",
+    adminFaqTitle: "إدارة الأسئلة الشائعة (FAQ)",
+    publishToggleBtn: "نشر",
+    unpublishToggleBtn: "إخفاء كمسودة",
+    msgSearchPlaceholder: "ابحث باسم العميل أو البريد أو الموضوع...",
+    msgFilterAll: "الكل",
+    msgFilterNew: "جديدة",
+    msgFilterReplied: "تم الرد",
+    exportMessagesBtn: "تصدير ملخص الرسائل",
+    msgExportedToast: "تم تنزيل ملف ملخص الرسائل",
 
     addNew: "إضافة جديد",
     edit: "تعديل",
@@ -244,7 +322,7 @@ window.VEXORA_I18N = {
     viewDetails: "قراءة التفاصيل",
     replyToClient: "الرد عبر البريد",
     markReplied: "تحديد كمقروء/تم الرد",
-    noReceivedMessages: "لا توجد رسائل تواصل مسجلة حتى الآن.",
+    noReceivedMessages: "لا توجد رسائل مطابقة حالياً.",
     messageStatusNew: "جديدة",
     messageStatusReplied: "تم الرد",
 
@@ -262,9 +340,25 @@ window.VEXORA_I18N = {
     settingsCompanyTitle: "بيانات الشركة والصفحة الرئيسية",
     settingsSocialTitle: "التواصل والروابط الاجتماعية",
     settingsBackendTitle: "إعدادات ربط Supabase و Gemini AI",
-    settingsBackendHint: "أدخل فقط Project URL و Anon Public Key الخاصة بـ Supabase (ممنوع وضع Service Role أو مفتاح Gemini هنا).",
+    settingsBackendHint: "أدخل فقط الروابط العامة (Project URL وAnon Public Key أو رابط بوابة AI الخلفية الآمنة). ممنوع وضع GEMINI_API_KEY أو Service Role في الواجهة الأمامية.",
+    aiEndpointUrlLabel: "رابط بوابة Gemini الخلفية (اختياري — بديل Edge Function)",
     saveSettingsBtn: "حفظ الإعدادات",
     settingsSavedToast: "تم حفظ إعدادات الموقع",
+
+    seoTitles: {
+      home: "Vexora Studio — Building The Future Through Code | شركة تطوير برمجيات",
+      about: "من نحن — Vexora Studio",
+      services: "الخدمات البرمجية — Vexora Studio",
+      projects: "المشاريع — Vexora Studio",
+      technologies: "التقنيات والأدوات — Vexora Studio",
+      team: "فريق العمل — Vexora Studio",
+      ai: "Vexora AI Assistant — المساعد الذكي",
+      download: "تحميل تطبيق Android الرسمي — Vexora Studio",
+      contact: "تواصل معنا — Vexora Studio",
+      admin: "لوحة الإدارة — Vexora Studio",
+      privacy: "سياسة الخصوصية — Vexora Studio",
+      terms: "شروط الاستخدام — Vexora Studio"
+    },
 
     /* Footer & Legal */
     footerQuickLinks: "الصفحات",
@@ -323,6 +417,7 @@ window.VEXORA_I18N = {
     navAbout: "About Us",
     navServices: "Services",
     navProjects: "Projects",
+    navTechnologies: "Technologies",
     navTeam: "Team",
     navAi: "Vexora AI",
     navDownload: "Android App",
@@ -356,27 +451,84 @@ window.VEXORA_I18N = {
     learnMoreAboutUs: "About Vexora Studio",
 
     whyChooseTitle: "Why Choose Vexora Studio?",
-    whyChooseSubtitle: "Focused engineering discipline across every website, Android app, and backend system.",
+    whyChooseSubtitle: "Focused engineering discipline across every website, Android app, and backend system from architecture to launch.",
+    whyChooseTechCta: "Explore Tech Stack",
+    whyChooseContactCta: "Start a Project",
     whyChooseItems: [
       {
         icon: "🧱",
         title: "Clean, Maintainable Architecture",
-        desc: "Modular software engineered for long-term stability, clarity, and scalability."
+        desc: "Modular software separating UI, domain logic, and data layers for long-term stability and scalability."
       },
       {
         icon: "⚡",
         title: "Mobile-First Speed & Precision",
-        desc: "Optimized layouts and responsive performance tailored for smartphones and desktops alike."
+        desc: "Optimized layouts and responsive performance tailored for smartphones and desktops with full RTL/LTR parity."
       },
       {
         icon: "🔐",
         title: "Security & Row-Level Protection",
-        desc: "Strict input validation, backend-protected secrets, and database Row Level Security."
+        desc: "Strict input validation, server-protected API keys, and PostgreSQL Row Level Security policies."
       },
       {
         icon: "🤖",
         title: "Practical AI & API Integration",
-        desc: "Seamless integration of Gemini AI, REST APIs, and cloud databases into real software."
+        desc: "Seamless backend integration of Gemini AI, REST APIs, and cloud databases into production software."
+      }
+    ],
+
+    faqTitle: "Frequently Asked Questions — FAQ",
+    faqSubtitle: "Clear answers about Vexora Studio's engineering services, workflow, security, and Android app.",
+    faqAskAiCta: "Have another question? Ask Vexora AI",
+
+    techHeadline: "Technologies & Engineering Stack",
+    techSubheadline: "The production languages, frameworks, databases, and AI tooling powering Vexora Studio software.",
+    techCategoryAll: "All Technologies",
+    techLinkedServices: "Related Services",
+    techLinkedProjects: "Used In Projects",
+    techRequestWithStack: "Request a Build with This Stack",
+    techGroups: [
+      {
+        key: "frontend",
+        icon: "🌐",
+        title: "Web & Frontend Engineering",
+        desc: "Fast, SEO-ready, responsive web interfaces supporting full Arabic RTL and English LTR layouts.",
+        items: ["HTML5", "CSS3", "JavaScript", "TypeScript", "React", "Next.js", "Responsive CSS"]
+      },
+      {
+        key: "mobile",
+        icon: "📱",
+        title: "Native Android Development",
+        desc: "Modern native Android applications engineered with Kotlin, Jetpack Compose, and Material Design 3.",
+        items: ["Kotlin", "Jetpack Compose", "Material 3", "Android SDK", "Room"]
+      },
+      {
+        key: "backend",
+        icon: "🛡️",
+        title: "Backend Systems & REST APIs",
+        desc: "Secure server workflows, admin authentication, and clean API endpoints connecting web and mobile.",
+        items: ["Supabase", "Deno Edge Functions", "Node.js", "Python", "REST APIs", "Auth & Security"]
+      },
+      {
+        key: "database",
+        icon: "🗄️",
+        title: "Cloud & Local Databases",
+        desc: "Structured schemas safeguarded by Row Level Security policies and clean data access layers.",
+        items: ["PostgreSQL", "Firebase Firestore", "SQL", "RLS", "Room"]
+      },
+      {
+        key: "ai",
+        icon: "🧠",
+        title: "Artificial Intelligence & Integrations",
+        desc: "Context-aware assistants, structured company knowledge bases, and server-side Gemini integration.",
+        items: ["Gemini API", "Prompt Engineering", "Edge Functions", "JSON"]
+      },
+      {
+        key: "languages",
+        icon: "⚙️",
+        title: "Core Languages & Software Craft",
+        desc: "Strong computer-science foundations for custom systems, utilities, and multi-platform engineering.",
+        items: ["Python", "C++", "Java", "Kotlin", "JavaScript", "Clean Architecture", "Git"]
       }
     ],
 
@@ -468,20 +620,24 @@ window.VEXORA_I18N = {
 
     /* AI Assistant */
     aiHeadline: "Vexora AI Assistant",
-    aiSubheadline: "Ask about Vexora Studio services, projects, team members, and technical stack based on live published company data.",
-    aiStatusConnected: "Connected to Secure Backend (Gemini API)",
-    aiStatusLocal: "Local Grounded Mode (Gemini Backend Not Connected Yet)",
-    aiInputPlaceholder: "Ask about our services, projects, team, or tech stack...",
+    aiSubheadline: "Powered by the Vexora Studio Knowledge Base and multi-turn conversation context for accurate answers.",
+    aiStatusConnected: "Connected to Secure Gemini Backend",
+    aiStatusCustomProxy: "Connected to Secure Gemini Proxy",
+    aiStatusLocal: "Local Knowledge Base Mode (Connect Gemini Backend for Cloud LLM)",
+    aiSourceGemini: "Gemini + Knowledge Base",
+    aiSourceKnowledge: "Verified Knowledge Base",
+    aiKbCountLabel: "Active Knowledge Articles",
+    aiInputPlaceholder: "Ask about services, F.cutus, Noorix, technologies, or follow up...",
     aiSendBtn: "Send",
     aiClearBtn: "New Chat",
-    aiThinking: "Analyzing your question...",
+    aiThinking: "Analyzing your question & conversation context...",
     aiGreeting:
-      "Welcome to Vexora Studio. Ask me directly about our 11 software services, published projects (F.cutus & Noorix), team, technical stack, or how to start a project.",
+      "Welcome to Vexora Studio. I use our verified Company Knowledge Base and conversation memory to answer accurately about our 11 services, projects (F.cutus & Noorix), tech stack, and team.",
     aiSuggestions: [
       "What services does Vexora Studio offer?",
-      "Which projects are currently listed?",
-      "Who founded Vexora Studio?",
+      "Tell me about F.cutus and Noorix",
       "What technologies do you specialize in?",
+      "How do you secure data and API keys?",
       "How can I request a website or Android app?"
     ],
 
@@ -540,15 +696,31 @@ window.VEXORA_I18N = {
     adminTabProjects: "Projects",
     adminTabServices: "Services",
     adminTabTeam: "Team",
+    adminTabKnowledge: "Knowledge & FAQ",
     adminTabMessages: "Messages",
     adminTabSettings: "Site Settings",
 
     backendStatusTitle: "Database & AI Backend Status",
     testDbBtn: "Test Database Connection",
+    testAiBtn: "Test Gemini AI Endpoint",
     dbConnectedMsg: "Supabase database connection verified",
     dbNotConfiguredMsg: "Supabase is not configured yet — data is currently stored in browser localStorage only.",
     dbErrorMsg: "Could not reach Supabase",
-    resetCatalogBtn: "Restore Default Software Catalog",
+    aiEndpointOkMsg: "Gemini AI backend endpoint is healthy",
+    aiEndpointErrorMsg: "AI endpoint check failed",
+    resetCatalogBtn: "Restore Default Company Catalog",
+
+    adminKbTitle: "Vexora AI Knowledge Base",
+    adminKbDesc: "Manage factual company articles, workflows, and engineering guidelines that ground Vexora AI answers.",
+    adminFaqTitle: "Frequently Asked Questions (FAQ)",
+    publishToggleBtn: "Publish",
+    unpublishToggleBtn: "Move to Draft",
+    msgSearchPlaceholder: "Search by sender, email, subject, or message...",
+    msgFilterAll: "All",
+    msgFilterNew: "New",
+    msgFilterReplied: "Replied",
+    exportMessagesBtn: "Export Messages",
+    msgExportedToast: "Messages summary downloaded",
 
     addNew: "Add New",
     edit: "Edit",
@@ -559,7 +731,7 @@ window.VEXORA_I18N = {
     viewDetails: "View Details",
     replyToClient: "Reply via Email",
     markReplied: "Mark Replied",
-    noReceivedMessages: "No contact messages received yet.",
+    noReceivedMessages: "No matching contact messages found.",
     messageStatusNew: "New",
     messageStatusReplied: "Replied",
 
@@ -577,9 +749,25 @@ window.VEXORA_I18N = {
     settingsCompanyTitle: "Company Identity & Home Intro",
     settingsSocialTitle: "Contact & Social Links",
     settingsBackendTitle: "Supabase & Gemini AI Connection Settings",
-    settingsBackendHint: "Enter only your public Supabase Project URL and public Anon Key (never enter Service Role or Gemini API keys here).",
+    settingsBackendHint: "Enter only public client endpoints (Supabase URL & Anon Key, or a secure backend AI Proxy URL). Never put GEMINI_API_KEY or Service Role secrets in frontend code.",
+    aiEndpointUrlLabel: "Custom Backend Gemini Proxy URL (Optional — overrides Edge Function)",
     saveSettingsBtn: "Save Settings",
     settingsSavedToast: "Site settings saved",
+
+    seoTitles: {
+      home: "Vexora Studio — Building The Future Through Code | Software Company",
+      about: "About Us — Vexora Studio",
+      services: "Software Services — Vexora Studio",
+      projects: "Projects & Portfolio — Vexora Studio",
+      technologies: "Technologies & Stack — Vexora Studio",
+      team: "Engineering Team — Vexora Studio",
+      ai: "Vexora AI Assistant — Vexora Studio",
+      download: "Download Official Android App — Vexora Studio",
+      contact: "Contact Us — Vexora Studio",
+      admin: "Admin Dashboard — Vexora Studio",
+      privacy: "Privacy Policy — Vexora Studio",
+      terms: "Terms of Service — Vexora Studio"
+    },
 
     /* Footer & Legal */
     footerQuickLinks: "Pages",

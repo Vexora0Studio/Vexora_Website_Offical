@@ -5,6 +5,13 @@
   const OVERRIDE_KEY = "vexora_supabase_public_cfg";
   const AUTH_SESSION_KEY = "vexora_supabase_auth_session";
 
+  function cleanEndpointUrl(url) {
+    const raw = String(url || "").trim();
+    if (!raw) return "";
+    if (/^https?:\/\//i.test(raw) || raw.startsWith("/")) return raw.replace(/\/+$/, "");
+    return "";
+  }
+
   function getConfig() {
     const base = window.VEXORA_CONFIG || {};
     let override = {};
@@ -15,9 +22,10 @@
       override = {};
     }
     return {
-      supabaseUrl: String(override.supabaseUrl || base.supabaseUrl || "").replace(/\/+$/, ""),
+      supabaseUrl: cleanEndpointUrl(override.supabaseUrl || base.supabaseUrl || ""),
       supabaseAnonKey: String(override.supabaseAnonKey || base.supabaseAnonKey || "").trim(),
       aiFunctionName: String(override.aiFunctionName || base.aiFunctionName || "vexora-ai").trim(),
+      aiEndpointUrl: cleanEndpointUrl(override.aiEndpointUrl || base.aiEndpointUrl || ""),
       storageBucket: String(base.storageBucket || "vexora-media").trim()
     };
   }
@@ -27,9 +35,10 @@
       localStorage.setItem(
         OVERRIDE_KEY,
         JSON.stringify({
-          supabaseUrl: String(cfg.supabaseUrl || "").trim().replace(/\/+$/, ""),
+          supabaseUrl: cleanEndpointUrl(cfg.supabaseUrl || ""),
           supabaseAnonKey: String(cfg.supabaseAnonKey || "").trim(),
-          aiFunctionName: String(cfg.aiFunctionName || "vexora-ai").trim() || "vexora-ai"
+          aiFunctionName: String(cfg.aiFunctionName || "vexora-ai").trim() || "vexora-ai",
+          aiEndpointUrl: cleanEndpointUrl(cfg.aiEndpointUrl || "")
         })
       );
     } catch {
@@ -48,6 +57,11 @@
   function isConfigured() {
     const c = getConfig();
     return Boolean(c.supabaseUrl && c.supabaseAnonKey);
+  }
+
+  function isAiConfigured() {
+    const c = getConfig();
+    return Boolean(c.aiEndpointUrl || (c.supabaseUrl && c.supabaseAnonKey));
   }
 
   function getStoredAuth() {
@@ -104,27 +118,33 @@
     if (!isConfigured()) return null;
     const base = `${c.supabaseUrl}/rest/v1`;
     const headers = authHeaders(Boolean(getStoredAuth()?.access_token));
-    const [settingsRes, servicesRes, projectsRes, teamRes] = await Promise.all([
+    const [settingsRes, servicesRes, projectsRes, teamRes, kbRes, faqRes] = await Promise.all([
       fetch(`${base}/site_settings?id=eq.main&limit=1`, { headers }),
       fetch(`${base}/services?order=sort_order.asc`, { headers }),
       fetch(`${base}/projects?order=created_at.desc`, { headers }),
-      fetch(`${base}/team_members?order=sort_order.asc`, { headers })
+      fetch(`${base}/team_members?order=sort_order.asc`, { headers }),
+      fetch(`${base}/knowledge_base?order=sort_order.asc`, { headers }).catch(() => null),
+      fetch(`${base}/faqs?order=sort_order.asc`, { headers }).catch(() => null)
     ]);
     if (!servicesRes.ok || !projectsRes.ok || !teamRes.ok) {
       throw new Error("Failed to load Supabase catalog");
     }
-    const [settingsRows, servicesRows, projectsRows, teamRows] = await Promise.all([
+    const [settingsRows, servicesRows, projectsRows, teamRows, kbRows, faqRows] = await Promise.all([
       settingsRes.ok ? settingsRes.json() : [],
       servicesRes.json(),
       projectsRes.json(),
-      teamRes.json()
+      teamRes.json(),
+      kbRes && kbRes.ok ? kbRes.json() : null,
+      faqRes && faqRes.ok ? faqRes.json() : null
     ]);
 
     return {
       settings: settingsRows?.[0] ? mapSettingsFromDb(settingsRows[0]) : null,
       services: servicesRows.map(mapServiceFromDb),
       projects: projectsRows.map(mapProjectFromDb),
-      team: teamRows.map(mapTeamFromDb)
+      team: teamRows.map(mapTeamFromDb),
+      knowledgeBase: Array.isArray(kbRows) ? kbRows.map(mapKbFromDb) : null,
+      faqs: Array.isArray(faqRows) ? faqRows.map(mapFaqFromDb) : null
     };
   }
 
@@ -273,6 +293,62 @@
       linkedin_url: m.linkedinUrl || "",
       published: Boolean(m.published),
       sort_order: Number(m.sortOrder || 1),
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function mapKbFromDb(r) {
+    return {
+      id: r.id,
+      topic: r.topic || "general",
+      titleEn: r.title_en,
+      titleAr: r.title_ar,
+      contentEn: r.content_en,
+      contentAr: r.content_ar,
+      keywords: Array.isArray(r.keywords) ? r.keywords : [],
+      sortOrder: Number(r.sort_order || 1),
+      published: r.published !== false
+    };
+  }
+
+  function mapKbToDb(k) {
+    return {
+      id: k.id,
+      topic: k.topic || "general",
+      title_en: k.titleEn,
+      title_ar: k.titleAr,
+      content_en: k.contentEn,
+      content_ar: k.contentAr,
+      keywords: k.keywords || [],
+      sort_order: Number(k.sortOrder || 1),
+      published: Boolean(k.published),
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function mapFaqFromDb(r) {
+    return {
+      id: r.id,
+      questionEn: r.question_en,
+      questionAr: r.question_ar,
+      answerEn: r.answer_en,
+      answerAr: r.answer_ar,
+      category: r.category || "general",
+      sortOrder: Number(r.sort_order || 1),
+      published: r.published !== false
+    };
+  }
+
+  function mapFaqToDb(f) {
+    return {
+      id: f.id,
+      question_en: f.questionEn,
+      question_ar: f.questionAr,
+      answer_en: f.answerEn,
+      answer_ar: f.answerAr,
+      category: f.category || "general",
+      sort_order: Number(f.sortOrder || 1),
+      published: Boolean(f.published),
       updated_at: new Date().toISOString()
     };
   }
@@ -466,15 +542,69 @@
     });
   }
 
-  async function askVexoraAI(message, lang, history, catalog) {
+  function resolveAiTarget() {
     const c = getConfig();
-    if (!isConfigured()) {
+    if (c.aiEndpointUrl) {
+      return {
+        url: c.aiEndpointUrl,
+        headers: { "Content-Type": "application/json" },
+        mode: "custom-proxy"
+      };
+    }
+    if (isConfigured()) {
+      return {
+        url: `${c.supabaseUrl}/functions/v1/${c.aiFunctionName}`,
+        headers: authHeaders(false),
+        mode: "supabase-edge"
+      };
+    }
+    return null;
+  }
+
+  async function testAiEndpoint() {
+    const target = resolveAiTarget();
+    if (!target) {
+      return { ok: false, configured: false, reason: "No Supabase or AI Proxy URL configured" };
+    }
+    const start = performance.now();
+    try {
+      const res = await fetch(target.url, {
+        method: "POST",
+        headers: target.headers,
+        body: JSON.stringify({ ping: true })
+      });
+      const ms = Math.round(performance.now() - start);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          ok: false,
+          configured: true,
+          mode: target.mode,
+          latencyMs: ms,
+          reason: data?.error || `HTTP ${res.status}`
+        };
+      }
+      return {
+        ok: Boolean(data?.ok !== false),
+        configured: true,
+        mode: target.mode,
+        latencyMs: ms,
+        provider: data?.provider || "gemini-2.5-flash"
+      };
+    } catch (err) {
+      return { ok: false, configured: true, mode: target.mode, reason: err?.message || "Network error" };
+    }
+  }
+
+  async function askVexoraAI(message, lang, history, catalog) {
+    const target = resolveAiTarget();
+    if (!target) {
       return { ok: false, configured: false, reason: "Backend not configured" };
     }
     try {
-      const res = await fetch(`${c.supabaseUrl}/functions/v1/${c.aiFunctionName}`, {
+      const res = await fetch(target.url, {
         method: "POST",
-        headers: authHeaders(false),
+        headers: target.headers,
         body: JSON.stringify({ message, lang, history, catalog })
       });
       const data = await res.json().catch(() => ({}));
@@ -485,7 +615,12 @@
           reason: data?.error || `HTTP ${res.status}`
         };
       }
-      return { ok: true, configured: true, reply: data.reply, provider: data.provider || "gemini" };
+      return {
+        ok: true,
+        configured: true,
+        reply: data.reply,
+        provider: data.provider || "gemini-2.5-flash"
+      };
     } catch (err) {
       return { ok: false, configured: true, reason: err?.message || "Network error" };
     }
@@ -496,8 +631,10 @@
     savePublicConfigOverride,
     clearPublicConfigOverride,
     isConfigured,
+    isAiConfigured,
     getStoredAuth,
     testConnection,
+    testAiEndpoint,
     fetchPublicCatalog,
     signInAdmin,
     signOutAdmin,
@@ -507,6 +644,10 @@
     deleteProject: (id) => deleteRow("projects", id),
     upsertTeamMember: (m) => upsertRow("team_members", mapTeamToDb(m)),
     deleteTeamMember: (id) => deleteRow("team_members", id),
+    upsertKnowledgeItem: (k) => upsertRow("knowledge_base", mapKbToDb(k)),
+    deleteKnowledgeItem: (id) => deleteRow("knowledge_base", id),
+    upsertFaq: (f) => upsertRow("faqs", mapFaqToDb(f)),
+    deleteFaq: (id) => deleteRow("faqs", id),
     updateSiteSettings: (s) => upsertRow("site_settings", mapSettingsToDb(s)),
     submitContactMessage,
     fetchAdminMessages,
