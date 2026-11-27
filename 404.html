@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vexora Studio — Redirecting...</title>
+  <script>
+    (function () {
+      var valid = ["home", "about", "services", "projects", "team", "ai", "download", "contact", "admin", "privacy", "terms"];
+      var parts = window.location.pathname.split("/").filter(Boolean);
+      var last = (parts[parts.length - 1] || "").toLowerCase();
+      var route = valid.indexOf(last) >= 0 ? last : "home";
+      var base = window.location.pathname.indexOf("/Vexora_Website_Offical/") >= 0
+        ? "/Vexora_Website_Offical/"
+        : "/";
+      window.location.replace(base + "#" + route);
+    })();
+  </script>
+</head>
+<body style="background:#050811;color:#e2e8f0;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;">
+  <p>Redirecting to Vexora Studio...</p>
+</body>
+</html>

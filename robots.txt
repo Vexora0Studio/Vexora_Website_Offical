@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vexora0studio.github.io/Vexora_Website_Offical/sitemap.xml
