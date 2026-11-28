@@ -843,7 +843,379 @@ create policy "Admins can delete Vexora media"
   to authenticated
   using (bucket_id = 'vexora-media' and public.has_vexora_role(array['owner', 'super_admin', 'admin']));
 
+drop policy if exists "Clients upload own project files" on storage.objects;
+create policy "Clients upload own project files"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'vexora-media'
+    and (storage.foldername(name))[1] = 'client-files'
+    and (storage.foldername(name))[2] = auth.uid()::text
+  );
+
+drop policy if exists "Clients delete own project files" on storage.objects;
+create policy "Clients delete own project files"
+  on storage.objects for delete
+  to authenticated
+  using (
+    bucket_id = 'vexora-media'
+    and (storage.foldername(name))[1] = 'client-files'
+    and (storage.foldername(name))[2] = auth.uid()::text
+  );
+
 -- 18. Seed Default Real Baseline Data
 insert into public.site_settings (id)
 values ('main')
 on conflict (id) do nothing;
+
+-- 19. Extend Projects for Progress, Client Linking, Milestones & Budget
+alter table public.projects add column if not exists progress_pct int not null default 0 check (progress_pct between 0 and 100);
+alter table public.projects add column if not exists deadline text not null default '';
+alter table public.projects add column if not exists current_phase text not null default 'Planning';
+alter table public.projects add column if not exists client_user_id uuid references auth.users(id) on delete set null;
+alter table public.projects add column if not exists client_email text not null default '';
+alter table public.projects add column if not exists budget_egp numeric not null default 0;
+
+drop policy if exists "Clients read own assigned projects" on public.projects;
+create policy "Clients read own assigned projects"
+  on public.projects for select
+  to authenticated
+  using (
+    client_user_id = auth.uid()
+    or (client_email <> '' and lower(client_email) = lower(coalesce(auth.jwt() ->> 'email', '')))
+  );
+
+drop policy if exists "Clients read specific notifications and admins read admin alerts" on public.updates_feed;
+create policy "Clients read specific notifications and admins read admin alerts"
+  on public.updates_feed for select
+  to authenticated
+  using (
+    (target_group in ('all', 'clients') and published = true and delivery_status = 'published')
+    or (target_group in ('specific', 'specific_email') and lower(target_email) = lower(coalesce(auth.jwt() ->> 'email', '')))
+    or (target_group = 'admins' and public.is_vexora_admin())
+  );
+
+-- 20. CRM Leads & Quote Requests
+create table if not exists public.crm_leads (
+  id text primary key,
+  name text not null check (char_length(name) between 2 and 120),
+  email text not null check (char_length(email) between 3 and 160),
+  phone text not null default '',
+  company text not null default '',
+  service_interest text not null default '',
+  budget_egp numeric not null default 0,
+  currency text not null default 'EGP',
+  stage text not null default 'new_lead' check (stage in ('new_lead', 'qualified', 'proposal_sent', 'negotiation', 'won', 'lost')),
+  source text not null default 'website',
+  assigned_to text not null default '',
+  notes text not null default '',
+  activities jsonb not null default '[]'::jsonb,
+  converted_project_id text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.crm_leads enable row level security;
+
+drop policy if exists "Visitors can submit new CRM leads" on public.crm_leads;
+create policy "Visitors can submit new CRM leads"
+  on public.crm_leads for insert
+  to anon, authenticated
+  with check (stage = 'new_lead');
+
+drop policy if exists "Admins manage crm_leads" on public.crm_leads;
+create policy "Admins manage crm_leads"
+  on public.crm_leads for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin', 'support']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin', 'support']));
+
+-- 21. Project Tasks & Milestones
+create table if not exists public.project_tasks (
+  id text primary key,
+  project_id text not null references public.projects(id) on delete cascade,
+  title text not null check (char_length(title) between 1 and 200),
+  phase text not null default 'Development',
+  status text not null default 'todo' check (status in ('todo', 'in_progress', 'review', 'done')),
+  priority text not null default 'medium' check (priority in ('low', 'medium', 'high', 'urgent')),
+  assigned_to text not null default '',
+  due_date text not null default '',
+  notes text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.project_tasks enable row level security;
+
+drop policy if exists "Admins manage project_tasks" on public.project_tasks;
+create policy "Admins manage project_tasks"
+  on public.project_tasks for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin', 'editor']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin', 'editor']));
+
+drop policy if exists "Clients view tasks for own projects" on public.project_tasks;
+create policy "Clients view tasks for own projects"
+  on public.project_tasks for select
+  to authenticated
+  using (
+    exists (
+      select 1 from public.projects p
+      where p.id = project_tasks.project_id
+        and (
+          p.client_user_id = auth.uid()
+          or (p.client_email <> '' and lower(p.client_email) = lower(coalesce(auth.jwt() ->> 'email', '')))
+        )
+    )
+  );
+
+-- 22. Client Project Files Metadata
+create table if not exists public.project_files (
+  id text primary key,
+  project_id text not null default '',
+  request_id text not null default '',
+  client_user_id uuid references auth.users(id) on delete set null,
+  client_email text not null default '',
+  file_name text not null,
+  file_url text not null,
+  mime_type text not null default 'application/octet-stream',
+  size_bytes bigint not null default 0,
+  uploaded_by text not null default 'client',
+  notes text not null default '',
+  created_at timestamptz not null default now()
+);
+
+alter table public.project_files enable row level security;
+
+drop policy if exists "Clients manage own project_files" on public.project_files;
+create policy "Clients manage own project_files"
+  on public.project_files for all
+  to authenticated
+  using (
+    client_user_id = auth.uid()
+    or (client_email <> '' and lower(client_email) = lower(coalesce(auth.jwt() ->> 'email', '')))
+    or public.has_vexora_role(array['owner', 'super_admin', 'admin', 'support'])
+  )
+  with check (
+    client_user_id = auth.uid()
+    or public.has_vexora_role(array['owner', 'super_admin', 'admin', 'support'])
+  );
+
+-- 23. Finance Management (Invoices & Ledger with EGP Support)
+create table if not exists public.finance_invoices (
+  id text primary key,
+  invoice_number text not null,
+  client_user_id uuid references auth.users(id) on delete set null,
+  client_name text not null default '',
+  client_email text not null default '',
+  project_id text not null default '',
+  currency text not null default 'EGP' check (currency in ('EGP', 'USD', 'SAR', 'EUR')),
+  items jsonb not null default '[]'::jsonb,
+  subtotal numeric not null default 0,
+  tax_pct numeric not null default 0,
+  total numeric not null default 0,
+  paid_amount numeric not null default 0,
+  status text not null default 'draft' check (status in ('draft', 'sent', 'paid', 'overdue', 'cancelled')),
+  due_date text not null default '',
+  notes text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.finance_invoices enable row level security;
+
+drop policy if exists "Admins manage finance_invoices" on public.finance_invoices;
+create policy "Admins manage finance_invoices"
+  on public.finance_invoices for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+drop policy if exists "Clients view own non-draft invoices" on public.finance_invoices;
+create policy "Clients view own non-draft invoices"
+  on public.finance_invoices for select
+  to authenticated
+  using (
+    status <> 'draft'
+    and (
+      client_user_id = auth.uid()
+      or (client_email <> '' and lower(client_email) = lower(coalesce(auth.jwt() ->> 'email', '')))
+    )
+  );
+
+create table if not exists public.finance_transactions (
+  id text primary key,
+  tx_type text not null check (tx_type in ('income', 'expense')),
+  category text not null default 'project_payment',
+  amount numeric not null default 0,
+  currency text not null default 'EGP' check (currency in ('EGP', 'USD', 'SAR', 'EUR')),
+  project_id text not null default '',
+  invoice_id text not null default '',
+  description text not null default '',
+  occurred_on text not null default '',
+  created_by text not null default '',
+  created_at timestamptz not null default now()
+);
+
+alter table public.finance_transactions enable row level security;
+
+drop policy if exists "Admins manage finance_transactions" on public.finance_transactions;
+create policy "Admins manage finance_transactions"
+  on public.finance_transactions for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+-- 24. HR Recruitment & Job Applications
+create table if not exists public.job_applications (
+  id text primary key,
+  applicant_name text not null check (char_length(applicant_name) between 2 and 120),
+  email text not null check (char_length(email) between 3 and 160),
+  phone text not null default '',
+  role_applied text not null,
+  specialization text not null default '',
+  experience_years int not null default 0,
+  portfolio_url text not null default '',
+  cv_summary text not null default '',
+  status text not null default 'new' check (status in ('new', 'shortlisted', 'interview', 'hired', 'rejected')),
+  internal_notes text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.job_applications enable row level security;
+
+drop policy if exists "Public can submit job applications" on public.job_applications;
+create policy "Public can submit job applications"
+  on public.job_applications for insert
+  to anon, authenticated
+  with check (status = 'new');
+
+drop policy if exists "Admins manage job_applications" on public.job_applications;
+create policy "Admins manage job_applications"
+  on public.job_applications for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+-- 25. System Monitoring Logs
+create table if not exists public.system_logs (
+  id text primary key,
+  source text not null default 'frontend',
+  severity text not null default 'info' check (severity in ('info', 'warn', 'error', 'critical')),
+  message text not null,
+  route text not null default '',
+  details jsonb not null default '{}'::jsonb,
+  resolved boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.system_logs enable row level security;
+
+drop policy if exists "Clients and visitors log system errors" on public.system_logs;
+create policy "Clients and visitors log system errors"
+  on public.system_logs for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "Admins manage system_logs" on public.system_logs;
+create policy "Admins manage system_logs"
+  on public.system_logs for select
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+drop policy if exists "Admins update system_logs" on public.system_logs;
+create policy "Admins update system_logs"
+  on public.system_logs for update
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+drop policy if exists "Owner deletes system_logs" on public.system_logs;
+create policy "Owner deletes system_logs"
+  on public.system_logs for delete
+  to authenticated
+  using (public.has_vexora_role(array['owner']));
+
+-- 26. Integration Center Configurations
+create table if not exists public.integration_configs (
+  key text primary key,
+  name_en text not null,
+  name_ar text not null,
+  category text not null default 'core',
+  enabled boolean not null default true,
+  status text not null default 'connected',
+  config jsonb not null default '{}'::jsonb,
+  last_checked_at timestamptz,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.integration_configs enable row level security;
+
+drop policy if exists "Admins manage integration_configs" on public.integration_configs;
+create policy "Admins manage integration_configs"
+  on public.integration_configs for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+insert into public.integration_configs (key, name_en, name_ar, category, enabled, status)
+values
+  ('vexora_ai', 'Vexora AI Platform', 'منصة Vexora AI الذكية', 'ai', true, 'connected'),
+  ('gemini_api', 'Gemini 3.8 Flash API (Edge)', 'واجهة Gemini 3.8 Flash (خادم آمن)', 'ai', true, 'connected'),
+  ('admin_panel', 'Enterprise Admin Panel', 'لوحة الإدارة المؤسسية', 'core', true, 'connected'),
+  ('customer_portal', 'Customer Portal & Vault', 'بوابة العملاء والملفات', 'core', true, 'connected'),
+  ('supabase_db', 'Supabase PostgreSQL & Storage', 'قاعدة بيانات وتخزين Supabase', 'infrastructure', true, 'connected'),
+  ('notifications', 'Notifications & Updates Feed', 'مركز الإشعارات والتحديثات', 'messaging', true, 'connected'),
+  ('project_mgmt', 'Project & Task Orchestrator', 'إدارة المشاريع والمهام', 'operations', true, 'connected')
+on conflict (key) do nothing;
+
+-- 27. Automation Engine Rules & Execution Logs
+create table if not exists public.automation_rules (
+  key text primary key,
+  name_en text not null,
+  name_ar text not null,
+  trigger_event text not null,
+  action_summary text not null default '',
+  enabled boolean not null default true,
+  run_count int not null default 0,
+  last_run_at timestamptz,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.automation_rules enable row level security;
+
+drop policy if exists "Admins manage automation_rules" on public.automation_rules;
+create policy "Admins manage automation_rules"
+  on public.automation_rules for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+
+insert into public.automation_rules (key, name_en, name_ar, trigger_event, action_summary, enabled)
+values
+  ('notify_client_status', 'Notify Client on Status Update', 'إشعار العميل عند تغير حالة الطلب أو المشروع', 'status_changed', 'Insert targeted update in updates_feed for client email', true),
+  ('alert_admin_inbound', 'Alert Admin on Inbound Activity', 'تنبيه الإدارة عند وصول طلب أو عميل أو رسالة أو طلب توظيف', 'inbound_created', 'Create high-priority admin alert and audit entry', true),
+  ('auto_project_from_request', 'Auto-Create Project & Starter Tasks', 'إنشاء مشروع ومهام أولية تلقائياً عند قبول طلب العميل', 'request_accepted', 'Create linked project record + 4 starter milestone tasks', true),
+  ('alert_system_error', 'Alert Admin on System / API Error', 'تنبيه الإدارة تلقائياً عند حدوث خطأ نظام أو AI', 'system_error', 'Log severity alert in system_logs + admin notification', true),
+  ('notify_on_release', 'Publish Release Notification', 'إرسال إشعار للزوار والعملاء عند نشر إصدار جديد', 'release_published', 'Broadcast release update to updates_feed', true)
+on conflict (key) do nothing;
+
+create table if not exists public.automation_logs (
+  id text primary key,
+  rule_key text not null,
+  trigger_event text not null,
+  status text not null check (status in ('ok', 'skipped', 'error')),
+  summary text not null default '',
+  payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.automation_logs enable row level security;
+
+drop policy if exists "Admins read and insert automation_logs" on public.automation_logs;
+create policy "Admins read and insert automation_logs"
+  on public.automation_logs for all
+  to authenticated
+  using (public.has_vexora_role(array['owner', 'super_admin', 'admin']))
+  with check (public.has_vexora_role(array['owner', 'super_admin', 'admin']));
+

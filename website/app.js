@@ -4,6 +4,7 @@
   const Backend = window.VexoraBackend;
   const Portal = window.VexoraPortal;
   const AdminEnt = window.VexoraAdmin;
+  const Eco = window.VexoraEcosystem;
 
   const ASSET_BASE = window.location.pathname.includes("/website/")
     ? "../app/src/main/res/drawable/"
@@ -532,7 +533,17 @@
       aiLogs: [],
       loginLogs: [],
       auditLogs: [],
-      messages: []
+      messages: [],
+      crmLeads: [],
+      projectTasks: [],
+      projectFiles: [],
+      financeInvoices: [],
+      financeTransactions: [],
+      jobApplications: [],
+      systemLogs: [],
+      integrationConfigs: Eco?.DEFAULT_INTEGRATIONS ? Eco.DEFAULT_INTEGRATIONS.map((x) => ({ ...x })) : [],
+      automationRules: Eco?.DEFAULT_AUTOMATION_RULES ? Eco.DEFAULT_AUTOMATION_RULES.map((x) => ({ ...x })) : [],
+      automationLogs: []
     };
   }
 
@@ -542,7 +553,7 @@
       if (raw) {
         const parsed = JSON.parse(raw);
         const def = createDefaultState();
-        return {
+        const merged = {
           ...def,
           ...parsed,
           settings: {
@@ -568,6 +579,7 @@
             events: Array.isArray(parsed.analytics?.events) ? parsed.analytics.events : []
           }
         };
+        return Eco?.ensureEcosystemState ? Eco.ensureEcosystemState(merged) : merged;
       }
       // Preserve any visitor messages from previous version while upgrading services/projects/team schema cleanly
       const rawOld = LEGACY_KEYS.map((k) => localStorage.getItem(k)).find(Boolean);
@@ -578,8 +590,9 @@
           def.messages = oldParsed.messages;
         }
       }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(def));
-      return def;
+      const normalized = Eco?.ensureEcosystemState ? Eco.ensureEcosystemState(def) : def;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+      return normalized;
     } catch {
       return createDefaultState();
     }
@@ -625,6 +638,8 @@
   let aiSyncStatus = { tested: false, ok: false, latencyMs: null, mode: "", message: "" };
   let aiChatHistory = loadAiHistory();
   let aiBusy = false;
+  let pendingAiQuestion = "";
+  let kbSearchQuery = "";
 
   function saveState() {
     try {
@@ -808,7 +823,8 @@
   const localClientStorage = {
     getAccounts() {
       try {
-        const raw = localStorage.getItem(LOCAL_CLIENT_ACCS_KEY);
+        // Store demo client credentials strictly in sessionStorage (never persisted long-term in localStorage)
+        const raw = sessionStorage.getItem(LOCAL_CLIENT_ACCS_KEY);
         const arr = raw ? JSON.parse(raw) : [];
         return Array.isArray(arr) ? arr : [];
       } catch {
@@ -833,7 +849,7 @@
         pwdHash
       };
       list.push(acc);
-      localStorage.setItem(LOCAL_CLIENT_ACCS_KEY, JSON.stringify(list));
+      sessionStorage.setItem(LOCAL_CLIENT_ACCS_KEY, JSON.stringify(list));
       return { userId: acc.userId, fullName: acc.fullName, email: acc.email, company: acc.company, phone: acc.phone, status: acc.status };
     },
     verifyAccount(email, pwdHash) {
@@ -858,7 +874,7 @@
         };
       });
       if (changed) {
-        localStorage.setItem(LOCAL_CLIENT_ACCS_KEY, JSON.stringify(updated));
+        sessionStorage.setItem(LOCAL_CLIENT_ACCS_KEY, JSON.stringify(updated));
         const sess = this.getSession();
         if (sess && sess.userId === userId && status === "disabled") {
           this.setSession(null);
@@ -894,15 +910,47 @@
   async function syncClientCloudData() {
     if (!Backend.isConfigured() || !Backend.getStoredClientAuth()?.access_token) return;
     try {
-      const [reqs, msgs] = await Promise.all([
+      const [reqs, msgs, clientProjs, clientFiles, clientInvoices, clientUpds] = await Promise.all([
         Backend.fetchClientRequests().catch(() => null),
-        Backend.fetchClientMessages().catch(() => null)
+        Backend.fetchClientMessages().catch(() => null),
+        Backend.fetchClientProjects ? Backend.fetchClientProjects().catch(() => null) : null,
+        Backend.fetchClientFiles ? Backend.fetchClientFiles().catch(() => null) : null,
+        Backend.fetchClientInvoices ? Backend.fetchClientInvoices().catch(() => null) : null,
+        Backend.fetchClientUpdates ? Backend.fetchClientUpdates().catch(() => null) : null
       ]);
       if (Array.isArray(reqs)) studioState.projectRequests = reqs;
       if (Array.isArray(msgs)) {
         const existingIds = new Set(msgs.map((m) => m.id));
         const localOnly = (studioState.messages || []).filter((m) => !existingIds.has(m.id));
         studioState.messages = [...msgs, ...localOnly];
+      }
+      if (Array.isArray(clientProjs) && clientProjs.length > 0) {
+        const map = new Map((studioState.projects || []).map((p) => [p.id, p]));
+        clientProjs.forEach((p) => map.set(p.id, { ...(map.get(p.id) || {}), ...p }));
+        studioState.projects = [...map.values()];
+        if (Backend.fetchClientProjectTasks) {
+          const tasks = await Backend.fetchClientProjectTasks(clientProjs.map((p) => p.id)).catch(() => null);
+          if (Array.isArray(tasks)) {
+            const tMap = new Map((studioState.projectTasks || []).map((tk) => [tk.id, tk]));
+            tasks.forEach((tk) => tMap.set(tk.id, tk));
+            studioState.projectTasks = [...tMap.values()];
+          }
+        }
+      }
+      if (Array.isArray(clientFiles)) {
+        const fMap = new Map((studioState.projectFiles || []).map((f) => [f.id, f]));
+        clientFiles.forEach((f) => fMap.set(f.id, f));
+        studioState.projectFiles = [...fMap.values()];
+      }
+      if (Array.isArray(clientInvoices)) {
+        const iMap = new Map((studioState.financeInvoices || []).map((inv) => [inv.id, inv]));
+        clientInvoices.forEach((inv) => iMap.set(inv.id, inv));
+        studioState.financeInvoices = [...iMap.values()];
+      }
+      if (Array.isArray(clientUpds) && clientUpds.length > 0) {
+        const uMap = new Map((studioState.updates || []).map((u) => [u.id, u]));
+        clientUpds.forEach((u) => uMap.set(u.id, u));
+        studioState.updates = [...uMap.values()];
       }
       saveState();
     } catch {
@@ -1249,22 +1297,74 @@
         showToast(t("downloadStartedToast"));
       });
     });
+
+    const kbSearchEl = document.getElementById("kbSearchInput");
+    if (kbSearchEl) {
+      kbSearchEl.addEventListener("input", () => {
+        kbSearchQuery = kbSearchEl.value;
+        const pos = kbSearchEl.selectionStart || 0;
+        renderScreen();
+        const nextInp = document.getElementById("kbSearchInput");
+        if (nextInp) {
+          nextInp.focus();
+          nextInp.setSelectionRange(pos, pos);
+        }
+      });
+    }
+
+    root.querySelectorAll("[data-ask-ai]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        pendingAiQuestion = btn.dataset.askAi || "";
+        navigate("ai");
+      });
+    });
   }
 
   function renderFaqSectionHtml() {
+    const q = kbSearchQuery.trim().toLowerCase();
     const publishedFaqs = (studioState.faqs || [])
       .filter((f) => f.published !== false)
+      .filter((f) => !q || `${f.questionEn} ${f.questionAr} ${f.answerEn} ${f.answerAr}`.toLowerCase().includes(q))
       .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-    if (publishedFaqs.length === 0) return "";
+    const publishedKb = (studioState.knowledgeBase || [])
+      .filter((k) => k.published !== false)
+      .filter((k) => !q || `${k.topic} ${k.titleEn} ${k.titleAr} ${k.contentEn} ${k.contentAr} ${(k.keywords || []).join(" ")}`.toLowerCase().includes(q))
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    if (publishedFaqs.length === 0 && publishedKb.length === 0 && !q) return "";
     return `
       <section class="section-block" id="faqSection">
         <div class="section-header-row" style="align-items:flex-end;">
           <div>
-            <h2 class="card-title">❓ ${escapeHtml(t("faqTitle"))}</h2>
-            <p class="section-desc">${escapeHtml(t("faqSubtitle"))}</p>
+            <h2 class="card-title">📚 ${escapeHtml(t("kbSectionTitle"))}</h2>
+            <p class="section-desc">${escapeHtml(t("kbSectionSubtitle"))}</p>
           </div>
           <button type="button" class="btn btn-text" data-go="ai">🤖 ${escapeHtml(t("faqAskAiCta"))} →</button>
         </div>
+
+        <input id="kbSearchInput" type="search" value="${escapeHtml(kbSearchQuery)}" placeholder="${escapeHtml(t("kbSearchPlaceholder"))}" />
+
+        ${
+          publishedKb.length > 0
+            ? `<div class="cards-grid">
+                ${publishedKb
+                  .slice(0, 6)
+                  .map(
+                    (k) => `
+                  <article class="glass-card stack-list" style="justify-content:space-between;">
+                    <div class="stack-list">
+                      <span class="tech-tag" style="align-self:flex-start;">${escapeHtml(k.topic || "general")}</span>
+                      <h3 class="card-title">${escapeHtml(isArabic() ? k.titleAr : k.titleEn)}</h3>
+                      <p class="muted-text" style="margin:0;">${escapeHtml(isArabic() ? k.contentAr : k.contentEn)}</p>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" data-ask-ai="${escapeHtml(isArabic() ? k.titleAr : k.titleEn)}">🤖 ${escapeHtml(t("kbAskAiBtn"))}</button>
+                  </article>
+                `
+                  )
+                  .join("")}
+              </div>`
+            : ""
+        }
+
         <div class="faq-list">
           ${publishedFaqs
             .map(
@@ -1272,6 +1372,9 @@
             <details class="faq-item" ${idx === 0 ? "open" : ""}>
               <summary>${escapeHtml(isArabic() ? f.questionAr : f.questionEn)}</summary>
               <p class="faq-answer">${escapeHtml(isArabic() ? f.answerAr : f.answerEn)}</p>
+              <div style="margin-top:8px;">
+                <button type="button" class="btn btn-text btn-sm" data-ask-ai="${escapeHtml(isArabic() ? f.questionAr : f.questionEn)}">🤖 ${escapeHtml(t("kbAskAiBtn"))} →</button>
+              </div>
             </details>
           `
             )
@@ -1845,6 +1948,86 @@
     `;
   }
 
+  function openJobApplicationModal() {
+    openModal(
+      `💼 ${t("careersApplyTitle")}`,
+      `
+      <form id="careerAppForm" class="stack-list">
+        <div class="form-two-col">
+          <div class="field"><label>${escapeHtml(t("fullNameLabel"))}</label><input id="carName" required /></div>
+          <div class="field"><label>${escapeHtml(t("emailLabel"))}</label><input id="carEmail" type="email" required /></div>
+        </div>
+        <div class="form-two-col">
+          <div class="field"><label>${escapeHtml(t("clientPhoneLabel"))}</label><input id="carPhone" /></div>
+          <div class="field"><label>${escapeHtml(t("careersRoleLabel"))}</label><input id="carRole" placeholder="Full-Stack / Android / AI Engineer" required /></div>
+        </div>
+        <div class="field"><label>${escapeHtml(t("careersSpecLabel"))}</label><input id="carSpec" placeholder="Kotlin, React, Node.js, PostgreSQL, Gemini AI" required /></div>
+        <div class="field"><label>${escapeHtml(t("careersExpLabel"))}</label><textarea id="carExp" rows="3" required></textarea></div>
+        <div class="field"><label>${escapeHtml(t("careersCvLabel"))}</label><input id="carCvUrl" placeholder="https://github.com/..." /></div>
+        <div id="carErr" class="error-text"></div>
+        <button id="carSubmitBtn" type="submit" class="btn btn-primary btn-full">🚀 ${escapeHtml(t("careersApplyBtn"))}</button>
+      </form>
+      `
+    );
+
+    document.getElementById("careerAppForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById("carName").value.trim();
+      const email = document.getElementById("carEmail").value.trim();
+      const roleTitle = document.getElementById("carRole").value.trim();
+      const specialization = document.getElementById("carSpec").value.trim();
+      const experience = document.getElementById("carExp").value.trim();
+      const err = document.getElementById("carErr");
+      const btn = document.getElementById("carSubmitBtn");
+
+      if (fullName.length < 2 || !email.includes("@") || roleTitle.length < 2 || specialization.length < 2) {
+        err.textContent = t("validationError");
+        return;
+      }
+      err.textContent = "";
+      btn.disabled = true;
+
+      const appObj = {
+        id: `job_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        fullName,
+        email,
+        phone: document.getElementById("carPhone").value.trim(),
+        roleTitle,
+        specialization,
+        experience,
+        portfolioUrl: safeHttpUrl(document.getElementById("carCvUrl").value.trim()),
+        status: "new",
+        notes: "",
+        createdAt: new Date().toISOString()
+      };
+
+      if (Backend.isConfigured() && Backend.submitJobApplication) {
+        try {
+          await Backend.submitJobApplication(appObj);
+        } catch (subErr) {
+          err.textContent = subErr?.message || "Submission failed";
+          btn.disabled = false;
+          return;
+        }
+      }
+
+      if (!Array.isArray(studioState.jobApplications)) studioState.jobApplications = [];
+      studioState.jobApplications.unshift(appObj);
+      if (Eco?.runAutomationEvent) {
+        Eco.runAutomationEvent(
+          { Backend, studioState, saveState, isArabic },
+          "inbound_created",
+          { kind: "Job Application", message: `${appObj.fullName} — ${appObj.roleTitle} (${appObj.email})` }
+        );
+      }
+      saveState();
+      btn.disabled = false;
+      closeModal();
+      showToast(t("careersSubmittedToast"));
+      renderScreen();
+    });
+  }
+
   function renderTeamScreen(root) {
     const members = studioState.team
       .filter((m) => m.published)
@@ -1863,7 +2046,17 @@
             : members.map((m) => renderTeamCardHtml(m)).join("")
         }
       </div>
+
+      <section class="glass-card highlight-border cta-banner" style="margin-top:14px;">
+        <div style="flex:1;min-width:210px;">
+          <h2 class="card-title" style="color:var(--neon-cyan);">💼 ${escapeHtml(t("careersApplyTitle"))}</h2>
+          <p class="muted-text" style="margin-top:6px;">${escapeHtml(t("careersApplySub"))}</p>
+        </div>
+        <button id="openCareerAppBtn" type="button" class="btn btn-primary">🚀 ${escapeHtml(t("careersApplyBtn"))}</button>
+      </section>
     `;
+
+    document.getElementById("openCareerAppBtn")?.addEventListener("click", openJobApplicationModal);
   }
 
   /* =========================================================
@@ -2184,6 +2377,15 @@
         currentLang,
         suggestions: (I18N[currentLang] && I18N[currentLang].aiSuggestions) || []
       });
+      if (pendingAiQuestion) {
+        const q = pendingAiQuestion;
+        pendingAiQuestion = "";
+        const inp = document.getElementById("aiInput");
+        if (inp) {
+          inp.value = q;
+          inp.focus();
+        }
+      }
       return;
     }
 
@@ -2533,6 +2735,8 @@
           <textarea id="cMessage" rows="4" required></textarea>
         </div>
 
+        <label class="checkbox-row"><input id="cCreateLead" type="checkbox" ${contactPreselectedService ? "checked" : ""} /> 💼 ${escapeHtml(t("sendQuoteLeadOpt"))}</label>
+
         <div id="cErr" class="error-text"></div>
         <button id="cSubmitBtn" type="submit" class="btn btn-primary btn-full">✉️ ${escapeHtml(t("sendMessage"))}</button>
       </form>
@@ -2595,6 +2799,7 @@
       const serviceRequested = document.getElementById("cService").value.trim();
       const subject = document.getElementById("cSubject").value.trim();
       const rawMessage = document.getElementById("cMessage").value.trim();
+      const wantsQuoteLead = Boolean(document.getElementById("cCreateLead")?.checked);
       const err = document.getElementById("cErr");
       const btn = document.getElementById("cSubmitBtn");
 
@@ -2630,6 +2835,40 @@
       }
 
       studioState.messages.unshift(msgObj);
+
+      if (wantsQuoteLead) {
+        const leadObj = {
+          id: `lead_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          fullName: senderName,
+          email,
+          phone: "",
+          company: "",
+          serviceRequested: serviceRequested || subject,
+          source: "contact_quote",
+          stage: "new_lead",
+          estimatedValue: 0,
+          currency: "EGP",
+          assignedTo: "",
+          notes: rawMessage,
+          activityLog: [{ at: new Date().toISOString(), by: email, note: `Quote requested: ${subject}` }],
+          convertedProjectId: "",
+          createdAt: new Date().toISOString()
+        };
+        if (!Array.isArray(studioState.crmLeads)) studioState.crmLeads = [];
+        studioState.crmLeads.unshift(leadObj);
+        if (Backend.isConfigured() && Backend.submitCrmLead) {
+          Backend.submitCrmLead(leadObj).catch(() => {});
+        }
+      }
+
+      if (Eco?.runAutomationEvent) {
+        Eco.runAutomationEvent(
+          { Backend, studioState, saveState, isArabic },
+          "inbound_created",
+          { kind: wantsQuoteLead ? "Quote / CRM Lead" : "Contact Message", message: `${senderName} (${email}): ${subject}` }
+        );
+      }
+
       saveState();
       btn.disabled = false;
       showToast(savedToCloud ? t("messageSentDb") : t("messageSentLocal"));
@@ -2795,6 +3034,11 @@
       descriptionAr: "",
       category: "Websites",
       status: "Planning",
+      progressPct: 0,
+      currentPhase: "",
+      deadline: "",
+      clientEmail: "",
+      budgetEgp: 0,
       technologies: [],
       assignedTeam: [],
       changeHistory: [],
@@ -2826,6 +3070,15 @@
             </select>
           </div>
         </div>
+        <div class="form-two-col">
+          <div class="field"><label>${escapeHtml(t("projClientEmailLabel"))}</label><input id="pClientEmail" type="email" value="${escapeHtml(item.clientEmail || "")}" placeholder="client@company.com" /></div>
+          <div class="field"><label>${escapeHtml(t("projPhaseLabel"))}</label><input id="pPhase" value="${escapeHtml(item.currentPhase || "")}" placeholder="Architecture / Development / QA" /></div>
+        </div>
+        <div class="form-two-col">
+          <div class="field"><label>${escapeHtml(t("projProgressLabel"))} (%)</label><input id="pProgress" type="number" min="0" max="100" value="${Number(item.progressPct || 0)}" /></div>
+          <div class="field"><label>${escapeHtml(t("projDeadlineLabel"))}</label><input id="pDeadline" type="date" value="${escapeHtml((item.deadline || "").slice(0, 10))}" /></div>
+        </div>
+        <div class="field"><label>${escapeHtml(t("projBudgetEgpLabel"))}</label><input id="pBudgetEgp" type="number" min="0" value="${Number(item.budgetEgp || 0)}" /></div>
         <div class="field"><label>${escapeHtml(t("websiteUrlLabel"))}</label><input id="pUrl" placeholder="https://..." value="${escapeHtml(item.websiteUrl || "")}" /></div>
         <div class="field"><label>${escapeHtml(t("videoUrlLabel"))}</label><input id="pVideoUrl" placeholder="https://youtube.com/watch?v=... or https://.../demo.mp4" value="${escapeHtml(item.videoUrl || "")}" /></div>
         <div class="field"><label>Technologies (comma-separated)</label><input id="pTech" value="${escapeHtml((item.technologies || []).join(", "))}" /></div>
@@ -2859,6 +3112,7 @@
       const rawUrl = document.getElementById("pUrl").value.trim();
       const rawVid = document.getElementById("pVideoUrl").value.trim();
       const actor = AdminEnt?.getActiveAdminSession?.(Backend)?.email || "admin";
+      const prevStatus = normalizeProjectStatus(item.status);
       const nextStatus = document.getElementById("pStatus").value;
       const hist = Array.isArray(item.changeHistory) ? [...item.changeHistory] : [];
       hist.unshift({ at: new Date().toISOString(), actor, summary: `${initial ? "Updated" : "Created"} (${nextStatus})` });
@@ -2871,6 +3125,11 @@
         descriptionAr: document.getElementById("pDescAr").value.trim(),
         category: document.getElementById("pCat").value,
         status: nextStatus,
+        clientEmail: document.getElementById("pClientEmail").value.trim().toLowerCase(),
+        currentPhase: document.getElementById("pPhase").value.trim(),
+        progressPct: Math.max(0, Math.min(100, Number(document.getElementById("pProgress").value || 0))),
+        deadline: document.getElementById("pDeadline").value.trim(),
+        budgetEgp: Math.max(0, Number(document.getElementById("pBudgetEgp").value || 0)),
         websiteUrl: rawUrl ? safeHttpUrl(rawUrl) : "",
         videoUrl: rawVid ? safeHttpUrl(rawVid) : "",
         imageUrl: document.getElementById("pImgUrl").value.trim(),
@@ -2891,6 +3150,13 @@
       const idx = studioState.projects.findIndex((x) => x.id === item.id);
       if (idx >= 0) studioState.projects[idx] = updated;
       else studioState.projects.push(updated);
+      if (initial && prevStatus !== normalizeProjectStatus(nextStatus) && updated.clientEmail && Eco?.runAutomationEvent) {
+        Eco.runAutomationEvent(
+          { Backend, studioState, saveState, isArabic },
+          "status_changed",
+          { title: updated.nameEn || updated.nameAr, clientEmail: updated.clientEmail, status: nextStatus, kind: "project" }
+        );
+      }
       saveState();
       closeModal();
       renderScreen();
@@ -3586,8 +3852,38 @@
       }
     });
 
+    window.addEventListener("error", (ev) => {
+      if (Eco?.logSystemIssue && ev?.message) {
+        Eco.logSystemIssue(
+          { Backend, studioState, saveState },
+          {
+            source: "frontend_runtime",
+            severity: "error",
+            message: ev.message,
+            route: currentRoute,
+            details: { file: ev.filename || "", line: ev.lineno || 0 }
+          }
+        );
+      }
+    });
+    window.addEventListener("unhandledrejection", (ev) => {
+      const msg = ev?.reason?.message || String(ev?.reason || "");
+      if (Eco?.logSystemIssue && msg) {
+        Eco.logSystemIssue(
+          { Backend, studioState, saveState },
+          {
+            source: "frontend_promise",
+            severity: "error",
+            message: msg,
+            route: currentRoute
+          }
+        );
+      }
+    });
+
     trackEvent("page_view", currentRoute);
     renderAll();
     syncFromSupabaseIfConfigured();
+    syncClientCloudData();
   });
 })();

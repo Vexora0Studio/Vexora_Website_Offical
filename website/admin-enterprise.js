@@ -9,18 +9,23 @@
 
   const SECTION_DEFS = [
     { key: "overview", icon: "📊", labelKey: "entNavOverview", roles: ["owner", "super_admin", "admin", "editor", "support"] },
-    { key: "website", icon: "🌐", labelKey: "entNavWebsite", roles: ["owner", "super_admin", "admin", "editor"] },
+    { key: "crm", icon: "💼", labelKey: "entNavCrm", roles: ["owner", "super_admin", "admin", "support"] },
     { key: "projects", icon: "🚀", labelKey: "entNavProjects", roles: ["owner", "super_admin", "admin", "editor"] },
     { key: "clients", icon: "👥", labelKey: "entNavClients", roles: ["owner", "super_admin", "admin", "support"] },
+    { key: "finance", icon: "💰", labelKey: "entNavFinance", roles: ["owner", "super_admin", "admin"] },
     { key: "employees", icon: "🧑‍💻", labelKey: "entNavEmployees", roles: ["owner", "super_admin", "admin"] },
+    { key: "website", icon: "🌐", labelKey: "entNavWebsite", roles: ["owner", "super_admin", "admin", "editor"] },
     { key: "ai_control", icon: "🤖", labelKey: "entNavAi", roles: ["owner", "super_admin", "admin"] },
     { key: "notifications", icon: "🔔", labelKey: "entNavNotifications", roles: ["owner", "super_admin", "admin", "editor"] },
     { key: "support", icon: "🎫", labelKey: "entNavSupport", roles: ["owner", "super_admin", "admin", "editor", "support"] },
     { key: "releases", icon: "📦", labelKey: "entNavReleases", roles: ["owner", "super_admin", "admin"] },
+    { key: "monitoring", icon: "🩺", labelKey: "entNavMonitoring", roles: ["owner", "super_admin", "admin"] },
+    { key: "integrations", icon: "🔗", labelKey: "entNavIntegrations", roles: ["owner", "super_admin", "admin"] },
+    { key: "automations", icon: "⚙️", labelKey: "entNavAutomations", roles: ["owner", "super_admin", "admin"] },
     { key: "database", icon: "🗄️", labelKey: "entNavDatabase", roles: ["owner", "super_admin"] },
     { key: "analytics", icon: "📈", labelKey: "entNavAnalytics", roles: ["owner", "super_admin", "admin", "editor"] },
     { key: "security", icon: "🔐", labelKey: "entNavSecurity", roles: ["owner", "super_admin"] },
-    { key: "settings", icon: "⚙️", labelKey: "entNavSettings", roles: ["owner", "super_admin", "admin"] }
+    { key: "settings", icon: "🛠️", labelKey: "entNavSettings", roles: ["owner", "super_admin", "admin"] }
   ];
 
   let uiState = {
@@ -32,6 +37,7 @@
     projStatus: "all",
     clientSearch: "",
     clientStatus: "all",
+    empSubTab: "directory",
     supportSearch: "",
     supportStatus: "all",
     supportType: "all",
@@ -615,13 +621,29 @@
             if (target === "support") {
               const msgs = await Backend.fetchAdminMessages();
               if (Array.isArray(msgs)) { studioState.messages = msgs; ctx.saveState(); }
-            } else if (target === "clients" || target === "overview") {
+            } else if (["clients", "overview", "crm", "finance", "employees", "monitoring", "integrations", "automations", "projects"].includes(target)) {
               const [reqs, metrics] = await Promise.all([
                 Backend.fetchAllRequestsAdmin().catch(() => null),
                 Backend.callAdminGateway("get_overview_metrics").catch(() => null)
               ]);
-              if (Array.isArray(reqs)) { studioState.projectRequests = reqs; ctx.saveState(); }
-              if (metrics) uiState.cloudMetrics = metrics;
+              if (Array.isArray(reqs)) { studioState.projectRequests = reqs; }
+              if (metrics) {
+                uiState.cloudMetrics = metrics;
+                const mp = Backend.mappers;
+                if (mp) {
+                  if (Array.isArray(metrics.crmLeads)) studioState.crmLeads = metrics.crmLeads.map(mp.mapCrmFromDb);
+                  if (Array.isArray(metrics.projectTasks)) studioState.projectTasks = metrics.projectTasks.map(mp.mapTaskFromDb);
+                  if (Array.isArray(metrics.projectFiles)) studioState.projectFiles = metrics.projectFiles.map(mp.mapProjectFileFromDb);
+                  if (Array.isArray(metrics.financeInvoices)) studioState.financeInvoices = metrics.financeInvoices.map(mp.mapInvoiceFromDb);
+                  if (Array.isArray(metrics.financeTransactions)) studioState.financeTransactions = metrics.financeTransactions.map(mp.mapTransactionFromDb);
+                  if (Array.isArray(metrics.jobApplications)) studioState.jobApplications = metrics.jobApplications.map(mp.mapJobAppFromDb);
+                }
+                if (Array.isArray(metrics.systemLogs)) studioState.systemLogs = metrics.systemLogs.map((r) => ({ id: r.id, source: r.source, severity: r.severity, message: r.message, route: r.route, resolved: Boolean(r.resolved), createdAt: r.created_at }));
+                if (Array.isArray(metrics.integrationConfigs) && metrics.integrationConfigs.length) studioState.integrationConfigs = metrics.integrationConfigs.map((r) => ({ key: r.key, nameEn: r.name_en, nameAr: r.name_ar, category: r.category, enabled: r.enabled !== false, status: r.status, lastCheckedAt: r.last_checked_at || "" }));
+                if (Array.isArray(metrics.automationRules) && metrics.automationRules.length) studioState.automationRules = metrics.automationRules.map((r) => ({ key: r.key, nameEn: r.name_en, nameAr: r.name_ar, triggerEvent: r.trigger_event, actionSummary: r.action_summary, enabled: r.enabled !== false, runCount: Number(r.run_count || 0), lastRunAt: r.last_run_at || "" }));
+                if (Array.isArray(metrics.automationLogs)) studioState.automationLogs = metrics.automationLogs.map((r) => ({ id: r.id, ruleKey: r.rule_key, triggerEvent: r.trigger_event, status: r.status, summary: r.summary, createdAt: r.created_at }));
+              }
+              ctx.saveState();
             } else if (target === "analytics") {
               ctx.setRemoteAnalyticsCache(await Backend.fetchAnalyticsSummary());
             } else if (target === "database") {
@@ -636,9 +658,25 @@
     });
 
     const body = document.getElementById("entSectionBody");
+    const eco = window.VexoraEcosystem;
     switch (uiState.section) {
       case "overview":
         renderOverview(body, ctx, session);
+        break;
+      case "crm":
+        if (eco?.renderCrmManager) eco.renderCrmManager(body, ctx, session);
+        break;
+      case "finance":
+        if (eco?.renderFinanceManager) eco.renderFinanceManager(body, ctx, session);
+        break;
+      case "monitoring":
+        if (eco?.renderMonitoringCenter) eco.renderMonitoringCenter(body, ctx, session);
+        break;
+      case "integrations":
+        if (eco?.renderIntegrationCenter) eco.renderIntegrationCenter(body, ctx, session);
+        break;
+      case "automations":
+        if (eco?.renderAutomationEngine) eco.renderAutomationEngine(body, ctx, session);
         break;
       case "website":
         renderWebsiteManager(body, ctx, session);
@@ -1163,15 +1201,19 @@
           : list
               .map((p) => {
                 const st = ctx.statusMeta(p.status);
+                const tasksCount = (studioState.projectTasks || []).filter((tk) => tk.projectId === p.id).length;
+                const pct = Math.max(0, Math.min(100, Number(p.progressPct || 0)));
                 return `
                   <div class="glass-card row-between" style="flex-wrap:wrap;gap:12px;">
                     <div style="min-width:220px;flex:1;">
                       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                         <h3 class="card-title">${escapeHtml(isArabic() ? p.nameAr : p.nameEn)}</h3>
                         <span class="status-pill ${st.cls}"><span class="pill-dot"></span>${escapeHtml(st.label)}</span>
+                        <span class="tech-chip">${pct}%</span>
                         ${p.featured ? `<span class="status-pill cyan">★ Featured</span>` : ""}
                       </div>
-                      <p class="muted-text" style="margin:4px 0;">${escapeHtml(p.category)} • ${p.published ? "Published" : "Draft"} • ${(p.technologies || []).join(", ")}</p>
+                      <p class="muted-text" style="margin:4px 0;">${escapeHtml(p.category)} • ${p.published ? "Published" : "Private Client/Draft"}${p.clientEmail ? ` • 👤 ${escapeHtml(p.clientEmail)}` : ""} • ${(p.technologies || []).join(", ")}</p>
+                      <div class="analytics-bar-track" style="max-width:340px;margin:4px 0;"><div class="analytics-bar-fill" style="width:${pct}%"></div></div>
                       ${
                         Array.isArray(p.assignedTeam) && p.assignedTeam.length
                           ? `<div style="font-size:0.78rem;color:var(--neon-cyan);">👥 ${escapeHtml(p.assignedTeam.join(", "))}</div>`
@@ -1179,6 +1221,7 @@
                       }
                     </div>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                      <button type="button" class="btn btn-primary btn-sm" data-tasks-proj="${escapeHtml(p.id)}">📋 ${escapeHtml(t("projTasksBtn"))} (${tasksCount})</button>
                       <button type="button" class="btn btn-outline btn-sm" data-hist-proj="${escapeHtml(p.id)}">🕒 ${escapeHtml(t("entHistoryBtn"))}</button>
                       <button type="button" class="btn btn-outline btn-sm" data-pub-proj="${escapeHtml(p.id)}">${escapeHtml(p.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
                       <button type="button" class="icon-btn" data-edit-proj="${escapeHtml(p.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
@@ -1204,6 +1247,15 @@
       uiState.projStatus = e.target.value;
       renderProjectsManager(body, ctx, session);
     });
+
+    body.querySelectorAll("[data-tasks-proj]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const p = studioState.projects.find((x) => x.id === b.dataset.tasksProj);
+        if (p && window.VexoraEcosystem?.openProjectTasksModal) {
+          window.VexoraEcosystem.openProjectTasksModal(p, ctx, session, () => renderProjectsManager(body, ctx, session));
+        }
+      })
+    );
 
     body.querySelectorAll("[data-hist-proj]").forEach((b) =>
       b.addEventListener("click", () => {
@@ -1525,48 +1577,73 @@
   function renderEmployeesManager(body, ctx, session) {
     const { t, isArabic, escapeHtml, Backend, studioState, saveState, showToast } = ctx;
     const team = [...(studioState.team || [])].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    const appsCount = (studioState.jobApplications || []).length;
 
     body.innerHTML = `
-      <div class="glass-card row-between">
-        <div>
-          <h2 class="card-title">🧑‍💻 ${escapeHtml(t("entNavEmployees"))} (${team.length})</h2>
-          <p class="muted-text" style="margin:2px 0 0;font-size:0.84rem;">${escapeHtml(t("entEmployeesSubtitle"))}</p>
+      <div class="glass-card stack-list">
+        <div class="row-between" style="flex-wrap:wrap;gap:8px;">
+          <div>
+            <h2 class="card-title">🧑‍💻 ${escapeHtml(t("entNavEmployees"))} (${team.length})</h2>
+            <p class="muted-text" style="margin:2px 0 0;font-size:0.84rem;">${escapeHtml(t("entEmployeesSubtitle"))}</p>
+          </div>
+          <button id="entAddEmpBtn" type="button" class="btn btn-primary btn-sm">+ ${escapeHtml(t("addNew"))}</button>
         </div>
-        <button id="entAddEmpBtn" type="button" class="btn btn-primary btn-sm">+ ${escapeHtml(t("addNew"))}</button>
+        <div class="chips-scroll">
+          <button type="button" class="chip-btn ${uiState.empSubTab !== "jobs" ? "active" : ""}" data-emp-tab="directory">👥 ${escapeHtml(t("hrDirectoryTab"))} (${team.length})</button>
+          <button type="button" class="chip-btn ${uiState.empSubTab === "jobs" ? "active" : ""}" data-emp-tab="jobs">💼 ${escapeHtml(t("hrJobAppsTitle"))} (${appsCount})</button>
+        </div>
       </div>
-      ${team
-        .map((m) => {
-          const empStat = m.employeeStatus || "active";
-          const assignedCount = (studioState.projects || []).filter((p) => (p.assignedTeam || []).includes(m.nameEn) || (p.assignedTeam || []).includes(m.id)).length;
-          return `
-            <div class="glass-card row-between" style="flex-wrap:wrap;gap:12px;">
-              <div style="min-width:220px;flex:1;">
-                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                  <h3 class="card-title">${escapeHtml(isArabic() ? m.nameAr : m.nameEn)}</h3>
-                  <span class="status-pill ${empStat === "active" ? "success" : empStat === "on_leave" ? "warning" : "error"}">${escapeHtml(empStat)}</span>
-                  ${m.systemRole && m.systemRole !== "none" ? `<span class="status-pill cyan">${escapeHtml(roleLabel(m.systemRole, t))}</span>` : ""}
-                </div>
-                <div class="muted-text" style="font-size:0.86rem;">
-                  ${escapeHtml(isArabic() ? m.roleAr : m.roleEn)}${m.email ? ` • ${escapeHtml(m.email)}` : ""}
-                </div>
-                <div style="font-size:0.78rem;color:var(--neon-cyan);margin-top:4px;">
-                  ${(m.skills || []).slice(0, 6).map((sk) => escapeHtml(sk)).join(" · ")} • ${assignedCount} ${escapeHtml(t("entAssignedProjectsCount"))}
-                </div>
-              </div>
-              <div style="display:flex;gap:6px;align-items:center;">
-                ${m.cvSummary || m.portfolioUrl ? `<button type="button" class="btn btn-outline btn-sm" data-emp-cv="${escapeHtml(m.id)}">📄 CV</button>` : ""}
-                <button type="button" class="btn btn-outline btn-sm" data-pub-tm="${escapeHtml(m.id)}">${escapeHtml(m.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
-                <button type="button" class="icon-btn" data-edit-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
-                <button type="button" class="icon-btn danger" data-del-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-              </div>
-            </div>
-          `;
-        })
-        .join("")}
+      <div id="empSubWrap" class="stack-list"></div>
     `;
 
     document.getElementById("entAddEmpBtn").addEventListener("click", () => ctx.openTeamEditor(null));
-    body.querySelectorAll("[data-emp-cv]").forEach((b) =>
+    body.querySelectorAll("[data-emp-tab]").forEach((b) =>
+      b.addEventListener("click", () => {
+        uiState.empSubTab = b.dataset.empTab;
+        renderEmployeesManager(body, ctx, session);
+      })
+    );
+
+    const wrap = document.getElementById("empSubWrap");
+    if (uiState.empSubTab === "jobs") {
+      if (window.VexoraEcosystem?.renderHrJobsPanel) {
+        window.VexoraEcosystem.renderHrJobsPanel(wrap, ctx, session, () => renderEmployeesManager(body, ctx, session));
+      }
+      return;
+    }
+
+    wrap.innerHTML = team
+      .map((m) => {
+        const empStat = m.employeeStatus || "active";
+        const assignedCount = (studioState.projects || []).filter((p) => (p.assignedTeam || []).includes(m.nameEn) || (p.assignedTeam || []).includes(m.id)).length;
+        const assignedTasks = (studioState.projectTasks || []).filter((tk) => tk.assignedTo === m.nameEn || tk.assignedTo === m.nameAr).length;
+        return `
+          <div class="glass-card row-between" style="flex-wrap:wrap;gap:12px;">
+            <div style="min-width:220px;flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <h3 class="card-title">${escapeHtml(isArabic() ? m.nameAr : m.nameEn)}</h3>
+                <span class="status-pill ${empStat === "active" ? "success" : empStat === "on_leave" ? "warning" : "error"}">${escapeHtml(empStat)}</span>
+                ${m.systemRole && m.systemRole !== "none" ? `<span class="status-pill cyan">${escapeHtml(roleLabel(m.systemRole, t))}</span>` : ""}
+              </div>
+              <div class="muted-text" style="font-size:0.86rem;">
+                ${escapeHtml(isArabic() ? m.roleAr : m.roleEn)}${m.email ? ` • ${escapeHtml(m.email)}` : ""}
+              </div>
+              <div style="font-size:0.78rem;color:var(--neon-cyan);margin-top:4px;">
+                ${(m.skills || []).slice(0, 6).map((sk) => escapeHtml(sk)).join(" · ")} • ${assignedCount} ${escapeHtml(t("entAssignedProjectsCount"))} • ${assignedTasks} ${escapeHtml(t("projTasksBtn"))}
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              ${m.cvSummary || m.portfolioUrl ? `<button type="button" class="btn btn-outline btn-sm" data-emp-cv="${escapeHtml(m.id)}">📄 CV</button>` : ""}
+              <button type="button" class="btn btn-outline btn-sm" data-pub-tm="${escapeHtml(m.id)}">${escapeHtml(m.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
+              <button type="button" class="icon-btn" data-edit-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
+              <button type="button" class="icon-btn danger" data-del-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+
+    wrap.querySelectorAll("[data-emp-cv]").forEach((b) =>
       b.addEventListener("click", () => {
         const m = studioState.team.find((x) => x.id === b.dataset.empCv);
         if (!m) return;
@@ -1580,7 +1657,7 @@
         );
       })
     );
-    body.querySelectorAll("[data-pub-tm]").forEach((b) =>
+    wrap.querySelectorAll("[data-pub-tm]").forEach((b) =>
       b.addEventListener("click", async () => {
         const item = studioState.team.find((x) => x.id === b.dataset.pubTm);
         if (!item) return;
@@ -1593,10 +1670,10 @@
         renderEmployeesManager(body, ctx, session);
       })
     );
-    body.querySelectorAll("[data-edit-tm]").forEach((b) =>
+    wrap.querySelectorAll("[data-edit-tm]").forEach((b) =>
       b.addEventListener("click", () => ctx.openTeamEditor(studioState.team.find((x) => x.id === b.dataset.editTm)))
     );
-    body.querySelectorAll("[data-del-tm]").forEach((b) =>
+    wrap.querySelectorAll("[data-del-tm]").forEach((b) =>
       b.addEventListener("click", () => {
         const id = b.dataset.delTm;
         openConfirmDialog(ctx, t("delete"), t("entDeleteConfirmMsg"), async () => {
@@ -2367,6 +2444,15 @@
         const idx = studioState.releases.findIndex((x) => x.id === item.id);
         if (idx >= 0) studioState.releases[idx] = updated;
         else studioState.releases.unshift(updated);
+        if (updated.status === "released" && window.VexoraEcosystem?.runAutomationEvent) {
+          await window.VexoraEcosystem.runAutomationEvent(ctx, "release_published", {
+            version: updated.version,
+            titleEn: updated.titleEn,
+            titleAr: updated.titleAr,
+            changelogEn: updated.descriptionEn || updated.changelog,
+            changelogAr: updated.descriptionAr || updated.changelog
+          });
+        }
         saveState();
         logAudit(ctx, session, "upsert_release", "site_releases", updated.id, { version: updated.version, status: updated.status });
         ctx.closeModal();
@@ -2415,19 +2501,32 @@
     const localCounts = {
       services: (studioState.services || []).length,
       projects: (studioState.projects || []).length,
+      project_tasks: (studioState.projectTasks || []).length,
+      project_files: (studioState.projectFiles || []).length,
       team_members: (studioState.team || []).length,
+      job_applications: (studioState.jobApplications || []).length,
       knowledge_base: (studioState.knowledgeBase || []).length,
       faqs: (studioState.faqs || []).length,
       updates_feed: (studioState.updates || []).length,
       site_releases: (studioState.releases || []).length,
+      crm_leads: (studioState.crmLeads || []).length,
+      finance_invoices: (studioState.financeInvoices || []).length,
+      finance_transactions: (studioState.financeTransactions || []).length,
       contact_messages: (studioState.messages || []).length,
       project_requests: (studioState.projectRequests || []).length,
+      system_logs: (studioState.systemLogs || []).length,
+      integration_configs: (studioState.integrationConfigs || []).length,
+      automation_rules: (studioState.automationRules || []).length,
+      automation_logs: (studioState.automationLogs || []).length,
       analytics_events: (studioState.analytics?.events || []).length,
       ai_logs: (studioState.aiLogs || []).length,
       login_logs: (studioState.loginLogs || []).length,
       audit_logs: (studioState.auditLogs || []).length
     };
-    const counts = uiState.cloudDbHealth?.tables || localCounts;
+    const rawCloudTables = uiState.cloudDbHealth?.tables;
+    const countRows = Array.isArray(rawCloudTables)
+      ? rawCloudTables.map((r) => [r.table, r.rows])
+      : Object.entries(rawCloudTables || localCounts);
 
     body.innerHTML = `
       <div class="glass-card highlight-border stack-list">
@@ -2443,7 +2542,7 @@
         </div>
         <div class="chips-wrap">
           <span class="status-pill ${Backend.isConfigured() ? "success" : "cyan"}">
-            ${escapeHtml(Backend.isConfigured() ? "PostgreSQL (Supabase + RLS)" : "Browser LocalStorage Sandbox")}
+            ${escapeHtml(Backend.isConfigured() ? "PostgreSQL (Supabase + RLS)" : "Browser Preview Storage")}
           </span>
         </div>
       </div>
@@ -2460,7 +2559,7 @@
               </tr>
             </thead>
             <tbody>
-              ${Object.entries(counts)
+              ${countRows
                 .map(
                   ([tbl, cnt]) => `
                 <tr>
@@ -2515,7 +2614,7 @@
       document.getElementById("entPurgeAnalyticsBtn").addEventListener("click", () => {
         openConfirmDialog(ctx, t("entOwnerOnlyZone"), t("entDeleteConfirmMsg"), async () => {
           if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.callAdminGateway("purge_telemetry_logs", { target: "analytics_events" }); } catch (err) { showToast(err.message); return; }
+            try { await Backend.callAdminGateway("purge_telemetry_logs", { table: "analytics_events", confirmPhrase: "OWNER_CONFIRM_PURGE" }); } catch (err) { showToast(err.message); return; }
           }
           studioState.analytics = { totalViews: 0, aiQueries: 0, apkDownloads: 0, byRoute: {}, bySource: {}, events: [] };
           saveState();
@@ -2527,7 +2626,7 @@
       document.getElementById("entPurgeAiLogsBtn").addEventListener("click", () => {
         openConfirmDialog(ctx, t("entOwnerOnlyZone"), t("entDeleteConfirmMsg"), async () => {
           if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.callAdminGateway("purge_telemetry_logs", { target: "ai_logs" }); } catch (err) { showToast(err.message); return; }
+            try { await Backend.callAdminGateway("purge_telemetry_logs", { table: "ai_logs", confirmPhrase: "OWNER_CONFIRM_PURGE" }); } catch (err) { showToast(err.message); return; }
           }
           studioState.aiLogs = [];
           saveState();

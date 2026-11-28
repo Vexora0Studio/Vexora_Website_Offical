@@ -292,6 +292,12 @@
       descriptionAr: r.description_ar,
       category: r.category || "Websites",
       status: r.status === "Coming Soon" ? "Planning" : (r.status || "In Progress"),
+      progressPct: Number(r.progress_pct ?? 0),
+      deadline: r.deadline || "",
+      currentPhase: r.current_phase || "Planning",
+      clientUserId: r.client_user_id || "",
+      clientEmail: r.client_email || "",
+      budgetEgp: Number(r.budget_egp ?? 0),
       technologies: Array.isArray(r.technologies) ? r.technologies : [],
       assignedTeam: Array.isArray(r.assigned_team) ? r.assigned_team : [],
       changeHistory: Array.isArray(r.change_history) ? r.change_history : [],
@@ -313,6 +319,12 @@
       description_ar: p.descriptionAr,
       category: p.category || "Websites",
       status: p.status === "Coming Soon" ? "Planning" : (p.status || "In Progress"),
+      progress_pct: Math.max(0, Math.min(100, Number(p.progressPct ?? 0))),
+      deadline: p.deadline || "",
+      current_phase: p.currentPhase || "Planning",
+      client_user_id: p.clientUserId || null,
+      client_email: p.clientEmail || "",
+      budget_egp: Number(p.budgetEgp ?? 0),
       technologies: p.technologies || [],
       assigned_team: p.assignedTeam || [],
       change_history: Array.isArray(p.changeHistory) ? p.changeHistory : [],
@@ -1423,6 +1435,385 @@
     }).catch(() => {});
   }
 
+  /* =========================================================
+     ECOSYSTEM EXTENSIONS (CRM, Tasks, Files, Finance, HR, Monitoring, Integrations, Automations)
+     ========================================================= */
+  const ALLOWED_CLIENT_FILE_EXT = new Set(["pdf", "png", "jpg", "jpeg", "webp", "docx", "xlsx", "csv", "txt", "zip", "json"]);
+
+  async function uploadClientFile(file) {
+    if (!file) throw new Error("No file selected.");
+    if (file.size > 12 * 1024 * 1024) throw new Error("Max file size is 12 MB.");
+    const ext = (file.name.split(".").pop() || "bin").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+    if (!ALLOWED_CLIENT_FILE_EXT.has(ext)) {
+      throw new Error("Unsupported file type. Allowed: PDF, Images, DOCX, XLSX, CSV, TXT, ZIP, JSON.");
+    }
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    const admin = getStoredAuth();
+    const token = client?.access_token || admin?.access_token;
+    const uid = client?.userId || admin?.userId || "anon";
+
+    if (isConfigured() && token) {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 80);
+      const filePath = `client-files/${uid}/${Date.now()}_${safeName}`;
+      const res = await fetch(`${c.supabaseUrl}/storage/v1/object/${c.storageBucket}/${filePath}`, {
+        method: "POST",
+        headers: {
+          apikey: c.supabaseAnonKey,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": file.type || "application/octet-stream",
+          "x-upsert": "true"
+        },
+        body: file
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Client file upload failed (${res.status}): ${txt}`);
+      }
+      return {
+        fileName: file.name,
+        fileUrl: `${c.supabaseUrl}/storage/v1/object/public/${c.storageBucket}/${filePath}`,
+        mimeType: file.type || "application/octet-stream",
+        sizeBytes: file.size,
+        synced: true
+      };
+    }
+
+    return {
+      fileName: file.name,
+      fileUrl: `session-file://${encodeURIComponent(file.name)}`,
+      mimeType: file.type || "application/octet-stream",
+      sizeBytes: file.size,
+      synced: false
+    };
+  }
+
+  function mapTaskFromDb(r) {
+    return {
+      id: r.id,
+      projectId: r.project_id,
+      title: r.title,
+      phase: r.phase || "Development",
+      status: r.status || "todo",
+      priority: r.priority || "medium",
+      assignedTo: r.assigned_to || "",
+      dueDate: r.due_date || "",
+      notes: r.notes || "",
+      createdAt: r.created_at
+    };
+  }
+
+  function mapTaskToDb(t) {
+    return {
+      id: t.id,
+      project_id: t.projectId,
+      title: t.title,
+      phase: t.phase || "Development",
+      status: t.status || "todo",
+      priority: t.priority || "medium",
+      assigned_to: t.assignedTo || "",
+      due_date: t.dueDate || "",
+      notes: t.notes || "",
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function mapCrmFromDb(r) {
+    return {
+      id: r.id,
+      name: r.name,
+      email: r.email,
+      phone: r.phone || "",
+      company: r.company || "",
+      serviceInterest: r.service_interest || "",
+      budgetEgp: Number(r.budget_egp || 0),
+      currency: r.currency || "EGP",
+      stage: r.stage || "new_lead",
+      source: r.source || "website",
+      assignedTo: r.assigned_to || "",
+      notes: r.notes || "",
+      activities: Array.isArray(r.activities) ? r.activities : [],
+      convertedProjectId: r.converted_project_id || "",
+      createdAt: r.created_at
+    };
+  }
+
+  function mapCrmToDb(l) {
+    return {
+      id: l.id,
+      name: l.name,
+      email: l.email,
+      phone: l.phone || "",
+      company: l.company || "",
+      service_interest: l.serviceInterest || "",
+      budget_egp: Number(l.budgetEgp || 0),
+      currency: l.currency || "EGP",
+      stage: l.stage || "new_lead",
+      source: l.source || "website",
+      assigned_to: l.assignedTo || "",
+      notes: l.notes || "",
+      activities: Array.isArray(l.activities) ? l.activities : [],
+      converted_project_id: l.convertedProjectId || "",
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function mapInvoiceFromDb(r) {
+    return {
+      id: r.id,
+      invoiceNumber: r.invoice_number,
+      clientUserId: r.client_user_id || "",
+      clientName: r.client_name || "",
+      clientEmail: r.client_email || "",
+      projectId: r.project_id || "",
+      currency: r.currency || "EGP",
+      items: Array.isArray(r.items) ? r.items : [],
+      subtotal: Number(r.subtotal || 0),
+      taxPct: Number(r.tax_pct || 0),
+      total: Number(r.total || 0),
+      paidAmount: Number(r.paid_amount || 0),
+      status: r.status || "draft",
+      dueDate: r.due_date || "",
+      notes: r.notes || "",
+      createdAt: r.created_at
+    };
+  }
+
+  function mapInvoiceToDb(inv) {
+    return {
+      id: inv.id,
+      invoice_number: inv.invoiceNumber,
+      client_user_id: inv.clientUserId || null,
+      client_name: inv.clientName || "",
+      client_email: inv.clientEmail || "",
+      project_id: inv.projectId || "",
+      currency: inv.currency || "EGP",
+      items: Array.isArray(inv.items) ? inv.items : [],
+      subtotal: Number(inv.subtotal || 0),
+      tax_pct: Number(inv.taxPct || 0),
+      total: Number(inv.total || 0),
+      paid_amount: Number(inv.paidAmount || 0),
+      status: inv.status || "draft",
+      due_date: inv.dueDate || "",
+      notes: inv.notes || "",
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function mapTransactionFromDb(r) {
+    return {
+      id: r.id,
+      txType: r.tx_type,
+      category: r.category || "project_payment",
+      amount: Number(r.amount || 0),
+      currency: r.currency || "EGP",
+      projectId: r.project_id || "",
+      invoiceId: r.invoice_id || "",
+      description: r.description || "",
+      occurredOn: r.occurred_on || "",
+      createdBy: r.created_by || "",
+      createdAt: r.created_at
+    };
+  }
+
+  function mapTransactionToDb(tx) {
+    return {
+      id: tx.id,
+      tx_type: tx.txType,
+      category: tx.category || "project_payment",
+      amount: Number(tx.amount || 0),
+      currency: tx.currency || "EGP",
+      project_id: tx.projectId || "",
+      invoice_id: tx.invoiceId || "",
+      description: tx.description || "",
+      occurred_on: tx.occurredOn || new Date().toISOString().slice(0, 10),
+      created_by: tx.createdBy || ""
+    };
+  }
+
+  function mapJobAppFromDb(r) {
+    return {
+      id: r.id,
+      applicantName: r.applicant_name,
+      email: r.email,
+      phone: r.phone || "",
+      roleApplied: r.role_applied,
+      specialization: r.specialization || "",
+      experienceYears: Number(r.experience_years || 0),
+      portfolioUrl: r.portfolio_url || "",
+      cvSummary: r.cv_summary || "",
+      status: r.status || "new",
+      internalNotes: r.internal_notes || "",
+      createdAt: r.created_at
+    };
+  }
+
+  function mapJobAppToDb(a) {
+    return {
+      id: a.id,
+      applicant_name: a.applicantName,
+      email: a.email,
+      phone: a.phone || "",
+      role_applied: a.roleApplied,
+      specialization: a.specialization || "",
+      experience_years: Number(a.experienceYears || 0),
+      portfolio_url: a.portfolioUrl || "",
+      cv_summary: a.cvSummary || "",
+      status: a.status || "new",
+      internal_notes: a.internalNotes || "",
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function mapProjectFileFromDb(r) {
+    return {
+      id: r.id,
+      projectId: r.project_id || "",
+      requestId: r.request_id || "",
+      clientUserId: r.client_user_id || "",
+      clientEmail: r.client_email || "",
+      fileName: r.file_name,
+      fileUrl: r.file_url,
+      mimeType: r.mime_type || "application/octet-stream",
+      sizeBytes: Number(r.size_bytes || 0),
+      uploadedBy: r.uploaded_by || "client",
+      notes: r.notes || "",
+      createdAt: r.created_at
+    };
+  }
+
+  async function submitCrmLead(lead) {
+    const c = getConfig();
+    if (!isConfigured()) return { synced: false };
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/crm_leads`, {
+      method: "POST",
+      headers: { ...authHeaders(false), Prefer: "return=minimal" },
+      body: JSON.stringify({ ...mapCrmToDb({ ...lead, stage: "new_lead" }), created_at: lead.createdAt || new Date().toISOString() })
+    });
+    if (!res.ok) throw new Error(`CRM submit failed (${res.status})`);
+    return { synced: true };
+  }
+
+  async function submitJobApplication(app) {
+    const c = getConfig();
+    if (!isConfigured()) return { synced: false };
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/job_applications`, {
+      method: "POST",
+      headers: { ...authHeaders(false), Prefer: "return=minimal" },
+      body: JSON.stringify({ ...mapJobAppToDb({ ...app, status: "new" }), created_at: app.createdAt || new Date().toISOString() })
+    });
+    if (!res.ok) throw new Error(`Job application submit failed (${res.status})`);
+    return { synced: true };
+  }
+
+  async function fetchClientProjects() {
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    if (!isConfigured() || !client?.access_token) return null;
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/projects?published=eq.false&order=created_at.desc`, { headers: clientAuthHeaders() });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.map(mapProjectFromDb);
+  }
+
+  async function fetchClientProjectTasks() {
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    if (!isConfigured() || !client?.access_token) return null;
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/project_tasks?order=created_at.asc`, { headers: clientAuthHeaders() });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.map(mapTaskFromDb);
+  }
+
+  async function fetchClientFiles() {
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    if (!isConfigured() || !client?.access_token) return null;
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/project_files?order=created_at.desc`, { headers: clientAuthHeaders() });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.map(mapProjectFileFromDb);
+  }
+
+  async function upsertProjectFileRecord(rec) {
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    const admin = getStoredAuth();
+    if (!isConfigured() || (!client?.access_token && !admin?.access_token)) return { synced: false };
+    const headers = admin?.access_token ? authHeaders(true) : clientAuthHeaders();
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/project_files`, {
+      method: "POST",
+      headers: { ...headers, Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        id: rec.id,
+        project_id: rec.projectId || "",
+        request_id: rec.requestId || "",
+        client_user_id: rec.clientUserId || client?.userId || null,
+        client_email: rec.clientEmail || client?.email || "",
+        file_name: rec.fileName,
+        file_url: rec.fileUrl,
+        mime_type: rec.mimeType || "application/octet-stream",
+        size_bytes: Number(rec.sizeBytes || 0),
+        uploaded_by: rec.uploadedBy || (admin?.access_token ? "admin" : "client"),
+        notes: rec.notes || "",
+        created_at: rec.createdAt || new Date().toISOString()
+      })
+    });
+    if (!res.ok) throw new Error(`Save file metadata failed (${res.status})`);
+    return { synced: true };
+  }
+
+  async function fetchClientInvoices() {
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    if (!isConfigured() || !client?.access_token) return null;
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/finance_invoices?order=created_at.desc`, { headers: clientAuthHeaders() });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.map(mapInvoiceFromDb);
+  }
+
+  async function fetchClientUpdates() {
+    const c = getConfig();
+    const client = getStoredClientAuth();
+    if (!isConfigured() || !client?.access_token) return null;
+    const res = await fetch(`${c.supabaseUrl}/rest/v1/updates_feed?order=pinned.desc,created_at.desc`, { headers: clientAuthHeaders() });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.map(mapUpdateFromDb);
+  }
+
+  async function logSystemEvent(entry) {
+    const c = getConfig();
+    if (!isConfigured()) return;
+    try {
+      await fetch(`${c.supabaseUrl}/rest/v1/system_logs`, {
+        method: "POST",
+        headers: { ...authHeaders(false), Prefer: "return=minimal" },
+        body: JSON.stringify({
+          id: entry.id || `syslog_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          source: String(entry.source || "frontend").slice(0, 60),
+          severity: ["info", "warn", "error", "critical"].includes(entry.severity) ? entry.severity : "info",
+          message: String(entry.message || "").slice(0, 500),
+          route: String(entry.route || "").slice(0, 60),
+          details: entry.details || {},
+          resolved: false,
+          created_at: entry.createdAt || new Date().toISOString()
+        })
+      });
+    } catch {
+      // Never cascade monitoring errors
+    }
+  }
+
+  async function triggerAutomation(triggerEvent, payload = {}) {
+    if (!isConfigured() || !getStoredAuth()?.access_token) {
+      return { ok: false, localOnly: true };
+    }
+    return await callAdminGateway("run_automation_event", { triggerEvent, payload });
+  }
+
   window.VexoraBackend = {
     getConfig,
     savePublicConfigOverride,
@@ -1443,6 +1834,8 @@
     deleteService: (id) => deleteRow("services", id),
     upsertProject: (p) => upsertRow("projects", mapProjectToDb(p)),
     deleteProject: (id) => deleteRow("projects", id),
+    upsertProjectTask: (t) => upsertRow("project_tasks", mapTaskToDb(t)),
+    deleteProjectTask: (id) => deleteRow("project_tasks", id),
     upsertTeamMember: (m) => upsertRow("team_members", mapTeamToDb(m)),
     deleteTeamMember: (id) => deleteRow("team_members", id),
     upsertKnowledgeItem: (k) => upsertRow("knowledge_base", mapKbToDb(k)),
@@ -1454,6 +1847,49 @@
     upsertRelease: (rel) => upsertRow("site_releases", mapReleaseToDb(rel)),
     deleteRelease: (id) => deleteRow("site_releases", id),
     updateSiteSettings: (s) => upsertRow("site_settings", mapSettingsToDb(s)),
+    submitCrmLead,
+    upsertCrmLead: (l) => upsertRow("crm_leads", mapCrmToDb(l)),
+    deleteCrmLead: (id) => deleteRow("crm_leads", id),
+    upsertInvoice: (inv) => upsertRow("finance_invoices", mapInvoiceToDb(inv)),
+    deleteInvoice: (id) => deleteRow("finance_invoices", id),
+    upsertTransaction: (tx) => upsertRow("finance_transactions", mapTransactionToDb(tx)),
+    deleteTransaction: (id) => deleteRow("finance_transactions", id),
+    submitJobApplication,
+    upsertJobApplication: (a) => upsertRow("job_applications", mapJobAppToDb(a)),
+    deleteJobApplication: (id) => deleteRow("job_applications", id),
+    upsertProjectFileRecord,
+    deleteProjectFileRecord: (id) => deleteRow("project_files", id),
+    uploadClientFile,
+    fetchClientProjects,
+    fetchClientProjectTasks,
+    fetchClientFiles,
+    fetchClientInvoices,
+    fetchClientUpdates,
+    logSystemEvent,
+    resolveSystemLog: (id, resolved) => upsertRow("system_logs", { id, resolved: Boolean(resolved) }),
+    upsertIntegrationConfig: (cfg) => upsertRow("integration_configs", {
+      key: cfg.key,
+      name_en: cfg.nameEn,
+      name_ar: cfg.nameAr,
+      category: cfg.category || "core",
+      enabled: cfg.enabled !== false,
+      status: cfg.status || "connected",
+      config: cfg.config || {},
+      last_checked_at: cfg.lastCheckedAt || new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }),
+    upsertAutomationRule: (rule) => upsertRow("automation_rules", {
+      key: rule.key,
+      name_en: rule.nameEn,
+      name_ar: rule.nameAr,
+      trigger_event: rule.triggerEvent,
+      action_summary: rule.actionSummary || "",
+      enabled: rule.enabled !== false,
+      run_count: Number(rule.runCount || 0),
+      last_run_at: rule.lastRunAt || null,
+      updated_at: new Date().toISOString()
+    }),
+    triggerAutomation,
     submitProjectRequest,
     fetchClientRequests,
     fetchAllRequestsAdmin,
@@ -1475,6 +1911,14 @@
     sendAiFeedback,
     embedRagChunks,
     upsertRagDocumentCloud,
-    deleteRagDocumentCloud
+    deleteRagDocumentCloud,
+    mappers: {
+      mapTaskFromDb,
+      mapCrmFromDb,
+      mapInvoiceFromDb,
+      mapTransactionFromDb,
+      mapJobAppFromDb,
+      mapProjectFileFromDb
+    }
   };
 })();

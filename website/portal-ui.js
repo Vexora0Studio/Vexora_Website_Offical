@@ -272,11 +272,26 @@
     }
 
     const portalTab = ctx.getClientPortalTab();
+    const ce = activeClient.email.toLowerCase();
     const clientRequests = (studioState.projectRequests || []).filter(
-      (r) => r.userId === activeClient.userId || r.clientEmail.toLowerCase() === activeClient.email.toLowerCase()
+      (r) => r.userId === activeClient.userId || (r.clientEmail || "").toLowerCase() === ce
+    );
+    const clientProjects = (studioState.projects || []).filter(
+      (p) => (p.clientUserId && p.clientUserId === activeClient.userId) || (p.clientEmail || "").toLowerCase() === ce
+    );
+    const clientFiles = (studioState.projectFiles || []).filter(
+      (f) => (f.clientUserId && f.clientUserId === activeClient.userId) || (f.clientEmail || "").toLowerCase() === ce
+    );
+    const clientInvoices = (studioState.financeInvoices || []).filter(
+      (inv) => inv.status !== "draft" && ((inv.clientUserId && inv.clientUserId === activeClient.userId) || (inv.clientEmail || "").toLowerCase() === ce)
     );
     const clientMessages = (studioState.messages || []).filter(
-      (m) => (m.userId && m.userId === activeClient.userId) || m.email.toLowerCase() === activeClient.email.toLowerCase()
+      (m) => (m.userId && m.userId === activeClient.userId) || (m.email || "").toLowerCase() === ce
+    );
+    const clientNotifs = (studioState.updates || []).filter(
+      (u) =>
+        u.published !== false &&
+        ((u.targetGroup === "specific_email" || u.targetGroup === "specific") && (u.targetEmail || "").toLowerCase() === ce)
     );
     const publishedServices = studioState.services.filter((s) => s.published);
 
@@ -289,12 +304,34 @@
         <button id="clientSignOutBtn" type="button" class="btn btn-outline btn-sm">🔓 ${escapeHtml(t("clientSignOutBtn"))}</button>
       </div>
 
+      ${
+        clientNotifs.length > 0
+          ? `<div class="glass-card highlight-border stack-list" style="padding:12px;">
+              <strong style="color:var(--neon-cyan);font-size:0.88rem;">🔔 ${escapeHtml(t("clientPersonalNotifsTitle"))} (${clientNotifs.length})</strong>
+              ${clientNotifs.slice(0, 3).map((n) => `
+                <div style="font-size:0.84rem;border-top:1px solid var(--subtle-outline);padding-top:6px;">
+                  <strong>${escapeHtml(isArabic() ? n.titleAr : n.titleEn)}</strong> — <span class="muted-text">${escapeHtml(isArabic() ? n.bodyAr : n.bodyEn)}</span>
+                </div>
+              `).join("")}
+            </div>`
+          : ""
+      }
+
       <div class="chips-scroll">
+        <button type="button" class="chip-btn ${portalTab === "my_projects" ? "active" : ""}" data-cl-tab="my_projects">
+          🚀 ${escapeHtml(t("clientTabProjects"))} (${clientProjects.length})
+        </button>
         <button type="button" class="chip-btn ${portalTab === "new_request" ? "active" : ""}" data-cl-tab="new_request">
           ➕ ${escapeHtml(t("clientTabNewRequest"))}
         </button>
         <button type="button" class="chip-btn ${portalTab === "my_requests" ? "active" : ""}" data-cl-tab="my_requests">
           📋 ${escapeHtml(t("clientTabMyRequests"))} (${clientRequests.length})
+        </button>
+        <button type="button" class="chip-btn ${portalTab === "files" ? "active" : ""}" data-cl-tab="files">
+          📁 ${escapeHtml(t("clientTabFiles"))} (${clientFiles.length})
+        </button>
+        <button type="button" class="chip-btn ${portalTab === "invoices" ? "active" : ""}" data-cl-tab="invoices">
+          🧾 ${escapeHtml(t("clientTabInvoices"))} (${clientInvoices.length})
         </button>
         <button type="button" class="chip-btn ${portalTab === "support" ? "active" : ""}" data-cl-tab="support">
           💬 ${escapeHtml(t("clientTabSupport"))} (${clientMessages.length})
@@ -407,12 +444,145 @@
         if (!Array.isArray(studioState.projectRequests)) studioState.projectRequests = [];
         studioState.projectRequests.unshift(reqObj);
         trackEvent("client_request", "client");
+        if (window.VexoraEcosystem?.runAutomationEvent) {
+          await window.VexoraEcosystem.runAutomationEvent({ studioState, saveState, Backend }, "inbound_created", {
+            kind: "Client Project Request",
+            message: `${activeClient.fullName} (${activeClient.email}) requested "${projectTitle}"`
+          });
+        }
         saveState();
         btn.disabled = false;
         showToast(t("clientRequestSubmittedToast"));
         ctx.setClientPortalTab("my_requests");
         renderScreen();
       });
+    } else if (portalTab === "my_projects") {
+      const allTasks = studioState.projectTasks || [];
+      portalBody.innerHTML = clientProjects.length === 0
+        ? `<div class="glass-card stack-list"><p class="muted-text" style="margin:0;">${escapeHtml(t("clientNoProjectsYet"))}</p><button id="clGoReqBtn" type="button" class="btn btn-primary btn-sm" style="align-self:flex-start;">+ ${escapeHtml(t("clientTabNewRequest"))}</button></div>`
+        : clientProjects.map((p) => {
+            const pTasks = allTasks.filter((tk) => tk.projectId === p.id);
+            const pct = Math.max(0, Math.min(100, Number(p.progressPct || 0)));
+            return `
+              <article class="glass-card highlight-border stack-list">
+                <div class="row-between" style="flex-wrap:wrap;gap:8px;">
+                  <div>
+                    <h3 class="card-title">${escapeHtml(isArabic() ? p.nameAr : p.nameEn)}</h3>
+                    <div class="muted-text" style="font-size:0.82rem;">${escapeHtml(p.category)} • ${escapeHtml(p.currentPhase || "In Progress")}${p.deadline ? ` • 📅 ${escapeHtml(p.deadline)}` : ""}</div>
+                  </div>
+                  <span class="status-pill cyan">${pct}%</span>
+                </div>
+                <div class="analytics-bar-track"><div class="analytics-bar-fill" style="width:${pct}%"></div></div>
+                <p class="muted-text" style="margin:0;">${escapeHtml(isArabic() ? p.descriptionAr : p.descriptionEn)}</p>
+                ${
+                  pTasks.length > 0
+                    ? `<div class="stack-list" style="gap:6px;">
+                        <strong style="font-size:0.84rem;color:var(--neon-cyan);">${escapeHtml(t("projTasksTitle"))} (${pTasks.filter((x) => x.status === "done").length}/${pTasks.length})</strong>
+                        ${pTasks.map((tk) => `
+                          <div class="row-between" style="font-size:0.82rem;padding:6px 10px;border-radius:8px;background:rgba(15,23,42,0.55);">
+                            <span>${escapeHtml(tk.title)}</span>
+                            <span class="status-pill ${tk.status === "done" ? "success" : tk.status === "in_progress" ? "warning" : "cyan"}">${escapeHtml(tk.status)}</span>
+                          </div>
+                        `).join("")}
+                      </div>`
+                    : ""
+                }
+              </article>
+            `;
+          }).join("");
+      document.getElementById("clGoReqBtn")?.addEventListener("click", () => {
+        ctx.setClientPortalTab("new_request");
+        renderScreen();
+      });
+    } else if (portalTab === "files") {
+      portalBody.innerHTML = `
+        <form id="clientFileUploadForm" class="glass-card highlight-border stack-list">
+          <h2 class="card-title" style="color:var(--neon-cyan);">📁 ${escapeHtml(t("clientUploadFileTitle"))}</h2>
+          <p class="muted-text" style="margin:0;font-size:0.84rem;">${escapeHtml(t("clientUploadFileSub"))}</p>
+          <div class="form-two-col">
+            <div class="field"><label>${escapeHtml(t("entNavProjects"))}</label>
+              <select id="cfProj">
+                <option value="">—</option>
+                ${clientProjects.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(isArabic() ? p.nameAr : p.nameEn)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field"><label>${escapeHtml(t("clientFileNotesLabel"))}</label><input id="cfNotes" /></div>
+          </div>
+          <div class="field"><input id="cfInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,.xlsx,.csv,.txt,.zip,.json" required /></div>
+          <div id="cfErr" class="error-text"></div>
+          <button id="cfSubmitBtn" type="submit" class="btn btn-primary btn-sm">⬆️ ${escapeHtml(t("clientUploadBtn"))}</button>
+        </form>
+        ${
+          clientFiles.length === 0
+            ? `<div class="glass-card"><p class="muted-text" style="margin:0;">${escapeHtml(t("clientNoFilesYet"))}</p></div>`
+            : clientFiles.map((f) => `
+              <div class="glass-card row-between" style="flex-wrap:wrap;gap:8px;">
+                <div>
+                  <strong>📄 ${escapeHtml(f.fileName)}</strong>
+                  <div class="muted-text" style="font-size:0.78rem;">${Math.max(1, Math.round((f.sizeBytes || 0) / 1024))} KB • ${escapeHtml((f.createdAt || "").slice(0, 10))}${f.notes ? ` • ${escapeHtml(f.notes)}` : ""}</div>
+                </div>
+                <div class="btn-row">
+                  ${/^https?:\/\//i.test(f.fileUrl || "") ? `<a href="${escapeHtml(f.fileUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">⬇️ Open</a>` : `<span class="tech-chip">Session File</span>`}
+                </div>
+              </div>
+            `).join("")
+        }
+      `;
+      document.getElementById("clientFileUploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const file = document.getElementById("cfInput").files?.[0];
+        const err = document.getElementById("cfErr");
+        const btn = document.getElementById("cfSubmitBtn");
+        if (!file) { err.textContent = t("validationError"); return; }
+        err.textContent = "";
+        btn.disabled = true;
+        try {
+          const uploaded = await Backend.uploadClientFile(file);
+          const rec = {
+            id: `file_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+            projectId: document.getElementById("cfProj").value,
+            requestId: "",
+            clientUserId: activeClient.userId,
+            clientEmail: activeClient.email,
+            fileName: uploaded.fileName,
+            fileUrl: uploaded.fileUrl,
+            mimeType: uploaded.mimeType,
+            sizeBytes: uploaded.sizeBytes,
+            uploadedBy: "client",
+            notes: document.getElementById("cfNotes").value.trim(),
+            createdAt: new Date().toISOString()
+          };
+          if (uploaded.synced) {
+            await Backend.upsertProjectFileRecord(rec);
+          }
+          if (!Array.isArray(studioState.projectFiles)) studioState.projectFiles = [];
+          studioState.projectFiles.unshift(rec);
+          saveState();
+          showToast("✓");
+          renderScreen();
+        } catch (upErr) {
+          err.textContent = upErr?.message || "Upload failed";
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    } else if (portalTab === "invoices") {
+      const fmt = window.VexoraEcosystem?.formatCurrency || ((amt, cur) => `${amt} ${cur || "EGP"}`);
+      portalBody.innerHTML = clientInvoices.length === 0
+        ? `<div class="glass-card"><p class="muted-text" style="margin:0;">${escapeHtml(t("clientNoInvoicesYet"))}</p></div>`
+        : clientInvoices.map((inv) => `
+          <div class="glass-card highlight-border stack-list">
+            <div class="row-between">
+              <div>
+                <h3 class="card-title">🧾 ${escapeHtml(inv.invoiceNumber)}</h3>
+                <div class="muted-text" style="font-size:0.8rem;">${escapeHtml(t("finDueDate"))}: ${escapeHtml(inv.dueDate || "—")}</div>
+              </div>
+              <span class="status-pill ${inv.status === "paid" ? "success" : inv.status === "overdue" ? "error" : "cyan"}">${escapeHtml(inv.status)}</span>
+            </div>
+            <div style="font-size:1.15rem;font-weight:700;color:var(--neon-cyan);">${escapeHtml(fmt(inv.total, inv.currency))}</div>
+            ${(inv.items || []).map((it) => `<div class="muted-text" style="font-size:0.84rem;">• ${escapeHtml(it.desc)} — ${escapeHtml(fmt(it.price, inv.currency))}</div>`).join("")}
+          </div>
+        `).join("");
     } else if (portalTab === "my_requests") {
       portalBody.innerHTML =
         clientRequests.length === 0
@@ -551,8 +721,18 @@
     const { t, isArabic, escapeHtml, studioState, navigate, showToast, renderAll } = ctx;
     const filter = ctx.getUpdatesFilter();
     const readIds = ctx.getReadUpdateIds();
+    const clientEmail = ctx.getActiveClientSession?.()?.email?.toLowerCase?.() || "";
+    const isAdmin = Boolean(ctx.isAdminAuthorized?.());
     const allPublished = (studioState.updates || [])
-      .filter((u) => u.published !== false)
+      .filter((u) => {
+        if (u.published === false) return false;
+        const grp = u.targetGroup || "all";
+        if (grp === "admins") return isAdmin;
+        if (grp === "specific_email" || grp === "specific") {
+          return isAdmin || (clientEmail && (u.targetEmail || "").toLowerCase() === clientEmail);
+        }
+        return true;
+      })
       .sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || new Date(b.createdAt) - new Date(a.createdAt));
 
     const visible = filter === "all" ? allPublished : allPublished.filter((u) => u.kind === filter);
@@ -708,6 +888,7 @@
         const id = btn.dataset.saveReq;
         const item = (studioState.projectRequests || []).find((r) => r.id === id);
         if (!item) return;
+        const prevStatus = item.status;
         const newStatus = body.querySelector(`[data-req-stat="${id}"]`)?.value || item.status;
         const newNote = body.querySelector(`[data-req-note="${id}"]`)?.value?.trim() || "";
 
@@ -722,6 +903,27 @@
         item.status = newStatus;
         item.adminNote = newNote;
         item.updatedAt = new Date().toISOString();
+
+        if (window.VexoraEcosystem?.runAutomationEvent) {
+          if (newStatus !== prevStatus || newNote) {
+            await window.VexoraEcosystem.runAutomationEvent({ studioState, saveState, Backend }, "status_changed", {
+              clientEmail: item.clientEmail,
+              title: item.projectTitle,
+              status: newStatus,
+              note: newNote
+            });
+          }
+          if (newStatus === "in_progress" && prevStatus !== "in_progress") {
+            await window.VexoraEcosystem.runAutomationEvent({ studioState, saveState, Backend }, "request_accepted", {
+              requestId: item.id,
+              projectTitle: item.projectTitle,
+              description: item.description,
+              clientEmail: item.clientEmail,
+              clientUserId: item.userId || ""
+            });
+          }
+        }
+
         saveState();
         showToast(t("adminRequestSavedToast"));
         renderScreen();
