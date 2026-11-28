@@ -1616,7 +1616,8 @@
      6. VEXORA AI CONTROL CENTER
      ========================================================= */
   function renderAiControl(body, ctx, session) {
-    const { t, escapeHtml, Backend, studioState, saveState, showToast } = ctx;
+    const { t, isArabic, escapeHtml, Backend, studioState, saveState, showToast } = ctx;
+    const ar = isArabic();
     const s = studioState.settings;
     const logs = Array.isArray(uiState.cloudMetrics?.recentAiLogs) && uiState.cloudMetrics.recentAiLogs.length
       ? uiState.cloudMetrics.recentAiLogs
@@ -1625,29 +1626,90 @@
     const avgLatency = logs.length
       ? Math.round(logs.reduce((acc, l) => acc + Number(l.latencyMs || l.latency_ms || 0), 0) / logs.length)
       : 0;
+    const totalTokens = logs.reduce(
+      (acc, l) => acc + Number(l.tokensEstimated || 0) + Number(l.tokens_input || 0) + Number(l.tokens_output || 0),
+      0
+    );
+    const ratedLogs = logs.filter((l) => l.feedback === "up" || l.feedback === "down");
+    const upLogs = ratedLogs.filter((l) => l.feedback === "up").length;
+    const satisfactionPct = ratedLogs.length ? `${Math.round((upLogs / ratedLogs.length) * 100)}%` : "—";
     const aiHealth = ctx.getAiSyncStatus();
+
+    const enabledTools = s.aiEnabledTools || {
+      web_search: true,
+      url_reader: true,
+      file_search: true,
+      code_sandbox: true,
+      calculator: true,
+      document_analyzer: true,
+      data_analyzer: true,
+      database_tools: true
+    };
+    const toolKeys = [
+      "web_search",
+      "url_reader",
+      "file_search",
+      "code_sandbox",
+      "calculator",
+      "document_analyzer",
+      "data_analyzer",
+      "database_tools"
+    ];
+    const agentConfigs = s.aiAgentConfigs || {};
+    const agentDefs = (window.VexoraAIPlatform?.AGENTS || [
+      { key: "research", ar: "وكيل البحث", en: "Research Agent" },
+      { key: "coding", ar: "وكيل البرمجة", en: "Coding Agent" },
+      { key: "writing", ar: "وكيل الكتابة", en: "Writing Agent" },
+      { key: "education", ar: "وكيل التعليم", en: "Education Agent" },
+      { key: "data", ar: "وكيل البيانات", en: "Data Agent" },
+      { key: "business", ar: "وكيل الأعمال", en: "Business Agent" },
+      { key: "general", ar: "المساعد العام", en: "General Agent" }
+    ]).filter((a) => a.key !== "auto");
+
+    const allDocs = window.VexoraAIPlatform?.loadRagDocs ? window.VexoraAIPlatform.loadRagDocs("studio", true) : [];
+    const studioDocs = allDocs.filter((d) => d.scope === "studio");
 
     body.innerHTML = `
       <div class="ent-kpi-grid">
-        <div class="glass-card ent-kpi-card"><div class="stat-value" style="font-size:1.25rem;">${escapeHtml(s.aiModel || "gemini-3.8-flash")}</div><div class="stat-label">${escapeHtml(t("entAiModelLabel"))}</div></div>
+        <div class="glass-card ent-kpi-card"><div class="stat-value" style="font-size:1.18rem;">${escapeHtml(s.aiModel || "gemini-3.8-flash")}</div><div class="stat-label">${escapeHtml(t("entAiModelLabel"))}</div></div>
         <div class="glass-card ent-kpi-card"><div class="stat-value">${studioState.analytics?.aiQueries || logs.length}</div><div class="stat-label">${escapeHtml(t("analyticsAiQueries"))}</div></div>
+        <div class="glass-card ent-kpi-card"><div class="stat-value">${totalTokens.toLocaleString()}</div><div class="stat-label">${escapeHtml(t("entAiTokensLabel"))}</div></div>
+        <div class="glass-card ent-kpi-card"><div class="stat-value">${satisfactionPct}</div><div class="stat-label">${escapeHtml(t("entAiSatisfactionLabel"))}</div></div>
         <div class="glass-card ent-kpi-card"><div class="stat-value">${errCount}</div><div class="stat-label">${escapeHtml(t("entAiErrorCount"))}</div></div>
         <div class="glass-card ent-kpi-card"><div class="stat-value">${aiHealth.latencyMs || avgLatency || 0}ms</div><div class="stat-label">${escapeHtml(t("entAiLatencyLabel"))}</div></div>
       </div>
 
       <form id="entAiConfigForm" class="glass-card highlight-border stack-list">
-        <div class="row-between">
+        <div class="row-between" style="flex-wrap:wrap;gap:8px;">
           <div>
             <h2 class="card-title">🤖 ${escapeHtml(t("entNavAi"))}</h2>
             <p class="muted-text" style="margin:2px 0 0;font-size:0.84rem;">${escapeHtml(t("entAiControlDesc"))}</p>
           </div>
-          <button id="entPingAiBtn" type="button" class="btn btn-outline btn-sm">⚡ ${escapeHtml(t("testAiBtn"))}</button>
+          <div class="btn-row" style="gap:8px;">
+            <button id="entExportAiCsvBtn" type="button" class="btn btn-outline btn-sm">📥 ${escapeHtml(t("entExportCsv"))}</button>
+            <button id="entPingAiBtn" type="button" class="btn btn-outline btn-sm">⚡ ${escapeHtml(t("testAiBtn"))}</button>
+          </div>
         </div>
 
         <label class="checkbox-row glass-card" style="padding:12px;">
           <input id="aiEnabledChk" type="checkbox" ${s.aiEnabled !== false ? "checked" : ""} />
           <span><strong>${escapeHtml(t("entAiMasterToggle"))}</strong></span>
         </label>
+
+        <div class="form-two-col">
+          <div class="field">
+            <label for="aiModelSel">${escapeHtml(t("entAiModelSelectLabel"))}</label>
+            <select id="aiModelSel">
+              <option value="gemini-3.8-flash" ${(s.aiModel || "gemini-3.8-flash") === "gemini-3.8-flash" ? "selected" : ""}>gemini-3.8-flash (Primary)</option>
+              <option value="gemini-2.5-flash" ${s.aiModel === "gemini-2.5-flash" ? "selected" : ""}>gemini-2.5-flash</option>
+              <option value="gemini-2.5-pro" ${s.aiModel === "gemini-2.5-pro" ? "selected" : ""}>gemini-2.5-pro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="aiRpmInp">${escapeHtml(t("entAiRpmLimitLabel"))}</label>
+            <input id="aiRpmInp" type="number" min="1" max="500" value="${Number(s.aiRateLimitRpm || 20)}" />
+          </div>
+        </div>
 
         <div class="form-two-col">
           <div class="field">
@@ -1672,18 +1734,85 @@
           <div class="field">
             <label>${escapeHtml(t("entAiKnowledgeSources"))}</label>
             <div class="muted-text" style="padding-top:10px;font-size:0.86rem;">
-              ${studioState.services.length} Services • ${studioState.projects.length} Projects • ${(studioState.knowledgeBase || []).length} KB • ${(studioState.faqs || []).length} FAQs
+              ${studioState.services.length} Services • ${studioState.projects.length} Projects • ${(studioState.knowledgeBase || []).length} KB • ${(studioState.faqs || []).length} FAQs • ${studioDocs.length} RAG Docs
             </div>
           </div>
         </div>
 
         <div class="field">
+          <label>${escapeHtml(t("entAiToolsLabel"))}</label>
+          <div class="chips-wrap">
+            ${toolKeys
+              .map(
+                (tk) => `
+              <label class="tech-chip" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" data-ai-tool="${tk}" ${enabledTools[tk] !== false ? "checked" : ""} />
+                <span>${escapeHtml(tk)}</span>
+              </label>
+            `
+              )
+              .join("")}
+          </div>
+        </div>
+
+        <div class="field">
+          <label>${escapeHtml(t("entAiAgentsLabel"))}</label>
+          <div class="two-col-grid">
+            ${agentDefs
+              .map((ag) => {
+                const cfg = agentConfigs[ag.key] || { enabled: true, prompt: "" };
+                return `
+                <div class="glass-card stack-list" style="padding:10px 12px;gap:6px;">
+                  <label class="checkbox-row" style="margin:0;">
+                    <input type="checkbox" data-agent-enable="${ag.key}" ${cfg.enabled !== false ? "checked" : ""} />
+                    <strong>${escapeHtml(ar ? ag.ar : ag.en)}</strong>
+                  </label>
+                  <input type="text" data-agent-prompt="${ag.key}" value="${escapeHtml(cfg.prompt || "")}" placeholder="${escapeHtml(t("entAiSystemPromptPlaceholder"))}" />
+                </div>
+              `;
+              })
+              .join("")}
+          </div>
+        </div>
+
+        <div class="field">
           <label for="aiSysPromptInp">${escapeHtml(t("entAiSystemPromptLabel"))}</label>
-          <textarea id="aiSysPromptInp" rows="4" placeholder="${escapeHtml(t("entAiSystemPromptPlaceholder"))}">${escapeHtml(s.aiSystemPrompt || "")}</textarea>
+          <textarea id="aiSysPromptInp" rows="3" placeholder="${escapeHtml(t("entAiSystemPromptPlaceholder"))}">${escapeHtml(s.aiSystemPrompt || "")}</textarea>
         </div>
 
         <button type="submit" class="btn btn-primary btn-full">${escapeHtml(t("saveSettingsBtn"))}</button>
       </form>
+
+      <!-- Studio-Scoped RAG Knowledge Uploader -->
+      <div class="glass-card stack-list">
+        <h3 class="card-title">📚 ${escapeHtml(t("entAiStudioRagTitle"))}</h3>
+        <p class="muted-text" style="margin:0;font-size:0.84rem;">${escapeHtml(t("entAiStudioRagDesc"))}</p>
+        <div class="form-two-col">
+          <div class="field"><label>${escapeHtml(t("aiRagPasteTitleLabel"))}</label><input id="entRagTitleInp" placeholder="Vexora Service Playbook" /></div>
+          <div class="field"><label>${escapeHtml(t("uploadImageLabel").replace("صورة", "ملف"))}</label><input id="entRagFileInp" type="file" accept=".txt,.md,.csv,.json,.pdf,.docx,.xlsx" /></div>
+        </div>
+        <div class="field"><label>${escapeHtml(t("aiRagPasteTextLabel"))}</label><textarea id="entRagTextInp" rows="3"></textarea></div>
+        <button id="entRagSaveBtn" type="button" class="btn btn-outline btn-sm">+ ${escapeHtml(t("aiRagIndexBtn"))}</button>
+        <div class="stack-list">
+          ${
+            studioDocs.length === 0
+              ? `<p class="muted-text" style="margin:0;">${escapeHtml(t("aiNoRagDocs"))}</p>`
+              : studioDocs
+                  .map(
+                    (d) => `
+                  <div class="glass-card row-between" style="padding:10px 12px;">
+                    <div>
+                      <strong>${escapeHtml(d.title)}</strong>
+                      <div class="muted-text" style="font-size:0.75rem;">${d.chunkCount} chunks • ${escapeHtml(d.embeddingModel || "local")}</div>
+                    </div>
+                    <button type="button" class="icon-btn danger" data-del-studio-rag="${escapeHtml(d.id)}">🗑️</button>
+                  </div>
+                `
+                  )
+                  .join("")
+          }
+        </div>
+      </div>
 
       <div class="glass-card stack-list">
         <h3 class="card-title">📋 ${escapeHtml(t("entAiLogsTitle"))}</h3>
@@ -1695,6 +1824,7 @@
                   <thead>
                     <tr>
                       <th>${escapeHtml(t("entColQuery"))}</th>
+                      <th>Agent / Mode</th>
                       <th>Lang</th>
                       <th>Source / Status</th>
                       <th>ms</th>
@@ -1703,11 +1833,12 @@
                   </thead>
                   <tbody>
                     ${logs
-                      .slice(0, 25)
+                      .slice(0, 30)
                       .map(
                         (l) => `
                       <tr>
                         <td>${escapeHtml(String(l.questionPreview || l.question_preview || "").slice(0, 80))}</td>
+                        <td><span class="tech-chip">${escapeHtml(l.agent || "general")} • ${escapeHtml(l.mode || "fast")}</span></td>
                         <td>${escapeHtml(l.lang || "ar")}</td>
                         <td><span class="status-pill ${l.status === "error" ? "error" : l.status === "paused" ? "warning" : "cyan"}">${escapeHtml(l.source || "local")} (${escapeHtml(l.status || "ok")})</span></td>
                         <td>${Number(l.latencyMs || l.latency_ms || 0)}</td>
@@ -1730,22 +1861,107 @@
       renderAiControl(body, ctx, session);
     });
 
+    document.getElementById("entExportAiCsvBtn").addEventListener("click", () => {
+      const header = ["question", "agent", "mode", "lang", "source", "status", "tokens", "latency_ms", "created_at"];
+      const rows = [
+        header.map(csvCell).join(","),
+        ...logs.map((l) =>
+          [
+            l.questionPreview || l.question_preview || "",
+            l.agent || "",
+            l.mode || "",
+            l.lang || "ar",
+            l.source || "",
+            l.status || "",
+            Number(l.tokensEstimated || 0) + Number(l.tokens_input || 0) + Number(l.tokens_output || 0),
+            Number(l.latencyMs || l.latency_ms || 0),
+            l.createdAt || l.created_at || ""
+          ]
+            .map(csvCell)
+            .join(",")
+        )
+      ].join("\n");
+      downloadTextFile("vexora-ai-telemetry.csv", rows, "text/csv;charset=utf-8");
+      showToast(t("entExportedToast"));
+    });
+
+    document.getElementById("entRagFileInp")?.addEventListener("change", async (e) => {
+      const f = e.target.files?.[0];
+      if (!f || !window.VexoraAIPlatform) return;
+      try {
+        const parsed = await window.VexoraAIPlatform.parseUploadedFile(f);
+        await window.VexoraAIPlatform.indexRagDocument("studio", parsed.name, parsed.mimeType, parsed.textContent || "", Backend, true);
+        logAudit(ctx, session, "index_studio_rag_doc", "ai_knowledge_docs", parsed.name, {});
+        showToast("✓");
+        renderAiControl(body, ctx, session);
+      } catch (err) {
+        showToast(err?.message || "RAG indexing failed");
+      }
+    });
+
+    document.getElementById("entRagSaveBtn")?.addEventListener("click", async () => {
+      if (!window.VexoraAIPlatform) return;
+      const title = document.getElementById("entRagTitleInp").value.trim() || "Studio Knowledge Doc";
+      const txt = document.getElementById("entRagTextInp").value.trim();
+      if (txt.length < 10) {
+        showToast(t("validationError"));
+        return;
+      }
+      await window.VexoraAIPlatform.indexRagDocument("studio", title, "text/plain", txt, Backend, true);
+      logAudit(ctx, session, "index_studio_rag_doc", "ai_knowledge_docs", title, {});
+      showToast("✓");
+      renderAiControl(body, ctx, session);
+    });
+
+    body.querySelectorAll("[data-del-studio-rag]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!window.VexoraAIPlatform) return;
+        const docs = window.VexoraAIPlatform.loadRagDocs("studio", true).filter((d) => d.scope === "studio" && d.id !== btn.dataset.delStudioRag);
+        window.VexoraAIPlatform.saveRagDocsForScope("studio", docs);
+        await Backend.deleteRagDocumentCloud?.(btn.dataset.delStudioRag, true);
+        logAudit(ctx, session, "delete_studio_rag_doc", "ai_knowledge_docs", btn.dataset.delStudioRag, {});
+        renderAiControl(body, ctx, session);
+      });
+    });
+
     document.getElementById("entAiConfigForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const nextTools = {};
+      body.querySelectorAll("[data-ai-tool]").forEach((chk) => {
+        nextTools[chk.dataset.aiTool] = chk.checked;
+      });
+      const nextAgents = {};
+      agentDefs.forEach((ag) => {
+        const chk = body.querySelector(`[data-agent-enable="${ag.key}"]`);
+        const inp = body.querySelector(`[data-agent-prompt="${ag.key}"]`);
+        nextAgents[ag.key] = {
+          enabled: chk ? chk.checked : true,
+          prompt: inp ? inp.value.trim() : ""
+        };
+      });
+
       const updated = {
         ...studioState.settings,
         aiEnabled: document.getElementById("aiEnabledChk").checked,
+        aiModel: document.getElementById("aiModelSel").value,
+        aiRateLimitRpm: Math.max(1, Number(document.getElementById("aiRpmInp").value || 20)),
         aiPersona: document.getElementById("aiPersonaInp").value.trim(),
         aiAllowedLangs: document.getElementById("aiLangsSel").value,
         aiDailyLimit: Number(document.getElementById("aiLimitInp").value || 500),
-        aiSystemPrompt: document.getElementById("aiSysPromptInp").value.trim()
+        aiSystemPrompt: document.getElementById("aiSysPromptInp").value.trim(),
+        aiEnabledTools: nextTools,
+        aiAgentConfigs: nextAgents
       };
       if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
         try { await Backend.updateSiteSettings(updated); } catch (err) { showToast(err.message); return; }
       }
       studioState.settings = updated;
       saveState();
-      logAudit(ctx, session, "update_ai_settings", "site_settings", "ai", { aiEnabled: updated.aiEnabled, aiAllowedLangs: updated.aiAllowedLangs });
+      logAudit(ctx, session, "update_ai_settings", "site_settings", "ai", {
+        aiEnabled: updated.aiEnabled,
+        aiModel: updated.aiModel,
+        aiRateLimitRpm: updated.aiRateLimitRpm
+      });
       showToast(t("settingsSavedToast"));
       renderAiControl(body, ctx, session);
     });

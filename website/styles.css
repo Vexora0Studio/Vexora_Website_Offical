@@ -2286,3 +2286,373 @@ html[data-theme="light"] .ai-error-banner {
   }
 }
 
+/* =========================================================
+   VEXORA AI — AUTONOMOUS MULTIMODAL WORKSPACE UI
+   ========================================================= */
+.vx-ai-shell {
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.vx-ai-shell.collapsed {
+  grid-template-columns: 60px minmax(0, 1fr);
+}
+
+.vx-ai-sidebar {
+  position: sticky;
+  top: calc(var(--topbar-h) + 12px);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - var(--topbar-h) - 26px);
+  overflow: hidden;
+}
+
+.vx-ai-side-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vx-ai-side-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  flex: 1;
+}
+
+.vx-ai-shell.collapsed .vx-ai-side-body,
+.vx-ai-shell.collapsed #vxNewChatBtn {
+  display: none;
+}
+
+.vx-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 330px;
+  padding-inline-end: 2px;
+}
+
+.vx-thread-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(15, 23, 42, 0.45);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.vx-thread-item:hover {
+  border-color: rgba(0, 212, 255, 0.35);
+  background: rgba(0, 212, 255, 0.08);
+}
+
+.vx-thread-item.active {
+  border-color: rgba(0, 212, 255, 0.6);
+  background: rgba(0, 212, 255, 0.14);
+}
+
+.vx-thread-select {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: start;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px;
+  font: inherit;
+}
+
+.vx-thread-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vx-thread-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.vx-thread-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.vx-side-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--subtle-outline);
+}
+
+.vx-ai-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vx-ai-topbar {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#vxMobileThreadsBtn {
+  display: none;
+}
+
+.vx-compact-select {
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  background: rgba(11, 17, 32, 0.85);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.vx-chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+}
+
+.vx-chat-box {
+  min-height: 360px;
+  max-height: 62vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px 4px;
+}
+
+.vx-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 212, 255, 0.32);
+  background: rgba(5, 8, 17, 0.62);
+}
+
+.vx-composer textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  max-height: 150px;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.94rem;
+  resize: vertical;
+  outline: none;
+  padding: 8px 4px;
+}
+
+.vx-msg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.vx-fb-active {
+  color: var(--neon-cyan) !important;
+  background: rgba(0, 212, 255, 0.14) !important;
+  border-radius: 8px;
+}
+
+.vx-thought-box {
+  margin: 4px 0 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(41, 121, 255, 0.1);
+  border: 1px solid rgba(41, 121, 255, 0.32);
+  font-size: 0.82rem;
+}
+
+.vx-thought-box summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+.vx-thought-text {
+  margin-top: 6px;
+  color: var(--text-soft);
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.vx-sources-box {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.vx-typing-dots {
+  display: inline-block;
+  color: var(--neon-cyan);
+  font-weight: 600;
+  animation: vxPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes vxPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Markdown & Syntax Highlighting */
+.vx-md-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.vx-md-p {
+  margin: 0;
+}
+
+.vx-md-h {
+  margin: 6px 0 2px;
+  color: var(--neon-cyan);
+}
+
+.vx-md-list {
+  margin: 2px 0 4px;
+  padding-inline-start: 20px;
+}
+
+.vx-md-quote {
+  margin: 4px 0;
+  padding: 6px 12px;
+  border-inline-start: 3px solid var(--neon-cyan);
+  background: rgba(0, 212, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-soft);
+}
+
+.vx-md-link {
+  color: var(--neon-cyan);
+  text-decoration: underline;
+}
+
+.vx-inline-code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(0, 212, 255, 0.14);
+  color: var(--neon-cyan);
+  font-family: "Space Grotesk", ui-monospace, monospace;
+  font-size: 0.86em;
+}
+
+.vx-code-card {
+  margin: 6px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 212, 255, 0.32);
+  background: #040814;
+  direction: ltr;
+  text-align: left;
+}
+
+.vx-code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.92);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.vx-code-lang {
+  font-family: "Space Grotesk", monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+}
+
+.vx-code-pre {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: "Space Grotesk", ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #e2e8f0;
+}
+
+.vx-tok-kw { color: #38bdf8; font-weight: 700; }
+.vx-tok-str { color: #34d399; }
+.vx-tok-com { color: #64748b; font-style: italic; }
+.vx-tok-num { color: #f59e0b; }
+
+.vx-sandbox-frame {
+  width: 100%;
+  height: 360px;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+@media (max-width: 960px) {
+  .vx-ai-shell,
+  .vx-ai-shell.collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .vx-ai-sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .vx-ai-shell.collapsed .vx-ai-sidebar {
+    display: none;
+  }
+
+  #vxMobileThreadsBtn {
+    display: inline-flex;
+  }
+}
+
+html[data-theme="light"] .vx-thread-item {
+  background: rgba(241, 245, 249, 0.9);
+}
+
+html[data-theme="light"] .vx-compact-select,
+html[data-theme="light"] .vx-composer {
+  background: #f8fafc;
+  color: var(--text-primary);
+}

@@ -208,7 +208,12 @@
       aiSystemPrompt: r.ai_system_prompt || "",
       aiPersona: r.ai_persona || "Senior Software Architect & Solutions Advisor",
       aiAllowedLangs: r.ai_allowed_langs || "both",
-      aiDailyLimit: Number(r.ai_daily_limit || 500)
+      aiDailyLimit: Number(r.ai_daily_limit || 500),
+      aiRateLimitRpm: Number(r.ai_rate_limit_rpm || 20),
+      aiEnabledTools: r.ai_enabled_tools && typeof r.ai_enabled_tools === "object"
+        ? r.ai_enabled_tools
+        : { web_search: true, url_reader: true, file_search: true, code_sandbox: true, calculator: true, document_analyzer: true, data_analyzer: true, database_tools: true },
+      aiAgentConfigs: r.ai_agent_configs && typeof r.ai_agent_configs === "object" ? r.ai_agent_configs : {}
     };
   }
 
@@ -236,6 +241,9 @@
       ai_persona: s.aiPersona || "Senior Software Architect & Solutions Advisor",
       ai_allowed_langs: s.aiAllowedLangs || "both",
       ai_daily_limit: Number(s.aiDailyLimit || 500),
+      ai_rate_limit_rpm: Number(s.aiRateLimitRpm || 20),
+      ai_enabled_tools: s.aiEnabledTools || { web_search: true, url_reader: true, file_search: true, code_sandbox: true, calculator: true, document_analyzer: true, data_analyzer: true, database_tools: true },
+      ai_agent_configs: s.aiAgentConfigs || {},
       updated_at: new Date().toISOString()
     };
   }
@@ -1075,13 +1083,44 @@
       };
     }
     if (isConfigured()) {
+      const adminToken = getStoredAuth()?.access_token;
+      const clientToken = getStoredClientAuth()?.access_token;
+      const bearer = adminToken || clientToken || c.supabaseAnonKey;
       return {
         url: `${c.supabaseUrl}/functions/v1/${c.aiFunctionName}`,
-        headers: authHeaders(false),
+        headers: {
+          apikey: c.supabaseAnonKey,
+          Authorization: `Bearer ${bearer}`,
+          "Content-Type": "application/json"
+        },
         mode: "supabase-edge"
       };
     }
     return null;
+  }
+
+  async function readJsonSafe(res) {
+    try {
+      if (typeof res.json === "function") {
+        return await res.json().catch(() => ({}));
+      }
+      if (typeof res.text === "function") {
+        const raw = await res.text().catch(() => "");
+        return raw ? JSON.parse(raw) : {};
+      }
+    } catch {
+      return {};
+    }
+    return {};
+  }
+
+  function mapHttpErrorType(status, errCode) {
+    if (errCode) return errCode;
+    if (status === 429) return "rate_limited";
+    if (status === 401 || status === 403) return "invalid_key";
+    if (status === 408 || status === 504) return "timeout";
+    if (status === 502 || status === 503) return "upstream";
+    return "server";
   }
 
   async function testAiEndpoint() {
@@ -1101,14 +1140,14 @@
       });
       if (timer) clearTimeout(timer);
       const ms = Math.round(performance.now() - start);
-      const data = await res.json().catch(() => ({}));
+      const data = await readJsonSafe(res);
       if (!res.ok) {
         return {
           ok: false,
           configured: true,
           mode: target.mode,
           latencyMs: ms,
-          errorType: data?.errorCode || "server",
+          errorType: mapHttpErrorType(res.status, data?.errorCode),
           reason: data?.error || `HTTP ${res.status}`
         };
       }
@@ -1117,6 +1156,7 @@
         configured: true,
         mode: target.mode,
         latencyMs: ms,
+        supportedModels: data?.supportedModels || ["gemini-3.8-flash"],
         provider: data?.model || data?.provider || "gemini-3.8-flash"
       };
     } catch (err) {
@@ -1132,27 +1172,43 @@
     }
   }
 
-  async function askVexoraAI(message, lang, history, catalog) {
+  async function askVexoraAI(message, lang, history, catalog, extras = {}) {
     const target = resolveAiTarget();
     if (!target) {
       return { ok: false, configured: false, errorType: "unconfigured", reason: "Backend not configured" };
     }
     const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-    const timer = controller ? setTimeout(() => controller.abort(), 25000) : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 32000) : null;
+    if (extras.signal && controller) {
+      extras.signal.addEventListener("abort", () => controller.abort(), { once: true });
+    }
     try {
       const res = await fetch(target.url, {
         method: "POST",
         headers: target.headers,
         signal: controller ? controller.signal : undefined,
-        body: JSON.stringify({ message, lang, history, catalog })
+        body: JSON.stringify({
+          message,
+          lang,
+          history,
+          catalog,
+          stream: false,
+          agent: extras.agent || "auto",
+          mode: extras.mode || "fast",
+          model: extras.model || undefined,
+          attachments: extras.attachments || [],
+          memories: extras.memories || [],
+          ragSnippets: extras.ragSnippets || [],
+          personalization: extras.personalization || {}
+        })
       });
       if (timer) clearTimeout(timer);
-      const data = await res.json().catch(() => ({}));
+      const data = await readJsonSafe(res);
       if (!res.ok || !data?.reply) {
         return {
           ok: false,
           configured: true,
-          errorType: data?.errorCode || "server",
+          errorType: mapHttpErrorType(res.status, data?.errorCode),
           reason: data?.error || `HTTP ${res.status}`
         };
       }
@@ -1160,10 +1216,23 @@
         ok: true,
         configured: true,
         reply: data.reply,
-        provider: data.model || data.provider || "gemini-3.8-flash"
+        provider: data.model || data.provider || "gemini-3.8-flash",
+        agent: data.agent || "general",
+        mode: data.mode || "fast",
+        thinkingSummary: data.thinkingSummary || "",
+        sources: Array.isArray(data.sources) ? data.sources : [],
+        toolsUsed: Array.isArray(data.toolsUsed) ? data.toolsUsed : [],
+        tokensInput: Number(data.tokensInput || 0),
+        tokensOutput: Number(data.tokensOutput || 0),
+        tokensEstimated: Number(data.tokensEstimated || 0),
+        latencyMs: Number(data.latencyMs || 0),
+        logId: data.logId || ""
       };
     } catch (err) {
       if (timer) clearTimeout(timer);
+      if (err?.name === "AbortError" && extras.signal?.aborted) {
+        return { ok: false, configured: true, aborted: true, errorType: "aborted", reason: "Generation stopped by user" };
+      }
       const isTimeout = err?.name === "AbortError";
       return {
         ok: false,
@@ -1172,6 +1241,186 @@
         reason: isTimeout ? "AI request timed out" : (err?.message || "Network error")
       };
     }
+  }
+
+  async function askVexoraAIStream(payload, callbacks = {}, abortSignal = null) {
+    const target = resolveAiTarget();
+    if (!target) {
+      return { ok: false, configured: false, errorType: "unconfigured", reason: "Backend not configured" };
+    }
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 50000) : null;
+    if (abortSignal && controller) {
+      abortSignal.addEventListener("abort", () => controller.abort(), { once: true });
+    }
+    try {
+      const res = await fetch(target.url, {
+        method: "POST",
+        headers: target.headers,
+        signal: controller ? controller.signal : undefined,
+        body: JSON.stringify({ ...payload, stream: true })
+      });
+      if (timer) clearTimeout(timer);
+      const ctype = (res.headers?.get?.("content-type") || "").toLowerCase();
+
+      if (!res.ok) {
+        const errData = await readJsonSafe(res);
+        return {
+          ok: false,
+          configured: true,
+          errorType: mapHttpErrorType(res.status, errData?.errorCode),
+          reason: errData?.error || `HTTP ${res.status}`
+        };
+      }
+
+      if (!ctype.includes("text/event-stream") || !res.body?.getReader) {
+        const data = await readJsonSafe(res);
+        if (!data?.reply) {
+          return { ok: false, configured: true, errorType: "server", reason: data?.error || "Empty AI response" };
+        }
+        callbacks.onDone?.(data);
+        return { ok: true, configured: true, ...data };
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let finalPayload = null;
+      let accText = "";
+      let accThought = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const frames = buffer.split("\n\n");
+        buffer = frames.pop() || "";
+
+        for (const frame of frames) {
+          const lines = frame.split("\n");
+          let evName = "message";
+          let dataStr = "";
+          for (const line of lines) {
+            if (line.startsWith("event:")) evName = line.slice(6).trim();
+            else if (line.startsWith("data:")) dataStr += line.slice(5).trim();
+          }
+          if (!dataStr) continue;
+          let parsed = null;
+          try { parsed = JSON.parse(dataStr); } catch { continue; }
+          if (evName === "meta") callbacks.onMeta?.(parsed);
+          else if (evName === "tools") callbacks.onTools?.(parsed);
+          else if (evName === "thought" && parsed.delta) {
+            accThought += parsed.delta;
+            callbacks.onThought?.(parsed.delta, accThought);
+          } else if (evName === "delta" && parsed.delta) {
+            accText += parsed.delta;
+            callbacks.onDelta?.(parsed.delta, accText);
+          } else if (evName === "done") {
+            finalPayload = parsed;
+            callbacks.onDone?.(parsed);
+          } else if (evName === "error") {
+            return { ok: false, configured: true, errorType: parsed.errorCode || "upstream", reason: parsed.error || "Stream failed" };
+          }
+        }
+      }
+
+      if (finalPayload) return { ok: true, configured: true, ...finalPayload };
+      if (accText) return { ok: true, configured: true, reply: accText, thinkingSummary: accThought };
+      return { ok: false, configured: true, errorType: "server", reason: "Stream closed without reply" };
+    } catch (err) {
+      if (timer) clearTimeout(timer);
+      if (err?.name === "AbortError" && abortSignal?.aborted) {
+        return { ok: false, configured: true, aborted: true, errorType: "aborted", reason: "Stopped by user" };
+      }
+      const isTimeout = err?.name === "AbortError";
+      return {
+        ok: false,
+        configured: true,
+        errorType: isTimeout ? "timeout" : "network",
+        reason: isTimeout ? "AI stream timed out" : (err?.message || "Network error")
+      };
+    }
+  }
+
+  async function sendAiFeedback(logId, feedback) {
+    const target = resolveAiTarget();
+    if (!target || !logId) return;
+    try {
+      await fetch(target.url, {
+        method: "POST",
+        headers: target.headers,
+        body: JSON.stringify({ action: "feedback", logId, feedback })
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
+  async function embedRagChunks(chunks) {
+    const target = resolveAiTarget();
+    if (!target || !Array.isArray(chunks) || !chunks.length) return null;
+    try {
+      const res = await fetch(target.url, {
+        method: "POST",
+        headers: target.headers,
+        body: JSON.stringify({ action: "embed_document", chunks })
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  async function upsertRagDocumentCloud(doc, chunks, isStudioScope = false) {
+    const c = getConfig();
+    if (!isConfigured()) return false;
+    const headers = isStudioScope ? authHeaders(true) : clientAuthHeaders();
+    const userId = isStudioScope ? getStoredAuth()?.userId : getStoredClientAuth()?.userId;
+    if (!userId && !isStudioScope) return false;
+
+    const docRes = await fetch(`${c.supabaseUrl}/rest/v1/ai_knowledge_docs`, {
+      method: "POST",
+      headers: { ...headers, Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        id: doc.id,
+        scope: isStudioScope ? "studio" : "user",
+        owner_user_id: userId || null,
+        title: doc.title,
+        mime_type: doc.mimeType || "text/plain",
+        chunk_count: chunks.length,
+        char_count: doc.charCount || 0,
+        embedding_model: doc.embeddingModel || "",
+        created_at: doc.createdAt || new Date().toISOString()
+      })
+    });
+    if (!docRes.ok) return false;
+
+    const chunkRows = chunks.map((ch, idx) => ({
+      id: `${doc.id}_c${idx}`,
+      doc_id: doc.id,
+      scope: isStudioScope ? "studio" : "user",
+      owner_user_id: userId || null,
+      chunk_index: idx,
+      content: ch.content,
+      embedding: Array.isArray(ch.embedding) ? ch.embedding : null
+    }));
+    const chunkRes = await fetch(`${c.supabaseUrl}/rest/v1/ai_knowledge_chunks`, {
+      method: "POST",
+      headers: { ...headers, Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(chunkRows)
+    });
+    return chunkRes.ok;
+  }
+
+  async function deleteRagDocumentCloud(docId, isStudioScope = false) {
+    const c = getConfig();
+    if (!isConfigured()) return;
+    const headers = isStudioScope ? authHeaders(true) : clientAuthHeaders();
+    await fetch(`${c.supabaseUrl}/rest/v1/ai_knowledge_docs?id=eq.${encodeURIComponent(docId)}`, {
+      method: "DELETE",
+      headers
+    }).catch(() => {});
   }
 
   window.VexoraBackend = {
@@ -1221,6 +1470,11 @@
     recordAuditLog,
     callAdminGateway,
     uploadImageFile,
-    askVexoraAI
+    askVexoraAI,
+    askVexoraAIStream,
+    sendAiFeedback,
+    embedRagChunks,
+    upsertRagDocumentCloud,
+    deleteRagDocumentCloud
   };
 })();

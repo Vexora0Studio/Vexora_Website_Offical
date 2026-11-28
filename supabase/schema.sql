@@ -108,6 +108,9 @@ create table if not exists public.site_settings (
   ai_persona text not null default 'Senior Software Architect & Solutions Advisor',
   ai_allowed_langs text not null default 'both' check (ai_allowed_langs in ('both', 'ar', 'en')),
   ai_daily_limit int not null default 500,
+  ai_rate_limit_rpm int not null default 20,
+  ai_enabled_tools jsonb not null default '{"web_search":true,"url_reader":true,"file_search":true,"code_sandbox":true,"calculator":true,"document_analyzer":true,"data_analyzer":true,"database_tools":true}'::jsonb,
+  ai_agent_configs jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
 
@@ -122,6 +125,9 @@ alter table public.site_settings add column if not exists ai_system_prompt text 
 alter table public.site_settings add column if not exists ai_persona text not null default 'Senior Software Architect & Solutions Advisor';
 alter table public.site_settings add column if not exists ai_allowed_langs text not null default 'both';
 alter table public.site_settings add column if not exists ai_daily_limit int not null default 500;
+alter table public.site_settings add column if not exists ai_rate_limit_rpm int not null default 20;
+alter table public.site_settings add column if not exists ai_enabled_tools jsonb not null default '{"web_search":true,"url_reader":true,"file_search":true,"code_sandbox":true,"calculator":true,"document_analyzer":true,"data_analyzer":true,"database_tools":true}'::jsonb;
+alter table public.site_settings add column if not exists ai_agent_configs jsonb not null default '{}'::jsonb;
 
 alter table public.site_settings enable row level security;
 
@@ -629,16 +635,31 @@ create policy "Allow login telemetry inserts"
 -- 16. Vexora AI Telemetry & Error Logs
 create table if not exists public.ai_logs (
   id text primary key,
+  user_id uuid references auth.users(id) on delete set null,
   user_lang text not null default 'ar',
+  agent text not null default 'general',
+  mode text not null default 'fast',
   status text not null check (status in ('ok', 'error', 'disabled', 'rate_limited')),
   latency_ms int not null default 0,
   tokens_estimated int not null default 0,
+  tokens_input int not null default 0,
+  tokens_output int not null default 0,
   model text not null default 'gemini-3.8-flash',
+  tools_used text[] not null default '{}',
+  feedback text not null default '' check (feedback in ('', 'up', 'down')),
   error_code text not null default '',
   error_message text not null default '',
   prompt_preview text not null default '',
   created_at timestamptz not null default now()
 );
+
+alter table public.ai_logs add column if not exists user_id uuid references auth.users(id) on delete set null;
+alter table public.ai_logs add column if not exists agent text not null default 'general';
+alter table public.ai_logs add column if not exists mode text not null default 'fast';
+alter table public.ai_logs add column if not exists tokens_input int not null default 0;
+alter table public.ai_logs add column if not exists tokens_output int not null default 0;
+alter table public.ai_logs add column if not exists tools_used text[] not null default '{}';
+alter table public.ai_logs add column if not exists feedback text not null default '';
 
 alter table public.ai_logs enable row level security;
 
@@ -653,6 +674,145 @@ create policy "Only owner deletes ai_logs"
   on public.ai_logs for delete
   to authenticated
   using (public.has_vexora_role(array['owner']));
+
+-- 16b. Vexora AI Multi-Conversations & Messages (User-Scoped Isolation)
+create table if not exists public.ai_conversations (
+  id text primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  title text not null default 'New Chat',
+  agent text not null default 'auto',
+  mode text not null default 'fast',
+  pinned boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.ai_conversations enable row level security;
+
+drop policy if exists "Users manage own ai_conversations" on public.ai_conversations;
+create policy "Users manage own ai_conversations"
+  on public.ai_conversations for all
+  to authenticated
+  using (auth.uid() = user_id or public.has_vexora_role(array['owner', 'super_admin']))
+  with check (auth.uid() = user_id);
+
+create table if not exists public.ai_messages (
+  id text primary key,
+  conversation_id text not null references public.ai_conversations(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role text not null check (role in ('user', 'assistant')),
+  content text not null,
+  agent text not null default 'general',
+  mode text not null default 'fast',
+  model text not null default '',
+  thinking_summary text not null default '',
+  sources jsonb not null default '[]'::jsonb,
+  tools_used jsonb not null default '[]'::jsonb,
+  attachments jsonb not null default '[]'::jsonb,
+  feedback text not null default '' check (feedback in ('', 'up', 'down')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.ai_messages enable row level security;
+
+drop policy if exists "Users manage own ai_messages" on public.ai_messages;
+create policy "Users manage own ai_messages"
+  on public.ai_messages for all
+  to authenticated
+  using (auth.uid() = user_id or public.has_vexora_role(array['owner', 'super_admin']))
+  with check (auth.uid() = user_id);
+
+-- 16c. Vexora AI Smart Long-Term Memory (Strictly Isolated Per User)
+create table if not exists public.ai_memories (
+  id text primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  category text not null default 'preference',
+  memory_text text not null check (char_length(memory_text) between 2 and 600),
+  created_at timestamptz not null default now()
+);
+
+alter table public.ai_memories enable row level security;
+
+drop policy if exists "Users manage own ai_memories" on public.ai_memories;
+create policy "Users manage own ai_memories"
+  on public.ai_memories for all
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- 16d. Vexora AI RAG Knowledge Documents & Vector Chunks (Studio + User Scoped)
+create table if not exists public.ai_knowledge_docs (
+  id text primary key,
+  scope text not null default 'user' check (scope in ('studio', 'user')),
+  owner_user_id uuid references auth.users(id) on delete cascade,
+  title text not null check (char_length(title) between 1 and 200),
+  mime_type text not null default 'text/plain',
+  chunk_count int not null default 0,
+  char_count int not null default 0,
+  embedding_model text not null default '',
+  created_at timestamptz not null default now()
+);
+
+alter table public.ai_knowledge_docs enable row level security;
+
+drop policy if exists "Read studio or own ai_knowledge_docs" on public.ai_knowledge_docs;
+create policy "Read studio or own ai_knowledge_docs"
+  on public.ai_knowledge_docs for select
+  to anon, authenticated
+  using (
+    scope = 'studio'
+    or (auth.uid() is not null and owner_user_id = auth.uid())
+    or public.is_vexora_admin()
+  );
+
+drop policy if exists "Manage studio or own ai_knowledge_docs" on public.ai_knowledge_docs;
+create policy "Manage studio or own ai_knowledge_docs"
+  on public.ai_knowledge_docs for all
+  to authenticated
+  using (
+    (scope = 'user' and owner_user_id = auth.uid())
+    or (scope = 'studio' and public.has_vexora_role(array['owner', 'super_admin', 'admin', 'editor']))
+  )
+  with check (
+    (scope = 'user' and owner_user_id = auth.uid())
+    or (scope = 'studio' and public.has_vexora_role(array['owner', 'super_admin', 'admin', 'editor']))
+  );
+
+create table if not exists public.ai_knowledge_chunks (
+  id text primary key,
+  doc_id text not null references public.ai_knowledge_docs(id) on delete cascade,
+  scope text not null default 'user' check (scope in ('studio', 'user')),
+  owner_user_id uuid references auth.users(id) on delete cascade,
+  chunk_index int not null default 0,
+  content text not null,
+  embedding double precision[],
+  created_at timestamptz not null default now()
+);
+
+alter table public.ai_knowledge_chunks enable row level security;
+
+drop policy if exists "Read studio or own ai_knowledge_chunks" on public.ai_knowledge_chunks;
+create policy "Read studio or own ai_knowledge_chunks"
+  on public.ai_knowledge_chunks for select
+  to anon, authenticated
+  using (
+    scope = 'studio'
+    or (auth.uid() is not null and owner_user_id = auth.uid())
+    or public.is_vexora_admin()
+  );
+
+drop policy if exists "Manage studio or own ai_knowledge_chunks" on public.ai_knowledge_chunks;
+create policy "Manage studio or own ai_knowledge_chunks"
+  on public.ai_knowledge_chunks for all
+  to authenticated
+  using (
+    (scope = 'user' and owner_user_id = auth.uid())
+    or (scope = 'studio' and public.has_vexora_role(array['owner', 'super_admin', 'admin', 'editor']))
+  )
+  with check (
+    (scope = 'user' and owner_user_id = auth.uid())
+    or (scope = 'studio' and public.has_vexora_role(array['owner', 'super_admin', 'admin', 'editor']))
+  );
 
 -- 17. Supabase Storage Bucket for Project & Team Media
 insert into storage.buckets (id, name, public)

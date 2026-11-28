@@ -88,7 +88,19 @@
         aiSystemPrompt: "",
         aiPersona: "Senior Software Architect & Solutions Advisor",
         aiAllowedLangs: "both",
-        aiDailyLimit: 500
+        aiDailyLimit: 500,
+        aiRateLimitRpm: 20,
+        aiEnabledTools: {
+          web_search: true,
+          url_reader: true,
+          file_search: true,
+          code_sandbox: true,
+          calculator: true,
+          document_analyzer: true,
+          data_analyzer: true,
+          database_tools: true
+        },
+        aiAgentConfigs: {}
       },
       services: [
         {
@@ -536,7 +548,9 @@
           settings: {
             ...def.settings,
             ...(parsed.settings || {}),
-            visibleSections: { ...def.settings.visibleSections, ...((parsed.settings && parsed.settings.visibleSections) || {}) }
+            visibleSections: { ...def.settings.visibleSections, ...((parsed.settings && parsed.settings.visibleSections) || {}) },
+            aiEnabledTools: { ...def.settings.aiEnabledTools, ...((parsed.settings && parsed.settings.aiEnabledTools) || {}) },
+            aiAgentConfigs: { ...(def.settings.aiAgentConfigs || {}), ...((parsed.settings && parsed.settings.aiAgentConfigs) || {}) }
           },
           knowledgeBase: Array.isArray(parsed.knowledgeBase) && parsed.knowledgeBase.length > 0 ? parsed.knowledgeBase : def.knowledgeBase,
           faqs: Array.isArray(parsed.faqs) && parsed.faqs.length > 0 ? parsed.faqs : def.faqs,
@@ -2148,6 +2162,31 @@
   }
 
   function renderAiScreen(root) {
+    if (window.VexoraAIPlatform && typeof window.VexoraAIPlatform.render === "function") {
+      window.VexoraAIPlatform.render(root, {
+        t,
+        isArabic,
+        escapeHtml,
+        Backend,
+        studioState,
+        saveState,
+        showToast,
+        openModal,
+        closeModal,
+        navigate,
+        routeLabel,
+        getActiveClientSession,
+        buildPublicCatalogForAI,
+        answerLocallyGrounded,
+        inferSuggestedRoutes,
+        recordLocalAiLog,
+        trackEvent,
+        currentLang,
+        suggestions: (I18N[currentLang] && I18N[currentLang].aiSuggestions) || []
+      });
+      return;
+    }
+
     const aiEnabled = studioState.settings?.aiEnabled !== false;
     if (aiChatHistory.length === 0) {
       aiChatHistory.push({

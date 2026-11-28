@@ -95,7 +95,7 @@ Deno.serve(async (req: Request) => {
         adminSb.from("project_requests").select("id,status,created_at"),
         adminSb.from("contact_messages").select("id,status,priority,ticket_type,created_at"),
         adminSb.from("analytics_events").select("event_type,route,referrer_source,created_at").order("created_at", { ascending: false }).limit(2000),
-        adminSb.from("ai_logs").select("id,user_lang,status,latency_ms,tokens_estimated,model,error_code,error_message,prompt_preview,created_at").order("created_at", { ascending: false }).limit(500),
+        adminSb.from("ai_logs").select("id,user_lang,agent,mode,status,latency_ms,tokens_input,tokens_output,tokens_estimated,model,tools_used,feedback,error_code,error_message,prompt_preview,created_at").order("created_at", { ascending: false }).limit(500),
         adminSb.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(200),
         adminSb.from("login_logs").select("*").order("created_at", { ascending: false }).limit(200),
         adminSb.from("admin_users").select("user_id,email,full_name,role,is_active,last_login_at,created_at").order("created_at", { ascending: true })
@@ -199,6 +199,10 @@ Deno.serve(async (req: Request) => {
         "audit_logs",
         "login_logs",
         "ai_logs",
+        "ai_conversations",
+        "ai_memories",
+        "ai_knowledge_docs",
+        "ai_knowledge_chunks",
         "admin_users"
       ];
       const counts = await Promise.all(
