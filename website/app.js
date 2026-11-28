@@ -2,6 +2,8 @@
 (function () {
   const I18N = window.VEXORA_I18N;
   const Backend = window.VexoraBackend;
+  const Portal = window.VexoraPortal;
+  const AdminEnt = window.VexoraAdmin;
 
   const ASSET_BASE = window.location.pathname.includes("/website/")
     ? "../app/src/main/res/drawable/"
@@ -34,7 +36,7 @@
     "Other Software Projects"
   ];
 
-  const PROJECT_STATUSES = ["Completed", "In Progress", "Coming Soon"];
+  const PROJECT_STATUSES = ["Planning", "In Progress", "Completed", "On Hold"];
 
   const SERVICE_CATEGORIES = [
     { key: "web", en: "Web & Frontend", ar: "الويب والواجهات" },
@@ -44,15 +46,18 @@
     { key: "engineering", en: "Software & UI/UX", ar: "الهندسة وتجربة المستخدم" }
   ];
 
-  const ADMIN_SESSION_KEY = "vexora_admin_unlocked_v5";
-  const ADMIN_CODE_POINTS = [86, 120, 64, 57, 35, 81, 109, 55, 50, 33, 76, 112, 36, 52, 90, 107];
   const STORAGE_KEY = "vexora_studio_state_v5";
   const LEGACY_KEYS = ["vexora_studio_state_v4", "vexora_studio_state_v3"];
+  const AI_HISTORY_KEY = "vexora_ai_history_v1";
+  const READ_UPDATES_KEY = "vexora_read_updates_v1";
+  const LOCAL_CLIENT_ACCS_KEY = "vexora_local_client_accounts_v1";
+  const LOCAL_CLIENT_SESS_KEY = "vexora_local_client_session_v1";
 
   function createDefaultState() {
     return {
       settings: {
         companyName: "Vexora Studio",
+        logoUrl: WEBSITE_LOGO,
         taglineEn: "Building The Future Through Code.",
         taglineAr: "نبني المستقبل عبر البرمجة.",
         homeDescEn:
@@ -63,7 +68,27 @@
         githubUrl: "https://github.com/Vexora0studio",
         linkedinUrl: "",
         youtubeUrl: "",
-        websiteUrl: "https://vexora0studio.github.io/Vexora_Website_Offical/"
+        websiteUrl: "https://vexora0studio.github.io/Vexora_Website_Offical/",
+        defaultLang: "ar",
+        timezone: "Africa/Cairo",
+        themeMode: "dark",
+        visibleSections: {
+          services: true,
+          projects: true,
+          technologies: true,
+          team: true,
+          ai: true,
+          client: true,
+          updates: true,
+          download: true,
+          faq: true
+        },
+        aiEnabled: true,
+        aiModel: "gemini-3.8-flash",
+        aiSystemPrompt: "",
+        aiPersona: "Senior Software Architect & Solutions Advisor",
+        aiAllowedLangs: "both",
+        aiDailyLimit: 500
       },
       services: [
         {
@@ -233,8 +258,11 @@
           category: "Websites",
           status: "Completed",
           technologies: ["HTML5", "CSS3", "JavaScript"],
+          assignedTeam: ["Omar Moataz"],
+          changeHistory: [],
           websiteUrl: "https://vexora-1studio.github.io/F.cuts/",
           imageUrl: "",
+          videoUrl: "",
           presetImageKey: "f_cutus",
           featured: true,
           published: true
@@ -250,8 +278,11 @@
           category: "Websites",
           status: "In Progress",
           technologies: ["Web Development", "UI/UX Development"],
+          assignedTeam: ["Omar Moataz"],
+          changeHistory: [],
           websiteUrl: "",
           imageUrl: "",
+          videoUrl: "",
           presetImageKey: "noorix",
           featured: true,
           published: true
@@ -270,6 +301,11 @@
             "Founder and director of Vexora Studio. Focuses on web platforms, Android application development, custom software engineering, and AI-powered systems.",
           bioAr:
             "مؤسس ومدير شركة Vexora Studio. يقود تطوير المواقع، تطبيقات Android، هندسة البرمجيات، ودمج حلول الذكاء الاصطناعي.",
+          email: "vexora0studio@gmail.com",
+          employeeStatus: "active",
+          systemRole: "owner",
+          portfolioUrl: "https://github.com/Vexora0studio",
+          cvSummary: "Founder & Full-Stack Software Engineer leading Web, Kotlin Android, Databases & AI integrations.",
           skills: ["Python", "C++", "Java", "Kotlin", "JavaScript", "HTML5 & CSS3", "AI Integration"],
           experienceYears: null,
           avatarUrl: "drawable:omar_develepor",
@@ -421,6 +457,69 @@
           published: true
         }
       ],
+      updates: [
+        {
+          id: "upd_gemini_portal",
+          kind: "update",
+          titleEn: "Vexora Platform Upgrade: Gemini 3.8 Flash, Client Portal & Video Portfolio",
+          titleAr: "تحديث منصة Vexora Studio: دعم Gemini 3.8 Flash وبوابة العملاء ومعرض الفيديو",
+          bodyEn:
+            "Vexora Studio's official platform now features Vexora AI powered by Gemini 3.8 Flash, a dedicated Client Portal for submitting and tracking software requests, live Notifications & Updates, and project video previews.",
+          bodyAr:
+            "أصبحت المنصة الرسمية لـ Vexora Studio تضم مساعد Vexora AI بنموذج Gemini 3.8 Flash، وبوابة عملاء متكاملة لتقديم الطلبات ومتابعتها، ومركز الإشعارات والتحديثات، ومعاينة فيديو للمشاريع.",
+          targetRoute: "client",
+          targetGroup: "all",
+          targetEmail: "",
+          deliveryStatus: "published",
+          pinned: true,
+          published: true,
+          createdAt: "2026-11-28T00:00:00.000Z"
+        },
+        {
+          id: "upd_android_apk",
+          kind: "news",
+          titleEn: "Official Vexora Studio Android App (APK v1.0) Available",
+          titleAr: "توفر تطبيق Vexora Studio الرسمي لنظام Android (APK v1.0)",
+          bodyEn:
+            "Download Vexora-Studio.apk directly from the Android App section to explore software services, portfolio projects, and contact channels on Android 7.0+.",
+          bodyAr:
+            "يمكنك تنزيل ملف Vexora-Studio.apk مباشرة من قسم تطبيق Android لاستعراض الخدمات البرمجية والمشاريع وقنوات التواصل على هواتف Android 7.0 فأحدث.",
+          targetRoute: "download",
+          targetGroup: "all",
+          targetEmail: "",
+          deliveryStatus: "published",
+          pinned: false,
+          published: true,
+          createdAt: "2026-11-27T00:00:00.000Z"
+        }
+      ],
+      releases: [
+        {
+          id: "rel_enterprise_26",
+          version: "v2.6.0",
+          titleEn: "Vexora Enterprise Admin Panel, RBAC & AI Control Center",
+          titleAr: "إطلاق لوحة إدارة Vexora Enterprise ونظام الصلاحيات ومركز تحكم AI",
+          descriptionEn: "Added 13-module enterprise admin dashboard, RBAC role matrix, Gemini AI master controls, support tickets, and analytics CSV/PDF reports.",
+          descriptionAr: "إضافة لوحة إدارة مركزية بـ 13 وحدة مع نظام صلاحيات RBAC، مركز تحكم Gemini AI، نظام التذاكر، وتقارير CSV وPDF.",
+          changelog: "- RBAC Roles: Owner, Super Admin, Admin, Editor, Support\n- Real-time KPI charts & CSV/PDF export\n- Unified Support & Contact Ticket workflow",
+          releaseDate: "2026-11-28",
+          status: "released",
+          deployTarget: "github_pages",
+          createdAt: "2026-11-28T00:00:00.000Z"
+        }
+      ],
+      projectRequests: [],
+      analytics: {
+        totalViews: 0,
+        aiQueries: 0,
+        apkDownloads: 0,
+        byRoute: {},
+        bySource: {},
+        events: []
+      },
+      aiLogs: [],
+      loginLogs: [],
+      auditLogs: [],
       messages: []
     };
   }
@@ -434,9 +533,26 @@
         return {
           ...def,
           ...parsed,
-          settings: { ...def.settings, ...(parsed.settings || {}) },
+          settings: {
+            ...def.settings,
+            ...(parsed.settings || {}),
+            visibleSections: { ...def.settings.visibleSections, ...((parsed.settings && parsed.settings.visibleSections) || {}) }
+          },
           knowledgeBase: Array.isArray(parsed.knowledgeBase) && parsed.knowledgeBase.length > 0 ? parsed.knowledgeBase : def.knowledgeBase,
-          faqs: Array.isArray(parsed.faqs) && parsed.faqs.length > 0 ? parsed.faqs : def.faqs
+          faqs: Array.isArray(parsed.faqs) && parsed.faqs.length > 0 ? parsed.faqs : def.faqs,
+          updates: Array.isArray(parsed.updates) && parsed.updates.length > 0 ? parsed.updates : def.updates,
+          releases: Array.isArray(parsed.releases) && parsed.releases.length > 0 ? parsed.releases : def.releases,
+          projectRequests: Array.isArray(parsed.projectRequests) ? parsed.projectRequests : [],
+          aiLogs: Array.isArray(parsed.aiLogs) ? parsed.aiLogs : [],
+          loginLogs: Array.isArray(parsed.loginLogs) ? parsed.loginLogs : [],
+          auditLogs: Array.isArray(parsed.auditLogs) ? parsed.auditLogs : [],
+          analytics: {
+            ...def.analytics,
+            ...(parsed.analytics || {}),
+            byRoute: { ...((parsed.analytics && parsed.analytics.byRoute) || {}) },
+            bySource: { ...((parsed.analytics && parsed.analytics.bySource) || {}) },
+            events: Array.isArray(parsed.analytics?.events) ? parsed.analytics.events : []
+          }
         };
       }
       // Preserve any visitor messages from previous version while upgrading services/projects/team schema cleanly
@@ -455,6 +571,25 @@
     }
   }
 
+  function loadAiHistory() {
+    try {
+      const raw = localStorage.getItem(AI_HISTORY_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.slice(-30) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveAiHistory() {
+    try {
+      localStorage.setItem(AI_HISTORY_KEY, JSON.stringify(aiChatHistory.slice(-30)));
+    } catch {
+      // Ignore storage quota errors
+    }
+  }
+
   let studioState = loadState();
   let currentLang = localStorage.getItem("vexora_lang") === "en" ? "en" : "ar";
   let currentRoute = normalizeRoute(window.location.hash.replace("#", "")) || "home";
@@ -464,12 +599,17 @@
   let projectSearchQuery = "";
   let techCategoryFilter = "all";
   let contactPreselectedService = "";
+  let clientAuthTab = "signin";
+  let clientPortalTab = "new_request";
+  let updatesFilter = "all";
+  let openVideoProjectIds = new Set();
   let adminSection = "dashboard";
   let adminMsgSearch = "";
   let adminMsgStatusFilter = "all";
+  let remoteAnalyticsCache = null;
   let dbSyncStatus = { tested: false, ok: false, latencyMs: null, message: "" };
   let aiSyncStatus = { tested: false, ok: false, latencyMs: null, mode: "", message: "" };
-  let aiChatHistory = [];
+  let aiChatHistory = loadAiHistory();
   let aiBusy = false;
 
   function saveState() {
@@ -490,6 +630,8 @@
       "technologies",
       "team",
       "ai",
+      "client",
+      "updates",
       "download",
       "contact",
       "admin",
@@ -533,20 +675,14 @@
   }
 
   function isAdminAuthorized() {
-    if (Backend.isConfigured()) {
-      return Boolean(Backend.getStoredAuth()?.access_token);
-    }
-    return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+    return Boolean(AdminEnt?.isAdminAuthorized(Backend));
   }
 
-  function verifyLocalAdminCode(input) {
-    const value = String(input || "");
-    if (value.length !== ADMIN_CODE_POINTS.length) return false;
-    let diff = 0;
-    for (let i = 0; i < ADMIN_CODE_POINTS.length; i++) {
-      diff |= value.charCodeAt(i) ^ ADMIN_CODE_POINTS[i];
+  function applyThemeMode(mode) {
+    const clean = mode === "light" ? "light" : "dark";
+    if (document.documentElement) {
+      document.documentElement.dataset.theme = clean;
     }
-    return diff === 0;
   }
 
   function serviceIconGlyph(key) {
@@ -575,14 +711,16 @@
   function normalizeProjectStatus(raw) {
     const s = String(raw || "").toLowerCase();
     if (s === "completed" || s === "available") return "Completed";
-    if (s === "coming soon" || s === "coming_soon") return "Coming Soon";
+    if (s === "coming soon" || s === "coming_soon" || s === "planning") return "Planning";
+    if (s === "on hold" || s === "on_hold") return "On Hold";
     return "In Progress";
   }
 
   function statusMeta(raw) {
     const normalized = normalizeProjectStatus(raw);
     if (normalized === "Completed") return { label: t("statusCompleted"), cls: "success", key: "Completed" };
-    if (normalized === "Coming Soon") return { label: t("statusComingSoon"), cls: "cyan", key: "Coming Soon" };
+    if (normalized === "Planning") return { label: t("statusPlanning"), cls: "cyan", key: "Planning" };
+    if (normalized === "On Hold") return { label: t("statusOnHold"), cls: "error", key: "On Hold" };
     return { label: t("statusInProgress"), cls: "warning", key: "In Progress" };
   }
 
@@ -597,10 +735,174 @@
     }
   }
 
+  function trackEvent(eventType, route = currentRoute) {
+    if (!studioState.analytics) {
+      studioState.analytics = { totalViews: 0, aiQueries: 0, apkDownloads: 0, byRoute: {}, bySource: {}, events: [] };
+    }
+    let source = "direct";
+    try {
+      source = document.referrer ? new URL(document.referrer).hostname : "direct";
+    } catch {
+      source = "direct";
+    }
+    if (!Array.isArray(studioState.analytics.events)) studioState.analytics.events = [];
+    studioState.analytics.events.push({ eventType, route, source, createdAt: new Date().toISOString() });
+    if (studioState.analytics.events.length > 500) {
+      studioState.analytics.events = studioState.analytics.events.slice(-500);
+    }
+
+    if (eventType === "page_view") {
+      studioState.analytics.totalViews = (studioState.analytics.totalViews || 0) + 1;
+      if (!studioState.analytics.byRoute) studioState.analytics.byRoute = {};
+      if (!studioState.analytics.bySource) studioState.analytics.bySource = {};
+      studioState.analytics.byRoute[route] = (studioState.analytics.byRoute[route] || 0) + 1;
+      studioState.analytics.bySource[source] = (studioState.analytics.bySource[source] || 0) + 1;
+    } else if (eventType === "ai_query") {
+      studioState.analytics.aiQueries = (studioState.analytics.aiQueries || 0) + 1;
+    } else if (eventType === "apk_download") {
+      studioState.analytics.apkDownloads = (studioState.analytics.apkDownloads || 0) + 1;
+    }
+    saveState();
+    if (Backend.trackAnalyticsEvent) Backend.trackAnalyticsEvent(eventType, route, source);
+  }
+
+  function getReadUpdateIds() {
+    try {
+      const raw = localStorage.getItem(READ_UPDATES_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function markUpdatesRead(ids) {
+    const cur = new Set(getReadUpdateIds());
+    ids.forEach((id) => cur.add(id));
+    try {
+      localStorage.setItem(READ_UPDATES_KEY, JSON.stringify([...cur]));
+    } catch {
+      // Ignore
+    }
+  }
+
+  function getUnreadUpdatesCount() {
+    const read = new Set(getReadUpdateIds());
+    return (studioState.updates || []).filter((u) => u.published !== false && !read.has(u.id)).length;
+  }
+
+  const localClientStorage = {
+    getAccounts() {
+      try {
+        const raw = localStorage.getItem(LOCAL_CLIENT_ACCS_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    },
+    createAccount({ fullName, email, company, phone, pwdHash }) {
+      const list = this.getAccounts();
+      const normEmail = email.toLowerCase();
+      if (list.some((a) => a.email === normEmail)) {
+        throw new Error(isArabic() ? "هذا البريد مسجل بالفعل." : "An account with this email already exists.");
+      }
+      const acc = {
+        userId: `local_client_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        fullName,
+        email: normEmail,
+        company: company || "",
+        phone: phone || "",
+        status: "active",
+        internalNotes: "",
+        createdAt: new Date().toISOString(),
+        pwdHash
+      };
+      list.push(acc);
+      localStorage.setItem(LOCAL_CLIENT_ACCS_KEY, JSON.stringify(list));
+      return { userId: acc.userId, fullName: acc.fullName, email: acc.email, company: acc.company, phone: acc.phone, status: acc.status };
+    },
+    verifyAccount(email, pwdHash) {
+      const normEmail = email.toLowerCase();
+      const found = this.getAccounts().find((a) => a.email === normEmail && a.pwdHash === pwdHash);
+      if (!found) return null;
+      if (found.status === "disabled") {
+        throw new Error(isArabic() ? "تم تعطيل حسابك من قِبل الإدارة. يرجى التواصل مع الدعم." : "Your client account has been disabled by an administrator.");
+      }
+      return { userId: found.userId, fullName: found.fullName, email: found.email, company: found.company, phone: found.phone, status: found.status || "active" };
+    },
+    updateAccountStatus(userId, status, internalNotes) {
+      const list = this.getAccounts();
+      let changed = false;
+      const updated = list.map((a) => {
+        if (a.userId !== userId && a.email !== userId) return a;
+        changed = true;
+        return {
+          ...a,
+          status: status || a.status || "active",
+          internalNotes: typeof internalNotes === "string" ? internalNotes : (a.internalNotes || "")
+        };
+      });
+      if (changed) {
+        localStorage.setItem(LOCAL_CLIENT_ACCS_KEY, JSON.stringify(updated));
+        const sess = this.getSession();
+        if (sess && sess.userId === userId && status === "disabled") {
+          this.setSession(null);
+        }
+      }
+      return changed;
+    },
+    getSession() {
+      try {
+        const raw = sessionStorage.getItem(LOCAL_CLIENT_SESS_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    },
+    setSession(sess) {
+      try {
+        if (!sess) sessionStorage.removeItem(LOCAL_CLIENT_SESS_KEY);
+        else sessionStorage.setItem(LOCAL_CLIENT_SESS_KEY, JSON.stringify(sess));
+      } catch {
+        // Ignore
+      }
+    }
+  };
+
+  function getActiveClientSession() {
+    if (Backend.isConfigured()) {
+      return Backend.getStoredClientAuth();
+    }
+    return localClientStorage.getSession();
+  }
+
+  async function syncClientCloudData() {
+    if (!Backend.isConfigured() || !Backend.getStoredClientAuth()?.access_token) return;
+    try {
+      const [reqs, msgs] = await Promise.all([
+        Backend.fetchClientRequests().catch(() => null),
+        Backend.fetchClientMessages().catch(() => null)
+      ]);
+      if (Array.isArray(reqs)) studioState.projectRequests = reqs;
+      if (Array.isArray(msgs)) {
+        const existingIds = new Set(msgs.map((m) => m.id));
+        const localOnly = (studioState.messages || []).filter((m) => !existingIds.has(m.id));
+        studioState.messages = [...msgs, ...localOnly];
+      }
+      saveState();
+    } catch {
+      // Non-fatal
+    }
+  }
+
   function navigate(route) {
-    currentRoute = normalizeRoute(route) || "home";
+    const next = normalizeRoute(route) || "home";
+    const changed = next !== currentRoute;
+    currentRoute = next;
     window.location.hash = currentRoute;
     closeDrawer();
+    if (changed) trackEvent("page_view", currentRoute);
     renderAll();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -629,13 +931,27 @@
   function renderChrome() {
     document.documentElement.lang = currentLang;
     document.documentElement.dir = isArabic() ? "rtl" : "ltr";
+    applyThemeMode(studioState.settings?.themeMode);
     document.getElementById("langToggleLabel").textContent = t("langToggleLabel");
     updateDocumentSeo();
 
     const settings = studioState.settings;
+    const vis = settings.visibleSections || {};
     const tagline = isArabic() ? settings.taglineAr : settings.taglineEn;
 
-    const navItems = [
+    const unreadUpdates = getUnreadUpdatesCount();
+    const notifBtn = document.getElementById("topbarNotifBtn");
+    const notifBadge = document.getElementById("topbarNotifBadge");
+    if (notifBtn) {
+      notifBtn.setAttribute("aria-label", t("topbarNotifLabel"));
+      notifBtn.hidden = vis.updates === false;
+    }
+    if (notifBadge) {
+      notifBadge.textContent = unreadUpdates > 9 ? "9+" : String(unreadUpdates);
+      notifBadge.hidden = unreadUpdates === 0;
+    }
+
+    const allNavItems = [
       { key: "home", label: t("navHome"), icon: "🏠" },
       { key: "about", label: t("navAbout"), icon: "🏢" },
       { key: "services", label: t("navServices"), icon: "🛠️" },
@@ -643,10 +959,13 @@
       { key: "technologies", label: t("navTechnologies"), icon: "💻" },
       { key: "team", label: t("navTeam"), icon: "👥" },
       { key: "ai", label: t("navAi"), icon: "🤖" },
+      { key: "client", label: t("navClient"), icon: "👤" },
+      { key: "updates", label: unreadUpdates > 0 ? `${t("navUpdates")} (${unreadUpdates})` : t("navUpdates"), icon: "🔔" },
       { key: "download", label: t("navDownload"), icon: "📲" },
       { key: "contact", label: t("navContact"), icon: "✉️" },
       { key: "admin", label: t("navAdmin"), icon: "🛡️" }
     ];
+    const navItems = allNavItems.filter((item) => vis[item.key] !== false);
 
     document.getElementById("navRail").innerHTML = navItems
       .map(
@@ -660,7 +979,7 @@
       .join("");
 
     // Mobile Bottom Bar: 5 core touch-friendly destinations
-    const mobileBottomKeys = ["home", "services", "projects", "ai", "contact"];
+    const mobileBottomKeys = ["home", "services", "projects", "ai", "client"];
     document.getElementById("bottomNav").innerHTML = navItems
       .filter((i) => mobileBottomKeys.includes(i.key))
       .map(
@@ -736,6 +1055,7 @@
           <div class="btn-row">
             <button type="button" class="btn btn-primary" data-go="projects">🚀 ${escapeHtml(t("exploreProjectsCta"))}</button>
             <button type="button" class="btn btn-outline" data-go="services">🛠️ ${escapeHtml(t("ourServicesCta"))}</button>
+            <button type="button" class="btn btn-outline" data-go="client">👤 ${escapeHtml(t("navClient"))}</button>
             <button type="button" class="btn btn-outline" data-go="ai">🤖 ${escapeHtml(t("askAiBtn"))}</button>
           </div>
           <div class="hero-trust-row">
@@ -769,67 +1089,79 @@
         </div>
       </section>
 
-      <section class="section-block">
-        <div class="section-header-row">
-          <h2 class="card-title">${escapeHtml(t("featuredServicesTitle"))}</h2>
-          <button type="button" class="btn btn-text" data-go="services">${escapeHtml(t("viewAll"))} →</button>
-        </div>
-        <div class="horizontal-scroll">
-          ${publishedServices
-            .slice(0, 6)
-            .map(
-              (srv) => `
-            <div class="glass-card featured-srv-card" data-tilt-3d="1" data-go="services">
-              <div class="service-icon-box">${serviceIconGlyph(srv.iconKey)}</div>
-              <h3 class="card-title" style="margin-top:12px;">${escapeHtml(isArabic() ? srv.titleAr : srv.titleEn)}</h3>
-              <p class="muted-text" style="margin-top:6px;">${escapeHtml(isArabic() ? srv.descriptionAr : srv.descriptionEn)}</p>
-            </div>
-          `
-            )
-            .join("")}
-        </div>
-      </section>
-
-      <section class="section-block">
-        <div class="section-header-row">
-          <h2 class="card-title">${escapeHtml(t("featuredProjectsTitle"))}</h2>
-          <button type="button" class="btn btn-text" data-go="projects">${escapeHtml(t("viewAll"))} →</button>
-        </div>
-        <div class="two-col-grid">
-          ${publishedProjects
-            .slice(0, 4)
-            .map((proj) => {
-              const st = statusMeta(proj.status);
-              return `
-              <div class="glass-card no-pad" data-tilt-3d="subtle" style="cursor:pointer;" data-go="projects">
-                <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${escapeHtml(projectImageSrc(proj))}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" loading="lazy" decoding="async" onerror="this.style.display='none'" />
-                <div class="card-inner">
-                  <div class="row-between">
-                    <h3 class="card-title">${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}</h3>
-                    <span class="status-pill ${st.cls}"><span class="pill-dot"></span>${escapeHtml(st.label)}</span>
-                  </div>
-                  <div style="font-size:0.78rem;color:var(--neon-cyan);font-weight:600;">${escapeHtml(projectCategoryLabel(proj.category))}</div>
-                  <p class="muted-text">${escapeHtml(isArabic() ? proj.descriptionAr : proj.descriptionEn)}</p>
-                </div>
+      ${
+        settings.visibleSections?.services !== false
+          ? `<section class="section-block">
+              <div class="section-header-row">
+                <h2 class="card-title">${escapeHtml(t("featuredServicesTitle"))}</h2>
+                <button type="button" class="btn btn-text" data-go="services">${escapeHtml(t("viewAll"))} →</button>
               </div>
-            `;
-            })
-            .join("")}
-        </div>
-      </section>
+              <div class="horizontal-scroll">
+                ${publishedServices
+                  .slice(0, 6)
+                  .map(
+                    (srv) => `
+                  <div class="glass-card featured-srv-card" data-tilt-3d="1" data-go="services">
+                    <div class="service-icon-box">${serviceIconGlyph(srv.iconKey)}</div>
+                    <h3 class="card-title" style="margin-top:12px;">${escapeHtml(isArabic() ? srv.titleAr : srv.titleEn)}</h3>
+                    <p class="muted-text" style="margin-top:6px;">${escapeHtml(isArabic() ? srv.descriptionAr : srv.descriptionEn)}</p>
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+            </section>`
+          : ""
+      }
 
-      <section class="section-block">
-        <div class="section-header-row">
-          <h2 class="card-title">${escapeHtml(t("homeTeamTitle"))}</h2>
-          <button type="button" class="btn btn-text" data-go="team">${escapeHtml(t("viewAll"))} →</button>
-        </div>
-        <div class="stack-list">
-          ${publishedTeam
-            .slice(0, 2)
-            .map((m) => renderTeamCardHtml(m))
-            .join("")}
-        </div>
-      </section>
+      ${
+        settings.visibleSections?.projects !== false
+          ? `<section class="section-block">
+              <div class="section-header-row">
+                <h2 class="card-title">${escapeHtml(t("featuredProjectsTitle"))}</h2>
+                <button type="button" class="btn btn-text" data-go="projects">${escapeHtml(t("viewAll"))} →</button>
+              </div>
+              <div class="two-col-grid">
+                ${publishedProjects
+                  .slice(0, 4)
+                  .map((proj) => {
+                    const st = statusMeta(proj.status);
+                    return `
+                    <div class="glass-card no-pad" data-tilt-3d="subtle" style="cursor:pointer;" data-go="projects">
+                      <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${escapeHtml(projectImageSrc(proj))}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" loading="lazy" decoding="async" onerror="this.style.display='none'" />
+                      <div class="card-inner">
+                        <div class="row-between">
+                          <h3 class="card-title">${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}</h3>
+                          <span class="status-pill ${st.cls}"><span class="pill-dot"></span>${escapeHtml(st.label)}</span>
+                        </div>
+                        <div style="font-size:0.78rem;color:var(--neon-cyan);font-weight:600;">${escapeHtml(projectCategoryLabel(proj.category))}</div>
+                        <p class="muted-text">${escapeHtml(isArabic() ? proj.descriptionAr : proj.descriptionEn)}</p>
+                      </div>
+                    </div>
+                  `;
+                  })
+                  .join("")}
+              </div>
+            </section>`
+          : ""
+      }
+
+      ${
+        settings.visibleSections?.team !== false
+          ? `<section class="section-block">
+              <div class="section-header-row">
+                <h2 class="card-title">${escapeHtml(t("homeTeamTitle"))}</h2>
+                <button type="button" class="btn btn-text" data-go="team">${escapeHtml(t("viewAll"))} →</button>
+              </div>
+              <div class="stack-list">
+                ${publishedTeam
+                  .slice(0, 2)
+                  .map((m) => renderTeamCardHtml(m))
+                  .join("")}
+              </div>
+            </section>`
+          : ""
+      }
 
       <section class="section-block">
         <div class="section-header-row" style="align-items:flex-end;">
@@ -859,24 +1191,28 @@
         </div>
       </section>
 
-      ${renderFaqSectionHtml()}
+      ${settings.visibleSections?.faq !== false ? renderFaqSectionHtml() : ""}
 
-      <section class="glass-card highlight-border" data-tilt-3d="1">
-        <div class="app-download-hero">
-          <img class="app-icon-badge" src="${STUDIO_IMAGES.appIcon}" alt="Vexora Studio Android App" loading="lazy" decoding="async" onerror="this.style.display='none'" />
-          <div style="flex:1;min-width:210px;">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <h2 class="card-title">${escapeHtml(t("downloadBannerTitle"))}</h2>
-              <span class="status-pill success"><span class="pill-dot"></span>APK v1.0</span>
-            </div>
-            <p class="muted-text" style="margin-top:6px;">${escapeHtml(t("downloadBannerDesc"))}</p>
-            <div class="btn-row" style="margin-top:12px;">
-              <a href="${APK_URL}" download="Vexora-Studio.apk" class="btn btn-primary" data-apk-dl="1">⬇️ ${escapeHtml(t("downloadApkBtn"))}</a>
-              <button type="button" class="btn btn-outline" data-go="download">📲 ${escapeHtml(t("downloadDetailsBtn"))}</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      ${
+        settings.visibleSections?.download !== false
+          ? `<section class="glass-card highlight-border" data-tilt-3d="1">
+              <div class="app-download-hero">
+                <img class="app-icon-badge" src="${STUDIO_IMAGES.appIcon}" alt="Vexora Studio Android App" loading="lazy" decoding="async" onerror="this.style.display='none'" />
+                <div style="flex:1;min-width:210px;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <h2 class="card-title">${escapeHtml(t("downloadBannerTitle"))}</h2>
+                    <span class="status-pill success"><span class="pill-dot"></span>APK v1.0</span>
+                  </div>
+                  <p class="muted-text" style="margin-top:6px;">${escapeHtml(t("downloadBannerDesc"))}</p>
+                  <div class="btn-row" style="margin-top:12px;">
+                    <a href="${APK_URL}" download="Vexora-Studio.apk" class="btn btn-primary" data-apk-dl="1">⬇️ ${escapeHtml(t("downloadApkBtn"))}</a>
+                    <button type="button" class="btn btn-outline" data-go="download">📲 ${escapeHtml(t("downloadDetailsBtn"))}</button>
+                  </div>
+                </div>
+              </div>
+            </section>`
+          : ""
+      }
 
       <section class="glass-card highlight-border cta-banner">
         <div style="flex:1;min-width:210px;">
@@ -894,7 +1230,10 @@
       el.addEventListener("click", () => navigate(el.dataset.go));
     });
     root.querySelectorAll("[data-apk-dl]").forEach((el) => {
-      el.addEventListener("click", () => showToast(t("downloadStartedToast")));
+      el.addEventListener("click", () => {
+        trackEvent("apk_download", "home");
+        showToast(t("downloadStartedToast"));
+      });
     });
   }
 
@@ -1150,6 +1489,8 @@
         .map((proj) => {
           const st = statusMeta(proj.status);
           const link = safeHttpUrl(proj.websiteUrl);
+          const videoInfo = Portal && Portal.safeVideoInfo ? Portal.safeVideoInfo(proj.videoUrl) : null;
+          const videoOpen = videoInfo && openVideoProjectIds.has(proj.id);
           return `
           <div class="glass-card no-pad ${proj.featured ? "highlight-border" : ""}" data-tilt-3d="subtle">
             <img class="project-img ${proj.presetImageKey === "f_cutus" || proj.presetImageKey === "noorix" ? "contain" : ""}" src="${escapeHtml(projectImageSrc(proj))}" alt="${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}" loading="lazy" decoding="async" onerror="this.style.display='none'" />
@@ -1158,7 +1499,10 @@
                 <h2 class="card-title" style="font-size:1.18rem;">${escapeHtml(isArabic() ? proj.nameAr : proj.nameEn)}</h2>
                 <span class="status-pill ${st.cls}"><span class="pill-dot"></span>${escapeHtml(st.label)}</span>
               </div>
-              <div style="font-size:0.8rem;color:var(--neon-cyan);font-weight:700;">${escapeHtml(projectCategoryLabel(proj.category))}</div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <span style="font-size:0.8rem;color:var(--neon-cyan);font-weight:700;">${escapeHtml(projectCategoryLabel(proj.category))}</span>
+                ${videoInfo ? `<span class="status-pill cyan">🎬 ${escapeHtml(t("videoDemoTag"))}</span>` : ""}
+              </div>
               <p class="muted-text">${escapeHtml(isArabic() ? proj.descriptionAr : proj.descriptionEn)}</p>
               ${
                 proj.technologies?.length
@@ -1171,18 +1515,48 @@
                   : ""
               }
               ${
-                link
-                  ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-full" style="margin-top:8px;">
-                      ${escapeHtml(t("visitWebsite"))}
-                    </a>`
+                videoOpen
+                  ? Portal.renderVideoPlayerHtml(proj.videoUrl, escapeHtml)
                   : ""
               }
+              <div class="btn-row" style="margin-top:8px;">
+                ${
+                  videoInfo
+                    ? `<button type="button" class="btn btn-outline btn-sm" data-toggle-vid="${escapeHtml(proj.id)}">
+                        🎬 ${escapeHtml(videoOpen ? t("hideVideoBtn") : t("watchVideoBtn"))}
+                      </button>`
+                    : ""
+                }
+                ${
+                  link
+                    ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="flex:1;">
+                        ${escapeHtml(t("visitWebsite"))}
+                      </a>`
+                    : ""
+                }
+              </div>
             </div>
           </div>
         `;
         })
         .join("")}
     </div>`;
+  }
+
+  function bindProjectVideoToggles(container) {
+    container.querySelectorAll("[data-toggle-vid]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.toggleVid;
+        if (openVideoProjectIds.has(id)) openVideoProjectIds.delete(id);
+        else openVideoProjectIds.add(id);
+        const gridWrap = document.getElementById("projectsGridWrap");
+        if (gridWrap) {
+          gridWrap.innerHTML = renderProjectsGridHtml();
+          bindProjectVideoToggles(gridWrap);
+          bind3DEffects(gridWrap);
+        }
+      });
+    });
   }
 
   function renderProjectsScreen(root) {
@@ -1192,9 +1566,10 @@
     ];
     const statusFilters = [
       { key: "all", label: t("statusAll") },
-      { key: "Completed", label: t("statusCompleted") },
+      { key: "Planning", label: t("statusPlanning") },
       { key: "In Progress", label: t("statusInProgress") },
-      { key: "Coming Soon", label: t("statusComingSoon") }
+      { key: "Completed", label: t("statusCompleted") },
+      { key: "On Hold", label: t("statusOnHold") }
     ];
 
     root.innerHTML = `
@@ -1236,10 +1611,12 @@
 
     const searchInput = document.getElementById("projectSearchInput");
     const gridWrap = document.getElementById("projectsGridWrap");
+    bindProjectVideoToggles(gridWrap);
 
     searchInput.addEventListener("input", () => {
       projectSearchQuery = searchInput.value;
       gridWrap.innerHTML = renderProjectsGridHtml();
+      bindProjectVideoToggles(gridWrap);
       bind3DEffects(gridWrap);
     });
 
@@ -1540,6 +1917,17 @@
           answerEn: f.answerEn,
           answerAr: f.answerAr
         })),
+      updates: (studioState.updates || [])
+        .filter((u) => u.published !== false)
+        .slice(0, 8)
+        .map((u) => ({
+          kind: u.kind,
+          titleEn: u.titleEn,
+          titleAr: u.titleAr,
+          bodyEn: u.bodyEn,
+          bodyAr: u.bodyAr,
+          createdAt: u.createdAt
+        })),
       technologies: (I18N[currentLang].techGroups || []).map((g) => ({
         category: g.title,
         items: g.items
@@ -1746,7 +2134,21 @@
     };
   }
 
+  function recordLocalAiLog(entry) {
+    if (!Array.isArray(studioState.aiLogs)) studioState.aiLogs = [];
+    studioState.aiLogs.unshift({
+      id: `ailog_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      createdAt: new Date().toISOString(),
+      ...entry
+    });
+    if (studioState.aiLogs.length > 100) {
+      studioState.aiLogs = studioState.aiLogs.slice(0, 100);
+    }
+    saveState();
+  }
+
   function renderAiScreen(root) {
+    const aiEnabled = studioState.settings?.aiEnabled !== false;
     if (aiChatHistory.length === 0) {
       aiChatHistory.push({
         role: "assistant",
@@ -1754,12 +2156,15 @@
         links: ["services", "projects", "technologies"],
         source: "knowledge"
       });
+      saveAiHistory();
     }
 
     const suggestions = I18N[currentLang].aiSuggestions || [];
     const cfg = Backend.getConfig();
-    const aiReady = Backend.isAiConfigured ? Backend.isAiConfigured() : Backend.isConfigured();
-    const statusText = cfg.aiEndpointUrl
+    const aiReady = aiEnabled && (Backend.isAiConfigured ? Backend.isAiConfigured() : Backend.isConfigured());
+    const statusText = !aiEnabled
+      ? t("entAiPausedBadge")
+      : cfg.aiEndpointUrl
       ? t("aiStatusCustomProxy")
       : Backend.isConfigured()
       ? t("aiStatusConnected")
@@ -1773,18 +2178,25 @@
           <p class="screen-subtitle">${escapeHtml(t("aiSubheadline"))}</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span class="status-pill cyan">⚡ ${escapeHtml(studioState.settings?.aiModel || t("aiModelBadge"))}</span>
           <span class="status-pill cyan">📚 ${activeKbCount} ${escapeHtml(t("aiKbCountLabel"))}</span>
-          <span class="status-pill ${aiReady ? "success" : "cyan"}">
+          <span class="status-pill ${!aiEnabled ? "warning" : aiReady ? "success" : "cyan"}">
             <span class="pill-dot"></span>
             ${escapeHtml(statusText)}
           </span>
         </div>
       </div>
 
+      ${
+        !aiEnabled
+          ? `<div class="ai-error-banner"><span>⏸️ ${escapeHtml(t("aiPausedNotice"))}</span></div>`
+          : ""
+      }
+
       <div class="chips-scroll">
         ${suggestions
           .map(
-            (s) => `<button type="button" class="chip-btn" data-ai-suggest="${escapeHtml(s)}">${escapeHtml(s)}</button>`
+            (s) => `<button type="button" class="chip-btn" data-ai-suggest="${escapeHtml(s)}" ${!aiEnabled ? "disabled" : ""}>${escapeHtml(s)}</button>`
           )
           .join("")}
       </div>
@@ -1792,13 +2204,21 @@
       <div class="glass-card highlight-border stack-list">
         <div id="aiChatBox" class="chat-box">
           ${aiChatHistory
-            .map((msg) => {
+            .map((msg, idx) => {
               const cls = msg.role === "user" ? "user" : "bot";
               const sourcePill =
                 msg.role === "assistant" && msg.source
                   ? `<div style="font-size:0.72rem;color:var(--neon-cyan);margin-bottom:4px;font-weight:700;">${escapeHtml(
-                      msg.source === "gemini" ? t("aiSourceGemini") : t("aiSourceKnowledge")
+                      msg.source === "gemini" ? `${t("aiSourceGemini")} (${msg.model || "gemini-3.8-flash"})` : t("aiSourceKnowledge")
                     )}</div>`
+                  : "";
+              const errorBox =
+                msg.role === "assistant" && msg.errorBanner
+                  ? `<div class="ai-error-banner">
+                      <span>⚠️ ${escapeHtml(msg.errorBanner)}</span>
+                      ${msg.retryPrompt ? `<button type="button" class="btn btn-outline btn-sm" data-ai-retry="${idx}">${escapeHtml(t("aiRetryBtn"))}</button>` : ""}
+                      <div style="font-size:0.78rem;color:var(--text-muted);width:100%;">${escapeHtml(t("aiFallbackNote"))}</div>
+                    </div>`
                   : "";
               const routeButtons =
                 msg.role === "assistant" && Array.isArray(msg.links) && msg.links.length
@@ -1808,18 +2228,18 @@
                         .join("")}
                     </div>`
                   : "";
-              return `<div class="chat-bubble ${cls}">${sourcePill}${escapeHtml(msg.text)}${routeButtons}</div>`;
+              return `<div class="chat-bubble ${cls}">${sourcePill}${errorBox}${escapeHtml(msg.text)}${routeButtons}</div>`;
             })
             .join("")}
           ${aiBusy ? `<div class="chat-bubble bot">${escapeHtml(t("aiThinking"))}</div>` : ""}
         </div>
 
         <form id="aiChatForm" class="chat-input-row">
-          <input id="aiInput" type="text" placeholder="${escapeHtml(t("aiInputPlaceholder"))}" ${aiBusy ? "disabled" : ""} required />
-          <button type="submit" class="btn btn-primary" ${aiBusy ? "disabled" : ""}>${escapeHtml(t("aiSendBtn"))}</button>
+          <input id="aiInput" type="text" placeholder="${escapeHtml(t("aiInputPlaceholder"))}" ${aiBusy || !aiEnabled ? "disabled" : ""} required />
+          <button type="submit" class="btn btn-primary" ${aiBusy || !aiEnabled ? "disabled" : ""}>${escapeHtml(t("aiSendBtn"))}</button>
         </form>
         <div class="row-between">
-          <span class="muted-text" style="font-size:0.78rem;">Gemini API runs strictly via secure backend (Edge Function or Proxy) grounded with Knowledge Base + chat context.</span>
+          <span class="muted-text" style="font-size:0.78rem;">${escapeHtml(t("aiHistorySavedHint"))}</span>
           <button id="aiClearBtn" type="button" class="btn btn-text btn-sm">${escapeHtml(t("aiClearBtn"))}</button>
         </div>
       </div>
@@ -1836,8 +2256,16 @@
       btn.addEventListener("click", () => handleAiSubmit(btn.dataset.aiSuggest));
     });
 
+    root.querySelectorAll("[data-ai-retry]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const msg = aiChatHistory[Number(btn.dataset.aiRetry)];
+        if (msg?.retryPrompt) handleAiSubmit(msg.retryPrompt);
+      });
+    });
+
     document.getElementById("aiClearBtn").addEventListener("click", () => {
       aiChatHistory = [{ role: "assistant", text: t("aiGreeting"), links: ["services", "projects", "technologies"], source: "knowledge" }];
+      saveAiHistory();
       renderScreen();
     });
 
@@ -1857,6 +2285,8 @@
       case "projects": return t("navProjects");
       case "technologies": return t("navTechnologies");
       case "team": return t("navTeam");
+      case "client": return t("navClient");
+      case "updates": return t("navUpdates");
       case "download": return t("navDownload");
       case "contact": return t("navContact");
       default: return t("navHome");
@@ -1866,32 +2296,59 @@
   async function handleAiSubmit(promptText) {
     const clean = String(promptText || "").trim();
     if (!clean || aiBusy) return;
+    if (studioState.settings?.aiEnabled === false) {
+      recordLocalAiLog({ questionPreview: clean.slice(0, 120), lang: currentLang, source: "paused", status: "paused", latencyMs: 0 });
+      showToast(t("aiPausedNotice"));
+      return;
+    }
 
-    const priorHistory = aiChatHistory.slice(-10).map((m) => ({ role: m.role, text: m.text }));
+    const priorHistory = aiChatHistory.slice(-12).map((m) => ({ role: m.role, text: m.text }));
     aiChatHistory.push({ role: "user", text: clean });
+    saveAiHistory();
+    trackEvent("ai_query", "ai");
     aiBusy = true;
     renderScreen();
 
+    const startedAt = Date.now();
     try {
       const catalog = buildPublicCatalogForAI();
       const remote = await Backend.askVexoraAI(clean, currentLang, priorHistory, catalog);
+      const latencyMs = Math.max(1, Date.now() - startedAt);
 
       if (remote.ok && remote.reply) {
+        recordLocalAiLog({ questionPreview: clean.slice(0, 120), lang: currentLang, source: "gemini", status: "ok", latencyMs });
         aiChatHistory.push({
           role: "assistant",
           text: remote.reply,
           links: inferSuggestedRoutes(remote.reply),
-          source: "gemini"
+          source: "gemini",
+          model: remote.provider || "gemini-3.8-flash"
         });
       } else {
         const localAns = answerLocallyGrounded(clean, currentLang, priorHistory);
+        let errBanner = "";
+        if (remote.configured) {
+          const baseErr = remote.errorType === "timeout" ? t("aiTimeoutError") : t("aiDisconnectError");
+          errBanner = `${baseErr}${remote.reason ? ` (${remote.reason})` : ""}`;
+        }
+        recordLocalAiLog({
+          questionPreview: clean.slice(0, 120),
+          lang: currentLang,
+          source: remote.configured ? "gemini" : "local_kb",
+          status: remote.configured ? "error" : "ok",
+          errorReason: errBanner,
+          latencyMs
+        });
         aiChatHistory.push({
           role: "assistant",
           text: localAns.text,
           links: localAns.links,
-          source: "knowledge"
+          source: "knowledge",
+          errorBanner: errBanner || undefined,
+          retryPrompt: errBanner ? clean : undefined
         });
       }
+      saveAiHistory();
     } finally {
       aiBusy = false;
       renderScreen();
@@ -1904,6 +2361,8 @@
     if (lower.includes("#services") || lower.includes("service")) out.push("services");
     if (lower.includes("#projects") || lower.includes("f.cutus") || lower.includes("noorix")) out.push("projects");
     if (lower.includes("#technologies") || lower.includes("kotlin") || lower.includes("react") || lower.includes("python")) out.push("technologies");
+    if (lower.includes("#client") || lower.includes("client portal")) out.push("client");
+    if (lower.includes("#updates")) out.push("updates");
     if (lower.includes("#contact") || lower.includes("vexora0studio@gmail.com")) out.push("contact");
     if (lower.includes("#download") || lower.includes("apk")) out.push("download");
     return [...new Set(out)].slice(0, 3);
@@ -1975,6 +2434,7 @@
     `;
 
     document.getElementById("apkDownloadBtn").addEventListener("click", () => {
+      trackEvent("apk_download", "download");
       showToast(t("downloadStartedToast"));
     });
   }
@@ -2151,743 +2611,47 @@
   }
 
   /* =========================================================
-     9. ADMIN DASHBOARD (Zero CV / Zero Hiring)
+     9. ENTERPRISE ADMIN PANEL (Delegated to VexoraAdmin)
      ========================================================= */
   function renderAdminScreen(root) {
-    const cloudConfigured = Backend.isConfigured();
-
-    if (!isAdminAuthorized()) {
-      if (cloudConfigured) {
-        root.innerHTML = `
-          <form id="adminCloudLoginForm" class="glass-card highlight-border stack-list" style="margin-top:16px;" novalidate>
-            <div style="font-size:2rem;">🛡️</div>
-            <h1 class="screen-title">${escapeHtml(t("adminAuthCloudTitle"))}</h1>
-            <p class="muted-text">${escapeHtml(t("adminAuthCloudDesc"))}</p>
-            <div class="field">
-              <label for="adminEmailInput">${escapeHtml(t("adminEmailLabel"))}</label>
-              <input id="adminEmailInput" type="email" autocomplete="email" required />
-            </div>
-            <div class="field">
-              <label for="adminPassInput">${escapeHtml(t("adminPasswordLabel"))}</label>
-              <input id="adminPassInput" type="password" autocomplete="current-password" required />
-            </div>
-            <div id="adminAuthErr" class="error-text"></div>
-            <button id="adminLoginSubmit" type="submit" class="btn btn-primary btn-full">🔐 ${escapeHtml(t("adminSignInBtn"))}</button>
-            <button id="clearCloudCfgBtn" type="button" class="btn btn-text btn-sm">⚙️ Reset Local Backend Override</button>
-          </form>
-        `;
-
-        document.getElementById("adminCloudLoginForm").addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const email = document.getElementById("adminEmailInput").value.trim();
-          const pass = document.getElementById("adminPassInput").value;
-          const err = document.getElementById("adminAuthErr");
-          const btn = document.getElementById("adminLoginSubmit");
-          err.textContent = "";
-          btn.disabled = true;
-          try {
-            await Backend.signInAdmin(email, pass);
-            const msgs = await Backend.fetchAdminMessages();
-            if (Array.isArray(msgs)) {
-              studioState.messages = msgs;
-              saveState();
-            }
-            showToast(t("adminUnlockedToast"));
-            renderScreen();
-          } catch (authErr) {
-            err.textContent = authErr?.message || t("adminInvalidAuth");
-          } finally {
-            btn.disabled = false;
-          }
-        });
-
-        document.getElementById("clearCloudCfgBtn").addEventListener("click", () => {
-          Backend.clearPublicConfigOverride();
-          Backend.signOutAdmin();
-          renderScreen();
-        });
-      } else {
-        root.innerHTML = `
-          <form id="adminLocalForm" class="glass-card highlight-border stack-list" style="margin-top:16px;" novalidate>
-            <div style="font-size:2rem;">🔒</div>
-            <h1 class="screen-title">${escapeHtml(t("adminAuthLocalTitle"))}</h1>
-            <p class="muted-text">${escapeHtml(t("adminAuthLocalDesc"))}</p>
-            <div class="field">
-              <label for="adminCodeInput">${escapeHtml(t("adminCodeLabel"))}</label>
-              <div style="display:flex;gap:8px;">
-                <input id="adminCodeInput" type="password" autocomplete="off" placeholder="${escapeHtml(t("adminCodePlaceholder"))}" style="flex:1;" required />
-                <button id="toggleAdminCodeBtn" type="button" class="icon-btn" aria-label="Show/Hide Code">👁️</button>
-              </div>
-            </div>
-            <div id="adminCodeErr" class="error-text"></div>
-            <button type="submit" class="btn btn-primary btn-full">🔓 ${escapeHtml(t("adminUnlockBtn"))}</button>
-          </form>
-        `;
-        const codeInput = document.getElementById("adminCodeInput");
-        document.getElementById("toggleAdminCodeBtn").addEventListener("click", () => {
-          codeInput.type = codeInput.type === "password" ? "text" : "password";
-        });
-        document.getElementById("adminLocalForm").addEventListener("submit", (e) => {
-          e.preventDefault();
-          const err = document.getElementById("adminCodeErr");
-          if (verifyLocalAdminCode(codeInput.value.trim())) {
-            sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
-            err.textContent = "";
-            showToast(t("adminUnlockedToast"));
-            renderScreen();
-          } else {
-            err.textContent = t("adminInvalidAuth");
-          }
-        });
-      }
+    if (!AdminEnt) {
+      root.innerHTML = `<div class="glass-card"><p class="error-text" style="margin:0;">Enterprise Admin module failed to load.</p></div>`;
       return;
     }
-
-    const unreadCount = studioState.messages.filter((m) => m.status !== "replied").length;
-    const tabs = [
-      { key: "dashboard", label: t("adminTabDashboard") },
-      { key: "projects", label: t("adminTabProjects") },
-      { key: "services", label: t("adminTabServices") },
-      { key: "team", label: t("adminTabTeam") },
-      { key: "knowledge", label: t("adminTabKnowledge") },
-      { key: "messages", label: unreadCount > 0 ? `${t("adminTabMessages")} (${unreadCount})` : t("adminTabMessages") },
-      { key: "settings", label: t("adminTabSettings") }
-    ];
-
-    root.innerHTML = `
-      <div class="row-between">
-        <h1 class="screen-title">🛡️ ${escapeHtml(t("adminTitle"))}</h1>
-        <button id="adminLogoutBtn" type="button" class="btn btn-outline btn-sm">🔒 ${escapeHtml(t("adminLogoutBtn"))}</button>
-      </div>
-
-      <div class="chips-scroll">
-        ${tabs
-          .map(
-            (tb) => `
-          <button type="button" class="chip-btn ${adminSection === tb.key ? "active" : ""}" data-atab="${tb.key}">
-            ${escapeHtml(tb.label)}
-          </button>
-        `
-          )
-          .join("")}
-      </div>
-
-      <div id="adminBody" class="stack-list"></div>
-    `;
-
-    document.getElementById("adminLogoutBtn").addEventListener("click", () => {
-      sessionStorage.removeItem(ADMIN_SESSION_KEY);
-      Backend.signOutAdmin();
-      renderScreen();
+    AdminEnt.render(root, {
+      t,
+      isArabic,
+      escapeHtml,
+      safeHttpUrl,
+      Backend,
+      studioState,
+      saveState,
+      showToast,
+      renderScreen,
+      renderAll,
+      navigate,
+      openModal,
+      closeModal,
+      serviceIconGlyph,
+      normalizeProjectStatus,
+      statusMeta,
+      PROJECT_CATEGORIES,
+      PROJECT_STATUSES,
+      localClientStorage,
+      openServiceEditor,
+      openProjectEditor,
+      openTeamEditor,
+      openKbEditor,
+      openFaqEditor,
+      openUpdateEditor,
+      applyThemeMode,
+      getDbSyncStatus: () => dbSyncStatus,
+      setDbSyncStatus: (v) => { dbSyncStatus = v; },
+      getAiSyncStatus: () => aiSyncStatus,
+      setAiSyncStatus: (v) => { aiSyncStatus = v; },
+      getRemoteAnalyticsCache: () => remoteAnalyticsCache,
+      setRemoteAnalyticsCache: (v) => { remoteAnalyticsCache = v; }
     });
-
-    root.querySelectorAll("[data-atab]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        adminSection = btn.dataset.atab;
-        if (adminSection === "messages" && cloudConfigured && Backend.getStoredAuth()?.access_token) {
-          try {
-            const liveMsgs = await Backend.fetchAdminMessages();
-            if (Array.isArray(liveMsgs)) {
-              studioState.messages = liveMsgs;
-              saveState();
-            }
-          } catch {
-            // Keep existing messages state
-          }
-        }
-        renderScreen();
-      });
-    });
-
-    const body = document.getElementById("adminBody");
-
-    if (adminSection === "dashboard") {
-      const dbBadge = !cloudConfigured
-        ? `<span class="status-pill warning"><span class="pill-dot"></span>${escapeHtml(t("dbNotConfiguredMsg"))}</span>`
-        : dbSyncStatus.tested && dbSyncStatus.ok
-        ? `<span class="status-pill success"><span class="pill-dot"></span>${escapeHtml(t("dbConnectedMsg"))} (${dbSyncStatus.latencyMs}ms)</span>`
-        : dbSyncStatus.tested && !dbSyncStatus.ok
-        ? `<span class="status-pill error"><span class="pill-dot"></span>${escapeHtml(t("dbErrorMsg"))}: ${escapeHtml(dbSyncStatus.message)}</span>`
-        : `<span class="status-pill cyan"><span class="pill-dot"></span>Supabase Configured</span>`;
-
-      const aiConfigured = Backend.isAiConfigured ? Backend.isAiConfigured() : cloudConfigured;
-      const aiBadge = !aiConfigured
-        ? `<span class="status-pill cyan"><span class="pill-dot"></span>${escapeHtml(t("aiStatusLocal"))}</span>`
-        : aiSyncStatus.tested && aiSyncStatus.ok
-        ? `<span class="status-pill success"><span class="pill-dot"></span>${escapeHtml(t("aiEndpointOkMsg"))} (${aiSyncStatus.latencyMs}ms)</span>`
-        : aiSyncStatus.tested && !aiSyncStatus.ok
-        ? `<span class="status-pill error"><span class="pill-dot"></span>${escapeHtml(t("aiEndpointErrorMsg"))}: ${escapeHtml(aiSyncStatus.message)}</span>`
-        : `<span class="status-pill cyan"><span class="pill-dot"></span>AI Endpoint Configured</span>`;
-
-      body.innerHTML = `
-        <div class="stats-grid">
-          <div class="glass-card">
-            <div class="stat-value">${studioState.projects.length}</div>
-            <div class="stat-label">${escapeHtml(t("adminTabProjects"))}</div>
-          </div>
-          <div class="glass-card">
-            <div class="stat-value">${studioState.services.length}</div>
-            <div class="stat-label">${escapeHtml(t("adminTabServices"))}</div>
-          </div>
-          <div class="glass-card">
-            <div class="stat-value">${(studioState.knowledgeBase || []).length + (studioState.faqs || []).length}</div>
-            <div class="stat-label">${escapeHtml(t("adminTabKnowledge"))}</div>
-          </div>
-          <div class="glass-card">
-            <div class="stat-value">${studioState.messages.length}</div>
-            <div class="stat-label">${escapeHtml(t("adminTabMessages"))}</div>
-          </div>
-        </div>
-
-        <div class="glass-card highlight-border stack-list">
-          <h2 class="card-title">${escapeHtml(t("backendStatusTitle"))}</h2>
-          <div class="chips-wrap">${dbBadge}${aiBadge}</div>
-          <div class="btn-row">
-            <button id="testDbBtn" type="button" class="btn btn-primary">🔌 ${escapeHtml(t("testDbBtn"))}</button>
-            <button id="testAiBtn" type="button" class="btn btn-outline">🤖 ${escapeHtml(t("testAiBtn"))}</button>
-            <button id="seedCatalogBtn" type="button" class="btn btn-outline">🔄 ${escapeHtml(t("resetCatalogBtn"))}</button>
-          </div>
-        </div>
-      `;
-
-      document.getElementById("testDbBtn").addEventListener("click", async () => {
-        const res = await Backend.testConnection();
-        dbSyncStatus = {
-          tested: true,
-          ok: res.ok,
-          latencyMs: res.latencyMs || null,
-          message: res.reason || ""
-        };
-        showToast(res.ok ? `${t("dbConnectedMsg")} (${res.latencyMs}ms)` : res.reason || t("dbNotConfiguredMsg"));
-        renderScreen();
-      });
-
-      document.getElementById("testAiBtn").addEventListener("click", async () => {
-        const res = await Backend.testAiEndpoint();
-        aiSyncStatus = {
-          tested: true,
-          ok: res.ok,
-          latencyMs: res.latencyMs || null,
-          mode: res.mode || "",
-          message: res.reason || ""
-        };
-        showToast(res.ok ? `${t("aiEndpointOkMsg")} (${res.latencyMs}ms)` : res.reason || t("aiEndpointErrorMsg"));
-        renderScreen();
-      });
-
-      document.getElementById("seedCatalogBtn").addEventListener("click", async () => {
-        const def = createDefaultState();
-        studioState.services = def.services;
-        studioState.projects = def.projects;
-        studioState.team = def.team;
-        studioState.knowledgeBase = def.knowledgeBase;
-        studioState.faqs = def.faqs;
-        saveState();
-        if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-          try {
-            await Promise.all([
-              Backend.updateSiteSettings(studioState.settings),
-              ...studioState.services.map((s) => Backend.upsertService(s)),
-              ...studioState.projects.map((p) => Backend.upsertProject(p)),
-              ...studioState.team.map((m) => Backend.upsertTeamMember(m)),
-              ...studioState.knowledgeBase.map((k) => Backend.upsertKnowledgeItem(k)),
-              ...studioState.faqs.map((f) => Backend.upsertFaq(f))
-            ]);
-          } catch (err) {
-            showToast(err?.message || "Sync warning");
-            return;
-          }
-        }
-        showToast("✓");
-        renderScreen();
-      });
-    } else if (adminSection === "projects") {
-      body.innerHTML = `
-        <button id="addProjBtn" type="button" class="btn btn-primary btn-full">+ ${escapeHtml(t("addNew"))} — ${escapeHtml(t("adminTabProjects"))}</button>
-        ${studioState.projects
-          .map(
-            (p) => `
-          <div class="glass-card row-between">
-            <div style="min-width:0;">
-              <h3 class="card-title">${escapeHtml(isArabic() ? p.nameAr : p.nameEn)}</h3>
-              <p class="muted-text" style="word-break:break-word;">${escapeHtml(p.category)} • ${escapeHtml(normalizeProjectStatus(p.status))} • ${p.published ? "Published" : "Draft"}</p>
-            </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
-              <button type="button" class="btn btn-outline btn-sm" data-pub-proj="${escapeHtml(p.id)}">${escapeHtml(p.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
-              <button type="button" class="icon-btn" data-edit-proj="${escapeHtml(p.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
-              <button type="button" class="icon-btn danger" data-del-proj="${escapeHtml(p.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-            </div>
-          </div>
-        `
-          )
-          .join("")}
-      `;
-
-      document.getElementById("addProjBtn").addEventListener("click", () => openProjectEditor(null));
-      body.querySelectorAll("[data-pub-proj]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const item = studioState.projects.find((x) => x.id === b.dataset.pubProj);
-          if (!item) return;
-          item.published = !item.published;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.upsertProject(item); } catch (err) { showToast(err.message); return; }
-          }
-          saveState();
-          renderScreen();
-        })
-      );
-      body.querySelectorAll("[data-edit-proj]").forEach((b) =>
-        b.addEventListener("click", () => openProjectEditor(studioState.projects.find((x) => x.id === b.dataset.editProj)))
-      );
-      body.querySelectorAll("[data-del-proj]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const id = b.dataset.delProj;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try {
-              await Backend.deleteProject(id);
-            } catch (err) {
-              showToast(err.message);
-              return;
-            }
-          }
-          studioState.projects = studioState.projects.filter((x) => x.id !== id);
-          saveState();
-          renderScreen();
-        })
-      );
-    } else if (adminSection === "services") {
-      body.innerHTML = `
-        <button id="addSrvBtn" type="button" class="btn btn-primary btn-full">+ ${escapeHtml(t("addNew"))} — ${escapeHtml(t("adminTabServices"))}</button>
-        ${studioState.services
-          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-          .map(
-            (s) => `
-          <div class="glass-card row-between">
-            <div style="min-width:0;">
-              <h3 class="card-title">${serviceIconGlyph(s.iconKey)} ${escapeHtml(isArabic() ? s.titleAr : s.titleEn)}</h3>
-              <p class="muted-text">${escapeHtml(s.category)} • ${s.published ? "Published" : "Draft"}</p>
-            </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
-              <button type="button" class="btn btn-outline btn-sm" data-pub-srv="${escapeHtml(s.id)}">${escapeHtml(s.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
-              <button type="button" class="icon-btn" data-edit-srv="${escapeHtml(s.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
-              <button type="button" class="icon-btn danger" data-del-srv="${escapeHtml(s.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-            </div>
-          </div>
-        `
-          )
-          .join("")}
-      `;
-
-      document.getElementById("addSrvBtn").addEventListener("click", () => openServiceEditor(null));
-      body.querySelectorAll("[data-pub-srv]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const item = studioState.services.find((x) => x.id === b.dataset.pubSrv);
-          if (!item) return;
-          item.published = !item.published;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.upsertService(item); } catch (err) { showToast(err.message); return; }
-          }
-          saveState();
-          renderScreen();
-        })
-      );
-      body.querySelectorAll("[data-edit-srv]").forEach((b) =>
-        b.addEventListener("click", () => openServiceEditor(studioState.services.find((x) => x.id === b.dataset.editSrv)))
-      );
-      body.querySelectorAll("[data-del-srv]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const id = b.dataset.delSrv;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try {
-              await Backend.deleteService(id);
-            } catch (err) {
-              showToast(err.message);
-              return;
-            }
-          }
-          studioState.services = studioState.services.filter((x) => x.id !== id);
-          saveState();
-          renderScreen();
-        })
-      );
-    } else if (adminSection === "team") {
-      body.innerHTML = `
-        <button id="addTeamBtn" type="button" class="btn btn-primary btn-full">+ ${escapeHtml(t("addNew"))} — ${escapeHtml(t("adminTabTeam"))}</button>
-        ${studioState.team
-          .map(
-            (m) => `
-          <div class="glass-card row-between">
-            <div style="min-width:0;">
-              <h3 class="card-title">${escapeHtml(isArabic() ? m.nameAr : m.nameEn)}</h3>
-              <p class="muted-text">${escapeHtml(isArabic() ? m.roleAr : m.roleEn)} • ${m.published ? "Published" : "Draft"}</p>
-            </div>
-            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
-              <button type="button" class="btn btn-outline btn-sm" data-pub-tm="${escapeHtml(m.id)}">${escapeHtml(m.published ? t("unpublishToggleBtn") : t("publishToggleBtn"))}</button>
-              <button type="button" class="icon-btn" data-edit-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
-              <button type="button" class="icon-btn danger" data-del-tm="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-            </div>
-          </div>
-        `
-          )
-          .join("")}
-      `;
-
-      document.getElementById("addTeamBtn").addEventListener("click", () => openTeamEditor(null));
-      body.querySelectorAll("[data-pub-tm]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const item = studioState.team.find((x) => x.id === b.dataset.pubTm);
-          if (!item) return;
-          item.published = !item.published;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.upsertTeamMember(item); } catch (err) { showToast(err.message); return; }
-          }
-          saveState();
-          renderScreen();
-        })
-      );
-      body.querySelectorAll("[data-edit-tm]").forEach((b) =>
-        b.addEventListener("click", () => openTeamEditor(studioState.team.find((x) => x.id === b.dataset.editTm)))
-      );
-      body.querySelectorAll("[data-del-tm]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const id = b.dataset.delTm;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try {
-              await Backend.deleteTeamMember(id);
-            } catch (err) {
-              showToast(err.message);
-              return;
-            }
-          }
-          studioState.team = studioState.team.filter((x) => x.id !== id);
-          saveState();
-          renderScreen();
-        })
-      );
-    } else if (adminSection === "knowledge") {
-      const kbItems = (studioState.knowledgeBase || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-      const faqItems = (studioState.faqs || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-      body.innerHTML = `
-        <div class="glass-card highlight-border stack-list">
-          <div class="row-between">
-            <div>
-              <h2 class="card-title">📚 ${escapeHtml(t("adminKbTitle"))}</h2>
-              <p class="muted-text" style="margin:4px 0 0;font-size:0.86rem;">${escapeHtml(t("adminKbDesc"))}</p>
-            </div>
-            <button id="addKbBtn" type="button" class="btn btn-primary btn-sm">+ ${escapeHtml(t("addNew"))}</button>
-          </div>
-          ${kbItems
-            .map(
-              (k) => `
-            <div class="glass-card row-between">
-              <div style="min-width:0;">
-                <h3 class="card-title">${escapeHtml(isArabic() ? k.titleAr : k.titleEn)}</h3>
-                <p class="muted-text" style="margin-top:4px;">${escapeHtml(k.topic)} • ${k.published !== false ? "Published" : "Draft"}</p>
-              </div>
-              <div style="display:flex;gap:4px;flex-shrink:0;">
-                <button type="button" class="icon-btn" data-edit-kb="${escapeHtml(k.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
-                <button type="button" class="icon-btn danger" data-del-kb="${escapeHtml(k.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-              </div>
-            </div>
-          `
-            )
-            .join("")}
-        </div>
-
-        <div class="glass-card stack-list">
-          <div class="row-between">
-            <h2 class="card-title">❓ ${escapeHtml(t("adminFaqTitle"))}</h2>
-            <button id="addFaqBtn" type="button" class="btn btn-outline btn-sm">+ ${escapeHtml(t("addNew"))}</button>
-          </div>
-          ${faqItems
-            .map(
-              (f) => `
-            <div class="glass-card row-between">
-              <div style="min-width:0;">
-                <h3 class="card-title">${escapeHtml(isArabic() ? f.questionAr : f.questionEn)}</h3>
-                <p class="muted-text" style="margin-top:4px;">${escapeHtml(f.category || "general")} • ${f.published !== false ? "Published" : "Draft"}</p>
-              </div>
-              <div style="display:flex;gap:4px;flex-shrink:0;">
-                <button type="button" class="icon-btn" data-edit-faq="${escapeHtml(f.id)}" aria-label="${escapeHtml(t("edit"))}">✏️</button>
-                <button type="button" class="icon-btn danger" data-del-faq="${escapeHtml(f.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-              </div>
-            </div>
-          `
-            )
-            .join("")}
-        </div>
-      `;
-
-      document.getElementById("addKbBtn").addEventListener("click", () => openKbEditor(null));
-      body.querySelectorAll("[data-edit-kb]").forEach((b) =>
-        b.addEventListener("click", () => openKbEditor((studioState.knowledgeBase || []).find((x) => x.id === b.dataset.editKb)))
-      );
-      body.querySelectorAll("[data-del-kb]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const id = b.dataset.delKb;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.deleteKnowledgeItem(id); } catch (err) { showToast(err.message); return; }
-          }
-          studioState.knowledgeBase = (studioState.knowledgeBase || []).filter((x) => x.id !== id);
-          saveState();
-          renderScreen();
-        })
-      );
-
-      document.getElementById("addFaqBtn").addEventListener("click", () => openFaqEditor(null));
-      body.querySelectorAll("[data-edit-faq]").forEach((b) =>
-        b.addEventListener("click", () => openFaqEditor((studioState.faqs || []).find((x) => x.id === b.dataset.editFaq)))
-      );
-      body.querySelectorAll("[data-del-faq]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const id = b.dataset.delFaq;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.deleteFaq(id); } catch (err) { showToast(err.message); return; }
-          }
-          studioState.faqs = (studioState.faqs || []).filter((x) => x.id !== id);
-          saveState();
-          renderScreen();
-        })
-      );
-    } else if (adminSection === "messages") {
-      const mq = adminMsgSearch.trim().toLowerCase();
-      const filteredMsgs = studioState.messages
-        .filter((m) => adminMsgStatusFilter === "all" || (adminMsgStatusFilter === "replied" ? m.status === "replied" : m.status !== "replied"))
-        .filter((m) => {
-          if (!mq) return true;
-          return `${m.senderName} ${m.email} ${m.subject} ${m.message}`.toLowerCase().includes(mq);
-        });
-
-      body.innerHTML = `
-        <div class="glass-card stack-list">
-          <div class="field">
-            <input id="adminMsgSearchInput" type="search" value="${escapeHtml(adminMsgSearch)}" placeholder="${escapeHtml(t("msgSearchPlaceholder"))}" />
-          </div>
-          <div class="row-between">
-            <div class="chips-scroll">
-              <button type="button" class="chip-btn ${adminMsgStatusFilter === "all" ? "active" : ""}" data-mstat="all">${escapeHtml(t("msgFilterAll"))} (${studioState.messages.length})</button>
-              <button type="button" class="chip-btn ${adminMsgStatusFilter === "new" ? "active" : ""}" data-mstat="new">${escapeHtml(t("msgFilterNew"))} (${unreadCount})</button>
-              <button type="button" class="chip-btn ${adminMsgStatusFilter === "replied" ? "active" : ""}" data-mstat="replied">${escapeHtml(t("msgFilterReplied"))} (${studioState.messages.length - unreadCount})</button>
-            </div>
-            ${
-              studioState.messages.length > 0
-                ? `<button id="exportMsgsBtn" type="button" class="btn btn-outline btn-sm">📥 ${escapeHtml(t("exportMessagesBtn"))}</button>`
-                : ""
-            }
-          </div>
-        </div>
-        ${
-          filteredMsgs.length === 0
-            ? `<div class="glass-card"><p class="muted-text" style="margin:0;">${escapeHtml(t("noReceivedMessages"))}</p></div>`
-            : filteredMsgs
-                .map((m) => {
-                  const isReplied = m.status === "replied";
-                  const mailtoHref = `mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`;
-                  return `
-            <div class="glass-card stack-list ${!isReplied ? "highlight-border" : ""}">
-              <div class="row-between">
-                <div style="min-width:0;">
-                  <h3 class="card-title">${escapeHtml(m.subject)}</h3>
-                  <div style="color:var(--neon-cyan);font-size:0.86rem;word-break:break-word;">${escapeHtml(m.senderName)} • ${escapeHtml(m.email)}</div>
-                </div>
-                <span class="status-pill ${isReplied ? "success" : "warning"}"><span class="pill-dot"></span>${escapeHtml(isReplied ? t("messageStatusReplied") : t("messageStatusNew"))}</span>
-              </div>
-              <p class="muted-text" style="margin:0;white-space:pre-wrap;">${escapeHtml(m.message)}</p>
-              <div class="btn-row">
-                <button type="button" class="btn btn-outline btn-sm" data-view-msg="${escapeHtml(m.id)}">👁️ ${escapeHtml(t("viewDetails"))}</button>
-                <a href="${mailtoHref}" class="btn btn-primary btn-sm" data-reply-client="${escapeHtml(m.id)}">✉️ ${escapeHtml(t("replyToClient"))}</a>
-                ${!isReplied ? `<button type="button" class="btn btn-outline btn-sm" data-rep-msg="${escapeHtml(m.id)}">✓ ${escapeHtml(t("markReplied"))}</button>` : ""}
-                <button type="button" class="icon-btn danger" data-del-msg="${escapeHtml(m.id)}" aria-label="${escapeHtml(t("delete"))}">🗑️</button>
-              </div>
-            </div>
-          `;
-                })
-                .join("")
-        }
-      `;
-
-      const msgSearchEl = document.getElementById("adminMsgSearchInput");
-      if (msgSearchEl) {
-        msgSearchEl.addEventListener("input", () => {
-          adminMsgSearch = msgSearchEl.value;
-          renderScreen();
-        });
-      }
-      body.querySelectorAll("[data-mstat]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          adminMsgStatusFilter = btn.dataset.mstat;
-          renderScreen();
-        });
-      });
-      const exportBtn = document.getElementById("exportMsgsBtn");
-      if (exportBtn) {
-        exportBtn.addEventListener("click", () => {
-          const textOut = studioState.messages
-            .map((m) => `[${m.status}] ${m.createdAt} | ${m.senderName} <${m.email}>\nSubject: ${m.subject}\n${m.message}\n---`)
-            .join("\n");
-          const blob = new Blob([textOut], { type: "text/plain;charset=utf-8" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = `vexora-messages-${new Date().toISOString().slice(0, 10)}.txt`;
-          a.click();
-          URL.revokeObjectURL(a.href);
-          showToast(t("msgExportedToast"));
-        });
-      }
-
-      body.querySelectorAll("[data-view-msg]").forEach((b) =>
-        b.addEventListener("click", () => {
-          const m = studioState.messages.find((x) => x.id === b.dataset.viewMsg);
-          if (!m) return;
-          openModal(
-            m.subject,
-            `
-            <div style="color:var(--neon-cyan);font-size:0.9rem;">${escapeHtml(m.senderName)} • ${escapeHtml(m.email)}</div>
-            <div class="muted-text" style="font-size:0.8rem;">${escapeHtml(new Date(m.createdAt).toLocaleString())}</div>
-            <hr style="border:none;border-top:1px solid var(--subtle-outline);width:100%;" />
-            <p style="margin:0;white-space:pre-wrap;">${escapeHtml(m.message)}</p>
-          `
-          );
-        })
-      );
-
-      body.querySelectorAll("[data-reply-client]").forEach((link) =>
-        link.addEventListener("click", async () => {
-          const m = studioState.messages.find((x) => x.id === link.dataset.replyClient);
-          if (!m) return;
-          m.status = "replied";
-          saveState();
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.updateMessageStatus(m.id, "replied"); } catch {}
-          }
-          setTimeout(() => renderScreen(), 250);
-        })
-      );
-
-      body.querySelectorAll("[data-rep-msg]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const m = studioState.messages.find((x) => x.id === b.dataset.repMsg);
-          if (!m) return;
-          m.status = "replied";
-          saveState();
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try { await Backend.updateMessageStatus(m.id, "replied"); } catch {}
-          }
-          renderScreen();
-        })
-      );
-
-      body.querySelectorAll("[data-del-msg]").forEach((b) =>
-        b.addEventListener("click", async () => {
-          const id = b.dataset.delMsg;
-          if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-            try {
-              await Backend.deleteMessage(id);
-            } catch (err) {
-              showToast(err.message);
-              return;
-            }
-          }
-          studioState.messages = studioState.messages.filter((x) => x.id !== id);
-          saveState();
-          renderScreen();
-        })
-      );
-    } else if (adminSection === "settings") {
-      const s = studioState.settings;
-      const cfg = Backend.getConfig();
-      body.innerHTML = `
-        <form id="settingsForm" class="glass-card highlight-border stack-list">
-          <h2 class="card-title">${escapeHtml(t("settingsCompanyTitle"))}</h2>
-          <div class="field"><label>Company Name</label><input id="setCompany" value="${escapeHtml(s.companyName)}" required /></div>
-          <div class="form-two-col">
-            <div class="field"><label>Tagline (EN)</label><input id="setTagEn" value="${escapeHtml(s.taglineEn)}" required /></div>
-            <div class="field"><label>Tagline (AR)</label><input id="setTagAr" value="${escapeHtml(s.taglineAr)}" required /></div>
-          </div>
-          <div class="field"><label>Home Intro (EN)</label><textarea id="setDescEn" rows="2">${escapeHtml(s.homeDescEn)}</textarea></div>
-          <div class="field"><label>Home Intro (AR)</label><textarea id="setDescAr" rows="2">${escapeHtml(s.homeDescAr)}</textarea></div>
-
-          <h2 class="card-title" style="margin-top:8px;">${escapeHtml(t("settingsSocialTitle"))}</h2>
-          <div class="form-two-col">
-            <div class="field"><label>Official Email</label><input id="setEmail" type="email" value="${escapeHtml(s.officialEmail)}" /></div>
-            <div class="field"><label>Website URL</label><input id="setWeb" value="${escapeHtml(s.websiteUrl)}" /></div>
-          </div>
-          <div class="form-two-col">
-            <div class="field"><label>GitHub URL</label><input id="setGh" value="${escapeHtml(s.githubUrl)}" /></div>
-            <div class="field"><label>LinkedIn URL</label><input id="setLi" value="${escapeHtml(s.linkedinUrl)}" /></div>
-          </div>
-          <div class="field"><label>YouTube URL</label><input id="setYt" value="${escapeHtml(s.youtubeUrl)}" /></div>
-
-          <button type="submit" class="btn btn-primary btn-full">${escapeHtml(t("saveSettingsBtn"))}</button>
-        </form>
-
-        <form id="backendCfgForm" class="glass-card stack-list">
-          <h2 class="card-title">${escapeHtml(t("settingsBackendTitle"))}</h2>
-          <p class="muted-text" style="font-size:0.84rem;">${escapeHtml(t("settingsBackendHint"))}</p>
-          <div class="field"><label>Supabase Project URL</label><input id="cfgSbUrl" placeholder="https://xxxx.supabase.co" value="${escapeHtml(cfg.supabaseUrl)}" /></div>
-          <div class="field"><label>Supabase Public Anon Key</label><input id="cfgSbKey" placeholder="eyJ..." value="${escapeHtml(cfg.supabaseAnonKey)}" /></div>
-          <div class="field"><label>AI Edge Function Name</label><input id="cfgAiFn" value="${escapeHtml(cfg.aiFunctionName)}" /></div>
-          <div class="field"><label>${escapeHtml(t("aiEndpointUrlLabel"))}</label><input id="cfgAiUrl" placeholder="https://your-secure-proxy.workers.dev/vexora-ai" value="${escapeHtml(cfg.aiEndpointUrl || "")}" /></div>
-          <div class="btn-row">
-            <button type="submit" class="btn btn-outline">💾 Save Backend Config</button>
-            <button id="cfgResetBtn" type="button" class="btn btn-text">Reset</button>
-          </div>
-        </form>
-      `;
-
-      document.getElementById("settingsForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const updated = {
-          companyName: document.getElementById("setCompany").value.trim() || "Vexora Studio",
-          taglineEn: document.getElementById("setTagEn").value.trim(),
-          taglineAr: document.getElementById("setTagAr").value.trim(),
-          homeDescEn: document.getElementById("setDescEn").value.trim(),
-          homeDescAr: document.getElementById("setDescAr").value.trim(),
-          officialEmail: document.getElementById("setEmail").value.trim(),
-          websiteUrl: document.getElementById("setWeb").value.trim(),
-          githubUrl: document.getElementById("setGh").value.trim(),
-          linkedinUrl: document.getElementById("setLi").value.trim(),
-          youtubeUrl: document.getElementById("setYt").value.trim()
-        };
-        if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
-          try {
-            await Backend.updateSiteSettings(updated);
-          } catch (err) {
-            showToast(err.message);
-            return;
-          }
-        }
-        studioState.settings = updated;
-        saveState();
-        showToast(t("settingsSavedToast"));
-        renderAll();
-      });
-
-      document.getElementById("backendCfgForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        Backend.savePublicConfigOverride({
-          supabaseUrl: document.getElementById("cfgSbUrl").value,
-          supabaseAnonKey: document.getElementById("cfgSbKey").value,
-          aiFunctionName: document.getElementById("cfgAiFn").value,
-          aiEndpointUrl: document.getElementById("cfgAiUrl").value
-        });
-        const check = await Backend.testConnection();
-        dbSyncStatus = {
-          tested: true,
-          ok: check.ok,
-          latencyMs: check.latencyMs || null,
-          message: check.reason || ""
-        };
-        showToast(check.ok ? `${t("dbConnectedMsg")} (${check.latencyMs}ms)` : check.reason || t("settingsSavedToast"));
-        renderScreen();
-      });
-
-      document.getElementById("cfgResetBtn").addEventListener("click", () => {
-        Backend.clearPublicConfigOverride();
-        Backend.signOutAdmin();
-        renderScreen();
-      });
-    }
   }
 
   /* =========================================================
@@ -2991,10 +2755,13 @@
       descriptionEn: "",
       descriptionAr: "",
       category: "Websites",
-      status: "In Progress",
+      status: "Planning",
       technologies: [],
+      assignedTeam: [],
+      changeHistory: [],
       websiteUrl: "",
       imageUrl: "",
+      videoUrl: "",
       presetImageKey: "web",
       featured: false,
       published: true
@@ -3021,7 +2788,9 @@
           </div>
         </div>
         <div class="field"><label>${escapeHtml(t("websiteUrlLabel"))}</label><input id="pUrl" placeholder="https://..." value="${escapeHtml(item.websiteUrl || "")}" /></div>
+        <div class="field"><label>${escapeHtml(t("videoUrlLabel"))}</label><input id="pVideoUrl" placeholder="https://youtube.com/watch?v=... or https://.../demo.mp4" value="${escapeHtml(item.videoUrl || "")}" /></div>
         <div class="field"><label>Technologies (comma-separated)</label><input id="pTech" value="${escapeHtml((item.technologies || []).join(", "))}" /></div>
+        <div class="field"><label>Assigned Team Members (comma-separated)</label><input id="pTeam" value="${escapeHtml((item.assignedTeam || []).join(", "))}" /></div>
         <div class="field">
           <label>${escapeHtml(t("uploadImageLabel"))}</label>
           <input id="pImgUrl" placeholder="https://... or upload below" value="${escapeHtml(item.imageUrl || "")}" />
@@ -3048,6 +2817,13 @@
 
     document.getElementById("projEditor").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const rawUrl = document.getElementById("pUrl").value.trim();
+      const rawVid = document.getElementById("pVideoUrl").value.trim();
+      const actor = AdminEnt?.getActiveAdminSession?.(Backend)?.email || "admin";
+      const nextStatus = document.getElementById("pStatus").value;
+      const hist = Array.isArray(item.changeHistory) ? [...item.changeHistory] : [];
+      hist.unshift({ at: new Date().toISOString(), actor, summary: `${initial ? "Updated" : "Created"} (${nextStatus})` });
+
       const updated = {
         ...item,
         nameEn: document.getElementById("pNameEn").value.trim(),
@@ -3055,10 +2831,13 @@
         descriptionEn: document.getElementById("pDescEn").value.trim(),
         descriptionAr: document.getElementById("pDescAr").value.trim(),
         category: document.getElementById("pCat").value,
-        status: document.getElementById("pStatus").value,
-        websiteUrl: document.getElementById("pUrl").value.trim(),
+        status: nextStatus,
+        websiteUrl: rawUrl ? safeHttpUrl(rawUrl) : "",
+        videoUrl: rawVid ? safeHttpUrl(rawVid) : "",
         imageUrl: document.getElementById("pImgUrl").value.trim(),
         technologies: document.getElementById("pTech").value.split(",").map((x) => x.trim()).filter(Boolean),
+        assignedTeam: document.getElementById("pTeam").value.split(",").map((x) => x.trim()).filter(Boolean),
+        changeHistory: hist.slice(0, 30),
         featured: document.getElementById("pFeat").checked,
         published: document.getElementById("pPub").checked
       };
@@ -3090,6 +2869,11 @@
       roleAr: "",
       bioEn: "",
       bioAr: "",
+      email: "",
+      employeeStatus: "active",
+      systemRole: "none",
+      portfolioUrl: "",
+      cvSummary: "",
       skills: [],
       experienceYears: null,
       avatarUrl: "",
@@ -3105,14 +2889,35 @@
       <form id="tmEditor" class="stack-list">
         <div class="field"><label>Name (EN)</label><input id="tNameEn" value="${escapeHtml(item.nameEn)}" required /></div>
         <div class="field"><label>Name (AR)</label><input id="tNameAr" value="${escapeHtml(item.nameAr)}" required /></div>
+        <div class="form-two-col">
+          <div class="field"><label>Official Email</label><input id="tEmail" type="email" value="${escapeHtml(item.email || "")}" /></div>
+          <div class="field"><label>Employee Status</label>
+            <select id="tEmpStatus">
+              <option value="active" ${(item.employeeStatus || "active") === "active" ? "selected" : ""}>Active</option>
+              <option value="on_leave" ${item.employeeStatus === "on_leave" ? "selected" : ""}>On Leave</option>
+              <option value="inactive" ${item.employeeStatus === "inactive" ? "selected" : ""}>Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>System RBAC Role</label>
+          <select id="tSysRole">
+            ${["none", "owner", "super_admin", "admin", "editor", "support"]
+              .map((r) => `<option value="${r}" ${(item.systemRole || "none") === r ? "selected" : ""}>${r}</option>`)
+              .join("")}
+          </select>
+        </div>
         <div class="field"><label>Specialization (EN)</label><input id="tSpecEn" value="${escapeHtml(item.specializationEn || "")}" /></div>
         <div class="field"><label>Specialization (AR)</label><input id="tSpecAr" value="${escapeHtml(item.specializationAr || "")}" /></div>
         <div class="field"><label>Job Title (EN)</label><input id="tRoleEn" value="${escapeHtml(item.roleEn)}" required /></div>
         <div class="field"><label>Job Title (AR)</label><input id="tRoleAr" value="${escapeHtml(item.roleAr)}" required /></div>
         <div class="field"><label>Bio (EN)</label><textarea id="tBioEn" rows="2" required>${escapeHtml(item.bioEn)}</textarea></div>
         <div class="field"><label>Bio (AR)</label><textarea id="tBioAr" rows="2" required>${escapeHtml(item.bioAr)}</textarea></div>
+        <div class="field"><label>Internal CV / Experience Summary</label><textarea id="tCvSum" rows="2">${escapeHtml(item.cvSummary || "")}</textarea></div>
         <div class="field"><label>Skills (comma-separated)</label><input id="tSkills" value="${escapeHtml((item.skills || []).join(", "))}" /></div>
-        <div class="field"><label>Experience Years (optional)</label><input id="tExp" type="number" min="0" value="${item.experienceYears ?? ""}" /></div>
+        <div class="form-two-col">
+          <div class="field"><label>Experience Years</label><input id="tExp" type="number" min="0" value="${item.experienceYears ?? ""}" /></div>
+          <div class="field"><label>Portfolio URL</label><input id="tPort" value="${escapeHtml(item.portfolioUrl || "")}" /></div>
+        </div>
         <div class="form-two-col">
           <div class="field"><label>GitHub URL (optional)</label><input id="tGh" value="${escapeHtml(item.githubUrl || "")}" /></div>
           <div class="field"><label>LinkedIn URL (optional)</label><input id="tLi" value="${escapeHtml(item.linkedinUrl || "")}" /></div>
@@ -3148,12 +2953,17 @@
         ...item,
         nameEn: document.getElementById("tNameEn").value.trim(),
         nameAr: document.getElementById("tNameAr").value.trim(),
+        email: document.getElementById("tEmail").value.trim(),
+        employeeStatus: document.getElementById("tEmpStatus").value,
+        systemRole: document.getElementById("tSysRole").value,
         specializationEn: document.getElementById("tSpecEn").value.trim(),
         specializationAr: document.getElementById("tSpecAr").value.trim(),
         roleEn: document.getElementById("tRoleEn").value.trim(),
         roleAr: document.getElementById("tRoleAr").value.trim(),
         bioEn: document.getElementById("tBioEn").value.trim(),
         bioAr: document.getElementById("tBioAr").value.trim(),
+        cvSummary: document.getElementById("tCvSum").value.trim(),
+        portfolioUrl: document.getElementById("tPort").value.trim(),
         skills: document.getElementById("tSkills").value.split(",").map((x) => x.trim()).filter(Boolean),
         experienceYears: expRaw === "" ? null : Number(expRaw),
         githubUrl: document.getElementById("tGh").value.trim(),
@@ -3289,6 +3099,106 @@
     });
   }
 
+  function openUpdateEditor(initial) {
+    const item = initial || {
+      id: `upd_${Date.now()}`,
+      kind: "update",
+      titleEn: "",
+      titleAr: "",
+      bodyEn: "",
+      bodyAr: "",
+      imageUrl: "",
+      targetRoute: "home",
+      targetGroup: "all",
+      targetEmail: "",
+      scheduledAt: "",
+      deliveryStatus: "published",
+      pinned: false,
+      published: true,
+      createdAt: new Date().toISOString()
+    };
+    const routes = ["home", "services", "projects", "technologies", "ai", "client", "download", "contact", "updates"];
+    openModal(
+      t("adminTabUpdates"),
+      `
+      <form id="updEditor" class="stack-list">
+        <div class="form-two-col">
+          <div class="field"><label>Kind</label>
+            <select id="uKind">
+              <option value="update" ${item.kind === "update" ? "selected" : ""}>Update</option>
+              <option value="news" ${item.kind === "news" ? "selected" : ""}>News</option>
+              <option value="notification" ${item.kind === "notification" ? "selected" : ""}>Notification</option>
+            </select>
+          </div>
+          <div class="field"><label>Target Route</label>
+            <select id="uTarget">
+              ${routes.map((r) => `<option value="${r}" ${item.targetRoute === r ? "selected" : ""}>#${r}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div class="form-two-col">
+          <div class="field"><label>Target Group</label>
+            <select id="uGroup">
+              <option value="all" ${(item.targetGroup || "all") === "all" ? "selected" : ""}>All Visitors</option>
+              <option value="clients" ${item.targetGroup === "clients" ? "selected" : ""}>Registered Clients</option>
+              <option value="specific_email" ${item.targetGroup === "specific_email" ? "selected" : ""}>Specific Email</option>
+            </select>
+          </div>
+          <div class="field"><label>Delivery Status</label>
+            <select id="uDelivery">
+              <option value="published" ${(item.deliveryStatus || "published") === "published" ? "selected" : ""}>Published</option>
+              <option value="scheduled" ${item.deliveryStatus === "scheduled" ? "selected" : ""}>Scheduled</option>
+              <option value="draft" ${item.deliveryStatus === "draft" ? "selected" : ""}>Draft</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-two-col">
+          <div class="field"><label>Target Email (if specific)</label><input id="uEmail" type="email" value="${escapeHtml(item.targetEmail || "")}" /></div>
+          <div class="field"><label>Schedule At (optional)</label><input id="uSched" type="datetime-local" value="${escapeHtml((item.scheduledAt || "").slice(0, 16))}" /></div>
+        </div>
+        <div class="field"><label>Title (EN)</label><input id="uTitleEn" value="${escapeHtml(item.titleEn)}" required /></div>
+        <div class="field"><label>Title (AR)</label><input id="uTitleAr" value="${escapeHtml(item.titleAr)}" required /></div>
+        <div class="field"><label>Body (EN)</label><textarea id="uBodyEn" rows="3" required>${escapeHtml(item.bodyEn)}</textarea></div>
+        <div class="field"><label>Body (AR)</label><textarea id="uBodyAr" rows="3" required>${escapeHtml(item.bodyAr)}</textarea></div>
+        <div class="field"><label>Image URL (optional)</label><input id="uImgUrl" value="${escapeHtml(item.imageUrl || "")}" /></div>
+        <label class="checkbox-row"><input id="uPin" type="checkbox" ${item.pinned ? "checked" : ""} /> Pinned</label>
+        <label class="checkbox-row"><input id="uPub" type="checkbox" ${item.published !== false ? "checked" : ""} /> ${escapeHtml(t("publishedLabel"))}</label>
+        <button type="submit" class="btn btn-primary btn-full">${escapeHtml(t("save"))}</button>
+      </form>
+    `
+    );
+
+    document.getElementById("updEditor").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const updated = {
+        ...item,
+        kind: document.getElementById("uKind").value,
+        targetRoute: document.getElementById("uTarget").value,
+        targetGroup: document.getElementById("uGroup").value,
+        deliveryStatus: document.getElementById("uDelivery").value,
+        targetEmail: document.getElementById("uEmail").value.trim(),
+        scheduledAt: document.getElementById("uSched").value ? new Date(document.getElementById("uSched").value).toISOString() : "",
+        imageUrl: document.getElementById("uImgUrl").value.trim(),
+        titleEn: document.getElementById("uTitleEn").value.trim(),
+        titleAr: document.getElementById("uTitleAr").value.trim(),
+        bodyEn: document.getElementById("uBodyEn").value.trim(),
+        bodyAr: document.getElementById("uBodyAr").value.trim(),
+        pinned: document.getElementById("uPin").checked,
+        published: document.getElementById("uPub").checked
+      };
+      if (Backend.isConfigured() && Backend.getStoredAuth()?.access_token) {
+        try { await Backend.upsertUpdateItem(updated); } catch (err) { showToast(err.message); return; }
+      }
+      if (!Array.isArray(studioState.updates)) studioState.updates = [];
+      const idx = studioState.updates.findIndex((x) => x.id === item.id);
+      if (idx >= 0) studioState.updates[idx] = updated;
+      else studioState.updates.unshift(updated);
+      saveState();
+      closeModal();
+      renderAll();
+    });
+  }
+
   /* =========================================================
      10. LEGAL SCREENS (Privacy & Terms)
      ========================================================= */
@@ -3352,6 +3262,8 @@
             <button type="button" class="footer-link-btn" data-footer-go="technologies">${escapeHtml(t("navTechnologies"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="team">${escapeHtml(t("navTeam"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="ai">${escapeHtml(t("navAi"))}</button>
+            <button type="button" class="footer-link-btn" data-footer-go="client">${escapeHtml(t("navClient"))}</button>
+            <button type="button" class="footer-link-btn" data-footer-go="updates">${escapeHtml(t("navUpdates"))}</button>
             <button type="button" class="footer-link-btn" data-footer-go="contact">${escapeHtml(t("navContact"))}</button>
           </div>
         </div>
@@ -3444,11 +3356,54 @@
     });
   }
 
+  function bindScrollReveals(container) {
+    const prefersReduced =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const targets = container.querySelectorAll(".section-block, .glass-card");
+    if (prefersReduced || typeof IntersectionObserver === "undefined") {
+      targets.forEach((el) => el.classList.add("is-revealed"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.06, rootMargin: "0px 0px -16px 0px" }
+    );
+    targets.forEach((el, idx) => {
+      if (idx < 3) {
+        el.classList.add("is-revealed");
+      } else {
+        el.classList.add("reveal-on-scroll");
+        io.observe(el);
+      }
+    });
+  }
+
   /* =========================================================
      13. RENDER DISPATCH & BOOTSTRAP
      ========================================================= */
   function renderScreen() {
     const root = document.getElementById("screenContainer");
+    const vis = studioState.settings?.visibleSections || {};
+    if (vis[currentRoute] === false) {
+      root.innerHTML = `
+        <div class="glass-card highlight-border stack-list" style="margin-top:20px;">
+          <h1 class="screen-title">🔒 ${escapeHtml(routeLabel(currentRoute))}</h1>
+          <p class="muted-text" style="margin:0;">${escapeHtml(t("sectionHiddenNotice"))}</p>
+          <button id="hiddenBackHomeBtn" type="button" class="btn btn-primary btn-sm">${escapeHtml(t("entBackToSite"))}</button>
+        </div>
+      `;
+      document.getElementById("hiddenBackHomeBtn").addEventListener("click", () => navigate("home"));
+      renderFooter(root);
+      return;
+    }
+
     switch (currentRoute) {
       case "about":
         renderAboutScreen(root);
@@ -3467,6 +3422,46 @@
         break;
       case "ai":
         renderAiScreen(root);
+        break;
+      case "client":
+        if (Portal) {
+          Portal.renderClientScreen(root, {
+            t,
+            isArabic,
+            escapeHtml,
+            Backend,
+            studioState,
+            saveState,
+            showToast,
+            renderScreen,
+            trackEvent,
+            localClientStorage,
+            getActiveClientSession,
+            syncClientCloudData,
+            getClientAuthTab: () => clientAuthTab,
+            setClientAuthTab: (v) => { clientAuthTab = v; },
+            getClientPortalTab: () => clientPortalTab,
+            setClientPortalTab: (v) => { clientPortalTab = v; }
+          });
+        }
+        break;
+      case "updates":
+        if (Portal) {
+          Portal.renderUpdatesScreen(root, {
+            t,
+            isArabic,
+            escapeHtml,
+            studioState,
+            navigate,
+            showToast,
+            renderScreen,
+            renderAll,
+            getUpdatesFilter: () => updatesFilter,
+            setUpdatesFilter: (v) => { updatesFilter = v; },
+            getReadUpdateIds,
+            markUpdatesRead
+          });
+        }
         break;
       case "download":
         renderDownloadScreen(root);
@@ -3489,6 +3484,7 @@
     }
     renderFooter(root);
     bind3DEffects(root);
+    bindScrollReveals(root);
   }
 
   function renderAll() {
@@ -3507,6 +3503,8 @@
       if (Array.isArray(live.team) && live.team.length > 0) studioState.team = live.team;
       if (Array.isArray(live.knowledgeBase) && live.knowledgeBase.length > 0) studioState.knowledgeBase = live.knowledgeBase;
       if (Array.isArray(live.faqs) && live.faqs.length > 0) studioState.faqs = live.faqs;
+      if (Array.isArray(live.updates) && live.updates.length > 0) studioState.updates = live.updates;
+      if (Array.isArray(live.releases) && live.releases.length > 0) studioState.releases = live.releases;
       dbSyncStatus = { tested: true, ok: true, latencyMs: null, message: "" };
       saveState();
       renderAll();
@@ -3521,6 +3519,9 @@
 
     const topDlBtn = document.getElementById("topbarDownloadBtn");
     if (topDlBtn) topDlBtn.addEventListener("click", () => navigate("download"));
+
+    const topNotifBtn = document.getElementById("topbarNotifBtn");
+    if (topNotifBtn) topNotifBtn.addEventListener("click", () => navigate("updates"));
 
     document.getElementById("langToggleBtn").addEventListener("click", () => {
       currentLang = currentLang === "ar" ? "en" : "ar";
@@ -3541,10 +3542,12 @@
       const next = normalizeRoute(window.location.hash.replace("#", ""));
       if (next && next !== currentRoute) {
         currentRoute = next;
+        trackEvent("page_view", currentRoute);
         renderAll();
       }
     });
 
+    trackEvent("page_view", currentRoute);
     renderAll();
     syncFromSupabaseIfConfigured();
   });

@@ -52,6 +52,10 @@ service cloud.firestore {
              isValidTimestamps(data);
     }
 
+    function isValidHttpOrEmpty(url) {
+      return url is string && url.size() <= 500 && url.matches('^$|^https?://.*');
+    }
+
     function isValidProject(data) {
       return data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 100 &&
              data.nameAr is string && data.nameAr.size() >= 1 && data.nameAr.size() <= 100 &&
@@ -59,11 +63,33 @@ service cloud.firestore {
              data.descriptionAr is string && data.descriptionAr.size() >= 1 && data.descriptionAr.size() <= 800 &&
              data.imageUrl is string && data.imageUrl.size() <= 500 &&
              data.presetImageKey is string && data.presetImageKey.size() >= 1 && data.presetImageKey.size() <= 40 &&
-             data.websiteUrl is string && data.websiteUrl.size() <= 500 &&
+             isValidHttpOrEmpty(data.websiteUrl) &&
+             (!('videoUrl' in data) || isValidHttpOrEmpty(data.videoUrl)) &&
              data.technologies is list && data.technologies.size() <= 15 &&
              (data.technologies.size() == 0 || data.technologies[0] is string) &&
              data.status in ['available', 'in_development', 'completed'] &&
              data.featured is bool &&
+             data.published is bool &&
+             isValidTimestamps(data);
+    }
+
+    function isValidProjectRequest(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.clientName is string && data.clientName.size() >= 2 && data.clientName.size() <= 120 &&
+             data.clientEmail is string && data.clientEmail.size() >= 5 && data.clientEmail.size() <= 150 &&
+             data.projectTitle is string && data.projectTitle.size() >= 2 && data.projectTitle.size() <= 160 &&
+             data.description is string && data.description.size() >= 10 && data.description.size() <= 3000 &&
+             data.status in ['submitted', 'reviewing', 'in_progress', 'completed'] &&
+             (!('adminNote' in data) || (data.adminNote is string && data.adminNote.size() <= 800)) &&
+             isValidTimestamps(data);
+    }
+
+    function isValidUpdateItem(data) {
+      return data.kind in ['update', 'news', 'notification'] &&
+             data.titleEn is string && data.titleEn.size() >= 2 && data.titleEn.size() <= 180 &&
+             data.titleAr is string && data.titleAr.size() >= 2 && data.titleAr.size() <= 180 &&
+             data.bodyEn is string && data.bodyEn.size() >= 2 && data.bodyEn.size() <= 2000 &&
+             data.bodyAr is string && data.bodyAr.size() >= 2 && data.bodyAr.size() <= 2000 &&
              data.published is bool &&
              isValidTimestamps(data);
     }
@@ -158,12 +184,12 @@ service cloud.firestore {
       allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
       allow create: if isAdmin() && isValidId(projectId) &&
                        incoming().keys().hasAll(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'createdAt', 'updatedAt']) &&
-                       incoming().keys().hasOnly(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'videoUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'createdAt', 'updatedAt']) &&
                        isValidProject(incoming());
       allow update: if isAdmin() && isValidId(projectId) &&
                        isValidProject(incoming()) &&
                        incoming().createdAt == existing().createdAt &&
-                       incoming().diff(existing()).affectedKeys().hasOnly(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'updatedAt']);
+                       incoming().diff(existing()).affectedKeys().hasOnly(['nameEn', 'nameAr', 'descriptionEn', 'descriptionAr', 'imageUrl', 'videoUrl', 'presetImageKey', 'websiteUrl', 'technologies', 'status', 'featured', 'published', 'updatedAt']);
       allow delete: if isAdmin() && isValidId(projectId);
     }
 
@@ -253,6 +279,47 @@ service cloud.firestore {
                        incoming().email is string && incoming().email.size() <= 150 &&
                        incoming().createdAt is timestamp && incoming().createdAt <= request.time;
       allow update, delete: if isAdmin() && isValidId(uid);
+    }
+
+    match /project_requests/{requestId} {
+      allow get: if isSignedIn() && isValidId(requestId) && (isAdmin() || existing().userId == request.auth.uid);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && isValidId(requestId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'submitted' &&
+                       incoming().keys().hasAll(['userId', 'clientName', 'clientEmail', 'projectTitle', 'description', 'status', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'clientName', 'clientEmail', 'serviceName', 'projectTitle', 'description', 'budgetRange', 'timeline', 'status', 'adminNote', 'createdAt', 'updatedAt']) &&
+                       isValidProjectRequest(incoming());
+      allow update: if isAdmin() && isValidId(requestId) &&
+                       isValidProjectRequest(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['status', 'adminNote', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(requestId);
+    }
+
+    match /updates_feed/{updateId} {
+      allow get: if isSignedIn() && isValidId(updateId) && (isAdmin() || existing().published == true);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow create: if isAdmin() && isValidId(updateId) &&
+                       incoming().keys().hasAll(['kind', 'titleEn', 'titleAr', 'bodyEn', 'bodyAr', 'published', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['kind', 'titleEn', 'titleAr', 'bodyEn', 'bodyAr', 'targetRoute', 'pinned', 'published', 'createdAt', 'updatedAt']) &&
+                       isValidUpdateItem(incoming());
+      allow update: if isAdmin() && isValidId(updateId) &&
+                       isValidUpdateItem(incoming()) &&
+                       incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin() && isValidId(updateId);
+    }
+
+    match /analytics_events/{eventId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn() && isValidId(eventId) &&
+                       incoming().keys().hasAll(['eventType', 'route', 'createdAt']) &&
+                       incoming().keys().hasOnly(['eventType', 'route', 'createdAt']) &&
+                       incoming().eventType in ['page_view', 'ai_query', 'apk_download', 'client_request'] &&
+                       incoming().route is string && incoming().route.size() <= 40 &&
+                       incoming().createdAt is timestamp && incoming().createdAt <= request.time;
+      allow update, delete: if false;
     }
   }
 }
